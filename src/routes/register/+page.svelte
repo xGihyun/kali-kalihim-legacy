@@ -29,7 +29,8 @@
 						is_registered: authData?.is_registered || false,
 						photo_url: authData?.photo_url || '',
 						uid: authData?.uid || '',
-						username: authData?.username || ''
+						username: authData?.username || '',
+						role: authData?.role || ''
 					},
 					personal_data: {
 						age: personalData?.age || -1,
@@ -80,8 +81,11 @@
 				<label class="label">
 					<span>Section</span>
 					<select class="input" size="1" value="section1" name="section" required>
-						<option value="section1">Section 1</option>
-						<option value="section2">Section 2</option>
+						<option value="section-1">Section 1</option>
+						<option value="section-2">Section 2</option>
+						<option value="section-3">Section 3</option>
+						<option value="section-4">Section 4</option>
+						<option value="section-5">Section 5</option>
 					</select>
 				</label>
 

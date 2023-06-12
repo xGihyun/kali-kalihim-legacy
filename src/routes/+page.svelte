@@ -12,8 +12,6 @@
 		const authData = userAuth?.userData.auth_data;
 		const personalData = userAuth?.userData.personal_data;
 
-		console.log(authData);
-
 		if (!userAuth) return;
 
 		console.log('Setting stores...');
@@ -28,7 +26,8 @@
 						is_registered: authData?.is_registered || false,
 						photo_url: authData?.photo_url || '',
 						uid: authData?.uid || '',
-						username: authData?.username || ''
+						username: authData?.username || '',
+						role: authData?.role || ''
 					},
 					personal_data: {
 						age: personalData?.age || -1,
@@ -49,10 +48,10 @@
 	}
 </script>
 
-{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-	<div>Hello {$user.auth_data.username}</div>
-{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
-	<div class="w-full flex h-full flex-col items-center justify-center">
+<div class="flex h-full flex-col items-center justify-center">
+	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
+		<div>Hello {$user.auth_data.username}</div>
+	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<div class="p-4 variant-filled-surface rounded-md">
 			<form method="post" action="?/register">
 				<label class="label">
@@ -80,9 +79,12 @@
 
 				<label class="label">
 					<span>Section</span>
-					<select class="input" size="1" value="section1" name="section" required>
-						<option value="section1">Section 1</option>
-						<option value="section2">Section 2</option>
+					<select class="input" size="1" value="section-1" name="section" required>
+						<option value="section-1">Section 1</option>
+						<option value="section-2">Section 2</option>
+						<option value="section-3">Section 3</option>
+						<option value="section-4">Section 4</option>
+						<option value="section-5">Section 5</option>
 					</select>
 				</label>
 
@@ -112,9 +114,7 @@
 				<button class="variant-filled-primary rounded-md p-2">Register</button>
 			</form>
 		</div>
-	</div>
-{:else if !$user.auth_data.is_logged_in && !$user.auth_data.is_registered}
-	<div class="flex h-full flex-col items-center justify-center">
+	{:else if !$user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<h1 class="font-gt-walsheim-pro-medium text-center text-9xl uppercase select-none mb-10">
 			Kali Kalihim
 		</h1>
@@ -124,5 +124,5 @@
 		>
 			<span class="text-xl">Sign in with Google</span>
 		</button>
-	</div>
-{/if}
+	{/if}
+</div>

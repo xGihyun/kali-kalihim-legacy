@@ -16,7 +16,10 @@
 			<a class="variant-filled-secondary rounded-md p-2" type="button" href="/leaderboards"
 				>Leaderboards</a
 			>
-			<form method="post" action="?/logout">
+			<a class="variant-filled-secondary rounded-md p-2" type="button" href="/matchmake"
+				>Matchmake</a
+			>
+			<form method="post" action="/logout">
 				<button class="variant-filled-primary rounded-md p-2">Log Out</button>
 			</form>
 			<a href="/profile">

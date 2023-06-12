@@ -6,7 +6,8 @@ export const defaultAuthData: UserAuthData = {
 	uid: '',
 	is_logged_in: false,
 	is_registered: false,
-	photo_url: ''
+	photo_url: '',
+	role: ''
 };
 
 export const defaultPersonalData: UserPersonalData = {

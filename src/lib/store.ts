@@ -7,7 +7,9 @@ export const currentUser = writable<UserData>({
 		username: '',
 		uid: '',
 		is_logged_in: false,
-		photo_url: ''
+		is_registered: false,
+		photo_url: '',
+		role: ''
 	},
 	personal_data: {
 		age: -1,

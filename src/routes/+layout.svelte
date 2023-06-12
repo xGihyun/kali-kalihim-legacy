@@ -15,7 +15,8 @@
 			is_registered: data.user?.auth_data.is_registered || false,
 			photo_url: data.user?.auth_data.photo_url || '',
 			uid: data.user?.auth_data.uid || '',
-			username: data.user?.auth_data.username || ''
+			username: data.user?.auth_data.username || '',
+			role: data.user?.auth_data.role || ''
 		},
 		personal_data: {
 			age: data.user?.personal_data.age || -1,

@@ -1,40 +1,10 @@
-import { auth, db } from '$lib/firebase/firebase';
-import { signOut } from 'firebase/auth';
+import { db } from '$lib/firebase/firebase';
 import { redirect, type Actions } from '@sveltejs/kit';
 import { doc, setDoc } from 'firebase/firestore';
 import { currentUser } from '$lib/store';
-import { defaultUserData } from '$lib/default';
 import type { UserPersonalData } from '$lib/types';
 
 export const actions: Actions = {
-	logout: async ({ cookies, locals }) => {
-		if (!locals.userData.auth_data.uid) {
-			return;
-		}
-
-		console.log('Resetting writable...');
-		currentUser.set({
-			...defaultUserData
-		});
-
-		console.log('Logging out, deleting cookies now, and redirecting to homepage...');
-		cookies.delete('session');
-
-		const userRef = doc(db, 'users', locals.userData.auth_data.uid);
-
-		// Set login to false in the database
-		await setDoc(userRef, { auth_data: { is_logged_in: false } }, { merge: true });
-
-		locals.userData = {
-			...defaultUserData
-		};
-
-		// Log out user from Google
-		await signOut(auth);
-		console.log("The user has been logged out, now redirecting to '/'");
-
-		throw redirect(302, '/');
-	},
 	register: async ({ request, locals }) => {
 		const userUid = locals.userData.auth_data.uid;
 

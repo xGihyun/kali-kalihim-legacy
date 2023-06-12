@@ -10,6 +10,7 @@ export type UserAuthData = {
 	is_logged_in: boolean;
 	uid: string | null;
 	is_registered: boolean;
+	role: string;
 };
 
 export type UserPersonalData = {

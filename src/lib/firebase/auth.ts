@@ -24,7 +24,8 @@ export async function googleAuthPopup() {
 			email: user.email,
 			photo_url: user.photoURL,
 			is_logged_in: true,
-			is_registered: false
+			is_registered: false,
+			role: 'user'
 		};
 
 		// The initial personal data to store. Values will be empty if it is a new user.
