@@ -8,8 +8,7 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter({ runtime: 'edge' }),
-		inlineStyleThreshold: 5000
+		adapter: adapter()
 	}
 };
 

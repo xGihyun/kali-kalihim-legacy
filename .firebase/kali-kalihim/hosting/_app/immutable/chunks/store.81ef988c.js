@@ -1,0 +1,1 @@
+import{w as e}from"./index.568093f0.js";const r=e({auth_data:{email:"",username:"",uid:"",is_logged_in:!1,is_registered:!1,photo_url:"",role:""},personal_data:{age:-1,contact_number:-1,name:{first:"",last:""},section:"",sex:""}});export{r as c};

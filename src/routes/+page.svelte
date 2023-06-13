@@ -2,13 +2,13 @@
 	import type { UserData } from '$lib/types';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
-	import { googleAuthPopup } from '$lib/firebase/auth';
+	import { emailPasswordAuth } from '$lib/firebase/auth';
 	import { currentUser } from '$lib/store';
 
 	$: user = getContext<Writable<UserData>>('user');
 
 	async function login() {
-		const userAuth = await googleAuthPopup();
+		const userAuth = await emailPasswordAuth('giordnnuz@gmail.com', 'password123');
 		const authData = userAuth?.userData.auth_data;
 		const personalData = userAuth?.userData.personal_data;
 
@@ -50,7 +50,7 @@
 
 <div class="flex h-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-		<div>Hello {$user.auth_data.username}</div>
+		<div>Hello {$user.personal_data.name.first}</div>
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<div class="p-4 variant-filled-surface rounded-md">
 			<form method="post" action="?/register">
@@ -118,11 +118,25 @@
 		<h1 class="font-gt-walsheim-pro-medium text-center text-9xl uppercase select-none mb-10">
 			Kali Kalihim
 		</h1>
-		<button
+		<!-- <button
 			class="rounded-lg border-[1px] border-white p-2 flex items-center gap-5 select-none"
 			on:click={login}
 		>
 			<span class="text-xl">Sign in with Google</span>
-		</button>
+		</button> -->
+		<form method="post" action="?/login">
+			<label class="label">
+				<span>Email</span>
+				<input class="input" type="email" name="email" required />
+			</label>
+
+			<label class="label">
+				<span>Password</span>
+				<input class="input" type="password" name="password" required />
+			</label>
+			<button class="rounded-lg border-[1px] border-white p-2 flex items-center gap-5 select-none">
+				<span class="text-xl">Submit</span>
+			</button>
+		</form>
 	{/if}
 </div>

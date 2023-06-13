@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { googleAuthPopup } from '$lib/firebase/auth';
 	import { currentUser } from '$lib/store';
 	import type { UserData } from '$lib/types';
@@ -128,4 +128,4 @@
 			<span class="text-xl">Sign in with Google</span>
 		</button>
 	</div>
-{/if}
+{/if} -->

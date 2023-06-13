@@ -26,6 +26,7 @@ export async function handle({ event, resolve }) {
 		const data = docSnap.data() as UserData;
 		event.locals.userData = data;
 
+		console.log('Hooks:')
 		console.log(event.locals.userData)
 	}
 

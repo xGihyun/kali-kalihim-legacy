@@ -35,6 +35,13 @@
 	async function fetchRandomUsers() {
 		loading = true;
 		const response = await fetch('../api/matchmake');
+
+		if (!response) {
+			loading = false;
+			console.log('Not enough participants')
+			return;
+		}
+
 		const data: UserData[] = await response.json();
 
 		users = data;
