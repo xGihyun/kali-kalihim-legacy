@@ -1,8 +1,9 @@
 /** @type {import('@sveltejs/kit').Handle} */
 
-import { db } from '$lib/firebase/firebase';
+import { auth, db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
 import { redirect } from '@sveltejs/kit';
+import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
 // https://kit.svelte.dev/docs/hooks
@@ -26,9 +27,17 @@ export async function handle({ event, resolve }) {
 		const data = docSnap.data() as UserData;
 		event.locals.userData = data;
 
-		console.log('Hooks:')
-		console.log(event.locals.userData)
+		console.log('Hooks run docSnap');
+		console.log(event.locals.userData);
 	}
+
+	// onAuthStateChanged(auth, (user) => {
+	// 	if (user) {
+	// 		console.log('User has logged in!');
+	// 	} else {
+	// 		console.log('User has logged out!');
+	// 	}
+	// });
 
 	// if (
 	// 	event.url.pathname === '/register' &&

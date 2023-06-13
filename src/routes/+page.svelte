@@ -2,50 +2,8 @@
 	import type { UserData } from '$lib/types';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
-	import { emailPasswordAuth } from '$lib/firebase/auth';
-	import { currentUser } from '$lib/store';
 
 	$: user = getContext<Writable<UserData>>('user');
-
-	async function login() {
-		const userAuth = await emailPasswordAuth('giordnnuz@gmail.com', 'password123');
-		const authData = userAuth?.userData.auth_data;
-		const personalData = userAuth?.userData.personal_data;
-
-		if (!userAuth) return;
-
-		console.log('Setting stores...');
-
-		// Update the current store
-		currentUser.update(
-			(val) =>
-				(val = {
-					auth_data: {
-						email: authData?.email || '',
-						is_logged_in: authData?.is_logged_in || false,
-						is_registered: authData?.is_registered || false,
-						photo_url: authData?.photo_url || '',
-						uid: authData?.uid || '',
-						username: authData?.username || '',
-						role: authData?.role || ''
-					},
-					personal_data: {
-						age: personalData?.age || -1,
-						contact_number: personalData?.contact_number || -1,
-						name: {
-							first: personalData?.name.first || '',
-							last: personalData?.name.last || ''
-						},
-						section: personalData?.section || '',
-						sex: personalData?.sex || ''
-					}
-				})
-		);
-
-		console.log('Stores set!');
-
-		console.log($user);
-	}
 </script>
 
 <div class="flex h-full flex-col items-center justify-center">
@@ -118,12 +76,6 @@
 		<h1 class="font-gt-walsheim-pro-medium text-center text-9xl uppercase select-none mb-10">
 			Kali Kalihim
 		</h1>
-		<!-- <button
-			class="rounded-lg border-[1px] border-white p-2 flex items-center gap-5 select-none"
-			on:click={login}
-		>
-			<span class="text-xl">Sign in with Google</span>
-		</button> -->
 		<form method="post" action="?/login">
 			<label class="label">
 				<span>Email</span>

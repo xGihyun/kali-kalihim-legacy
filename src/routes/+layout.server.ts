@@ -9,6 +9,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		return;
 	}
 
+	console.log('\nlayout.server')
+	console.log(locals.userData)
+
 	/**
 	 * NOTE: WILL BE USED LATER (MAYBE)
 	 */
