@@ -9,22 +9,8 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		return;
 	}
 
-	console.log('\nlayout.server')
-	console.log(locals.userData)
-
-	/**
-	 * NOTE: WILL BE USED LATER (MAYBE)
-	 */
-	// Get all of the documents
-	// const usersCollection = collection(db, 'users');
-	// const usersDocs = await getDocs(usersCollection);
-
-	// /** @type {import('$lib/types').UserData[]} */
-	// let docData = [];
-
-	// usersDocs.forEach((doc) => {
-	// 	docData.push(/** @type {import('$lib/types').UserData} */ (doc.data()));
-	// });
+	// console.log('\nlayout.server')
+	// console.log(locals.userData)
 	return {
 		user: locals.userData
 	};

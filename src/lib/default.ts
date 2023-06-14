@@ -23,5 +23,6 @@ export const defaultPersonalData: UserPersonalData = {
 
 export const defaultUserData: UserData = {
 	auth_data: defaultAuthData,
-	personal_data: defaultPersonalData
+	personal_data: defaultPersonalData,
+	score: 0
 };

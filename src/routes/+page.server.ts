@@ -8,7 +8,7 @@ import {
 	createUserWithEmailAndPassword,
 	fetchSignInMethodsForEmail
 } from 'firebase/auth';
-import type { UserData } from '$lib/types.js';
+import type { UserData, UserPersonalData } from '$lib/types.js';
 
 export const actions = {
 	register: async ({ request, locals }) => {
@@ -26,7 +26,7 @@ export const actions = {
 		const section = data.get('section')?.toString();
 		const contactNumber = Number(data.get('contact-number')?.toString().trim());
 
-		const newPersonalData = {
+		const newPersonalData: UserPersonalData = {
 			age: age,
 			contact_number: contactNumber,
 			name: {
@@ -45,7 +45,8 @@ export const actions = {
 			personal_data: {
 				...val.personal_data,
 				...newPersonalData
-			}
+			},
+			score: val.score
 		}));
 
 		const userRef = doc(db, 'users', userUid);
@@ -98,7 +99,8 @@ export const actions = {
 				},
 				personal_data: {
 					...defaultPersonalData
-				}
+				},
+				score: 0
 			};
 
 			await setDoc(userRef, newUserData);
@@ -119,7 +121,8 @@ export const actions = {
 						},
 						personal_data: {
 							...userData.personal_data
-						}
+						},
+						score: val.score
 					})
 			);
 
@@ -131,12 +134,30 @@ export const actions = {
 			const userRef = doc(db, 'users', user.uid);
 			const docSnap = await getDoc(userRef);
 
+			// Theoretically, there should already be a document
 			if (!docSnap.exists()) {
-				throw error(404, 'User has no document.');
-			}
+				// throw error(404, 'User has no document.');
+				const newUserData: UserData = {
+					auth_data: {
+						email: user.email,
+						is_logged_in: true,
+						is_registered: false,
+						photo_url: user.photoURL,
+						role: 'user',
+						uid: user.uid,
+						username: user.displayName
+					},
+					personal_data: {
+						...defaultPersonalData
+					},
+					score: 0
+				};
 
-			// User document exists, update the auth_data field
-			await updateDoc(userRef, { 'auth_data.is_logged_in': true });
+				await setDoc(userRef, newUserData);
+			} else {
+				// User document exists, update the auth_data field
+				await updateDoc(userRef, { 'auth_data.is_logged_in': true });
+			}
 
 			// Get the updated user data
 			const userDoc = await getDoc(userRef);
@@ -155,7 +176,8 @@ export const actions = {
 						},
 						personal_data: {
 							...userData.personal_data
-						}
+						},
+						score: val.score
 					})
 			);
 

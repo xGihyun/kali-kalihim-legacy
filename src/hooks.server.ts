@@ -27,8 +27,8 @@ export async function handle({ event, resolve }) {
 		const data = docSnap.data() as UserData;
 		event.locals.userData = data;
 
-		console.log('Hooks run docSnap');
-		console.log(event.locals.userData);
+		// console.log('Hooks run docSnap');
+		// console.log(event.locals.userData);
 	}
 
 	// onAuthStateChanged(auth, (user) => {

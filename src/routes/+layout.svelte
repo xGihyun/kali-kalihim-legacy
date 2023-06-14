@@ -27,7 +27,8 @@
 			},
 			section: data.user?.personal_data.section || '',
 			sex: data.user?.personal_data.sex || ''
-		}
+		},
+		score: data.user?.score || 0
 	});
 
 	setContext('user', currentUser);

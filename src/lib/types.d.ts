@@ -1,6 +1,7 @@
 export type UserData = {
 	auth_data: UserAuthData;
 	personal_data: UserPersonalData;
+	score: number;
 };
 
 export type UserAuthData = {
@@ -23,3 +24,7 @@ export type UserPersonalData = {
 	age: number;
 	contact_number: number;
 };
+
+// export type PerformanceData = {
+
+// }

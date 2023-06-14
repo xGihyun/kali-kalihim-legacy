@@ -5,6 +5,7 @@
 	import type { Writable } from 'svelte/store';
 
 	const user = getContext<Writable<UserData>>('user');
+	const initials = $user.personal_data.name.first[0] + $user.personal_data.name.last[0];
 </script>
 
 {#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
@@ -22,9 +23,10 @@
 			<form method="post" action="/logout">
 				<button class="variant-filled-primary rounded-md p-2">Log Out</button>
 			</form>
-			<a href="/profile">
+			<!-- <a href="/profile">
 				<Avatar src={$user.auth_data.photo_url || ''} width="w-10" />
-			</a>
+			</a> -->
+			<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
 		</div>
 	</nav>
 {/if}

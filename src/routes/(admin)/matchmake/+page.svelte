@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { db } from '$lib/firebase/firebase';
 	import type { UserData } from '$lib/types';
 	import { addDoc, collection } from 'firebase/firestore';
@@ -38,7 +39,7 @@
 
 		if (!response) {
 			loading = false;
-			console.log('Not enough participants')
+			console.log('Not enough participants');
 			return;
 		}
 
@@ -71,6 +72,23 @@
 		// console.log(matchHistoryData)
 		// console.log(data);
 	}
+
+	async function handleSubmit(event: SubmitEvent) {
+		const form = event.target as HTMLFormElement;
+		const formData = new FormData(form);
+		const response = await fetch('/api/submit-score', {
+			method: 'POST',
+			body: formData
+		});
+
+		if (response.ok) {
+			console.log('Scores submitted successfully!');
+			console.log(response.json());
+			form.reset();
+		} else {
+			console.error('Error submitting form:', response.statusText);
+		}
+	}
 </script>
 
 <div class="h-full w-full flex flex-col justify-center items-center">
@@ -94,7 +112,43 @@
 				</p>
 			</div>
 			<span>Skill to perform: {skillToPerform}</span>
+			<div class="flex flex-col gap-4">
+				<form on:submit|preventDefault={handleSubmit}>
+					{#each users as user, idx (idx)}
+						<label class="label">
+							<span>Score for {user.personal_data.name.first} {user.personal_data.name.last}</span>
+							<input
+								class="input"
+								type="text"
+								placeholder="Score"
+								name={`score-${user.auth_data.uid}`}
+								required
+							/>
+						</label>
+					{/each}
+					<button class="variant-filled-primary rounded-md p-2">Submit</button>
+				</form>
+			</div>
 		{/if}
+
+		<!-- FOR TESTING PURPOSES -->
+		<!-- <span class="uppercase text-9xl font-gt-walsheim-pro-medium">match found</span>
+		<div class="flex gap-2 text-end">
+			<p class="text-3xl">First Last</p>
+			<span class="uppercase font-gt-walsheim-pro-medium text-3xl">vs</span>
+			<p class="text-3xl">First Last</p>
+		</div>
+		<span>Skill to perform: Skill</span>
+		<div class="flex flex-col gap-4">
+			<label class="label">
+				<span>Score for (name)</span>
+				<input class="input" type="text" placeholder="Score" name="score" required />
+			</label>
+			<label class="label">
+				<span>Score for (name)</span>
+				<input class="input" type="text" placeholder="Score" name="score" required />
+			</label>
+		</div> -->
 	</div>
 	<button class="variant-filled-primary rounded-md p-2" on:click={fetchRandomUsers}
 		>Find Match</button
