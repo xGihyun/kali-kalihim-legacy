@@ -76,19 +76,23 @@
 		<h1 class="font-gt-walsheim-pro-medium text-center text-9xl uppercase select-none mb-10">
 			Kali Kalihim
 		</h1>
-		<form method="post" action="?/login">
-			<label class="label">
-				<span>Email</span>
-				<input class="input" type="email" name="email" required />
-			</label>
-
-			<label class="label">
-				<span>Password</span>
-				<input class="input" type="password" name="password" required />
-			</label>
-			<button class="rounded-lg border-[1px] border-white p-2 flex items-center gap-5 select-none">
-				<span class="text-xl">Submit</span>
-			</button>
-		</form>
+		<div class="flex gap-4 flex-col">
+			<form class="contents" method="post" action="?/login">
+				<div>
+					<label class="label">
+						<span>Email</span>
+						<input class="input" type="email" name="email" required />
+					</label>
+		
+					<label class="label">
+						<span>Password</span>
+						<input class="input" type="password" name="password" required />
+					</label>
+				</div>
+				<button class="btn mx-auto flex variant-filled-primary">
+					<span class="text-xl">Submit</span>
+				</button>
+			</form>
+		</div>
 	{/if}
 </div>

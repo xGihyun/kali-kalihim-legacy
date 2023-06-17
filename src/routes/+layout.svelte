@@ -5,9 +5,13 @@
 	import { currentUser } from '$lib/store';
 	import { setContext } from 'svelte';
 	import { Navbar } from '../components';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	import { storePopup } from '@skeletonlabs/skeleton';
 
 	export let data;
 
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+	
 	$: currentUser.set({
 		auth_data: {
 			email: data.user?.auth_data.email || '',
@@ -34,7 +38,7 @@
 	setContext('user', currentUser);
 </script>
 
-<Navbar />
+<Navbar notifications={data.notifications || []} />
 <main class="h-screen">
 	<slot />
 </main>

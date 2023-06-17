@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { db } from '$lib/firebase/firebase';
 	import type { UserData } from '$lib/types';
-	import { addDoc, collection } from 'firebase/firestore';
+	import { Timestamp, addDoc, collection } from 'firebase/firestore';
 
 	let skillToPerform = '';
 	let dataFetched = false;
@@ -52,7 +52,23 @@
 		loading = false;
 		dataFetched = true;
 
-		addMatchHistory(users);
+		// Add pending match to their notifications
+		addPendingMatch(users);
+	}
+
+	function addPendingMatch(users: UserData[]) {
+		const currentDate = new Date();
+
+		const pendingMatchData = {
+			players: [...users],
+			timestamp: Timestamp.fromDate(currentDate)
+		};
+
+		users.forEach(async (user) => {
+			const pendingMatchCollection = collection(db, `users/${user.auth_data.uid}/pending_matches`);
+
+			await addDoc(pendingMatchCollection, pendingMatchData);
+		});
 	}
 
 	function addMatchHistory(users: UserData[]) {
@@ -60,7 +76,7 @@
 
 		const matchHistoryData = {
 			players: [...users],
-			timestamp: currentDate
+			timestamp: Timestamp.fromDate(currentDate)
 		};
 
 		users.forEach(async (user) => {
@@ -83,10 +99,10 @@
 
 		if (response.ok) {
 			console.log('Scores submitted successfully!');
-			console.log(response.json());
 			form.reset();
+			addMatchHistory(users);
 		} else {
-			console.error('Error submitting form:', response.statusText);
+			console.error('Error submitting form: ', response.statusText);
 		}
 	}
 </script>
@@ -113,20 +129,22 @@
 			</div>
 			<span>Skill to perform: {skillToPerform}</span>
 			<div class="flex flex-col gap-4">
-				<form on:submit|preventDefault={handleSubmit}>
-					{#each users as user, idx (idx)}
-						<label class="label">
-							<span>Score for {user.personal_data.name.first} {user.personal_data.name.last}</span>
-							<input
-								class="input"
-								type="text"
-								placeholder="Score"
-								name={`score-${user.auth_data.uid}`}
-								required
-							/>
-						</label>
-					{/each}
-					<button class="variant-filled-primary rounded-md p-2">Submit</button>
+				<form class="contents" on:submit|preventDefault={handleSubmit}>
+					<div>
+						{#each users as user, idx (idx)}
+							<label class="label">
+								<span>Score for {user.personal_data.name.first} {user.personal_data.name.last}</span
+								>
+								<input
+									class="input"
+									type="text"
+									name={`score-${user.auth_data.uid}`}
+									required
+								/>
+							</label>
+						{/each}
+					</div>
+					<button class="mx-auto variant-filled-primary rounded-md p-2">Submit</button>
 				</form>
 			</div>
 		{/if}
