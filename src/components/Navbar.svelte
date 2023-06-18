@@ -3,7 +3,7 @@
 	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import type { PendingMatches, UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
-	import { collection, onSnapshot, Timestamp } from 'firebase/firestore';
+	import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 	import { db } from '$lib/firebase/firebase';
 	import { onDestroy } from 'svelte';
 	import { Bell } from '../assets/icons';
@@ -13,9 +13,15 @@
 	const user = getContext<Writable<UserData>>('user');
 	const initials = $user.personal_data.name.first[0] + $user.personal_data.name.last[0];
 
-	const popupFeatured: PopupSettings = {
+	const popupNotification: PopupSettings = {
 		event: 'click',
-		target: 'popupFeatured',
+		target: 'notifications',
+		placement: 'bottom'
+	};
+
+	const popupProfile: PopupSettings = {
+		event: 'click',
+		target: 'profile',
 		placement: 'bottom'
 	};
 
@@ -43,7 +49,8 @@
 
 	if ($user.auth_data.uid) {
 		const pendingMatchesCollection = collection(db, `users/${$user.auth_data.uid}/pending_matches`);
-		const unsubNotifications = onSnapshot(pendingMatchesCollection, (snapshot) => {
+		const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
+		const unsubNotifications = onSnapshot(q, (snapshot) => {
 			notifications = snapshot.docs.map(
 				(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatches
 			);
@@ -55,46 +62,66 @@
 
 {#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 	<nav
-		class="flex fixed h-20 w-full shrink-0 items-center justify-between gap-5 border-b-[1px] border-neutral-800 px-20 py-5"
+		class="flex fixed h-20 w-full shrink-0 items-center justify-between gap-5 border-b-[1px] border-neutral-800 px-[5%] py-5"
 	>
-		<a href="/" class="font-gt-walsheim-pro-medium text-4xl uppercase">Kali Kalihim</a>
+		<a href="/" class="font-gt-walsheim-pro-medium text-2xl md:text-4xl uppercase">Kali Kalihim</a>
 		<div class="flex items-center gap-5">
-			<a class="variant-filled-secondary btn" type="button" href="/leaderboards">Leaderboards</a>
-			<a class="variant-filled-secondary btn" type="button" href="/matchmake">Matchmake</a>
-
+			<a class="variant-filled-secondary btn hidden md:block" type="button" href="/leaderboards"
+				>Leaderboards</a
+			>
+			<a class="variant-filled-secondary btn hidden md:block" type="button" href="/matchmake"
+				>Matchmake</a
+			>
 			<div class="flex items-center">
-				<button class="btn-icon aspect-square" use:popup={popupFeatured}>
-					<Bell styles="text-white w-6 h-6" />
+				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
+					<Bell styles="w-5 h-5" />
 				</button>
-				<div class="card p-4 w-72 shadow-xl" data-popup="popupFeatured">
-					{#each notifications as notification, idx (idx)}
-						<div>
-							{#each notification.players as player, playerIdx (playerIdx)}
-								{#if player.auth_data.uid !== $user.auth_data.uid}
-									<p>
-										Match VS
-										<span class="font-bold"
-											>{player.personal_data.name.first} {player.personal_data.name.last}</span
-										>
-									</p>
-								{/if}
-							{/each}
-							<span class="text-sm opacity-50"
-								>{getTimeSince(timestampToDate(notification.timestamp))}</span
-							>
-						</div>
-					{/each}
+				<div class="card p-4 w-72 shadow-xl transition-none duration-0" data-popup="notifications">
+					<ul class="space-y-4">
+						{#each notifications as notification, idx (idx)}
+							<li class="flex flex-col items-start">
+								{#each notification.players as player, playerIdx (playerIdx)}
+									{#if player.auth_data.uid !== $user.auth_data.uid}
+										<p>
+											Match VS
+											<span class="font-bold"
+												>{player.personal_data.name.first} {player.personal_data.name.last}</span
+											>
+										</p>
+									{/if}
+								{/each}
+								<span class="text-sm opacity-50"
+									>{getTimeSince(timestampToDate(notification.timestamp))}</span
+								>
+							</li>
+						{/each}
+					</ul>
 					<div class="arrow bg-surface-100-800-token" />
 				</div>
 			</div>
 
-			<form method="post" action="/logout">
-				<button class="variant-filled-primary btn">Log Out</button>
-			</form>
 			<!-- <a href="/profile">
 				<Avatar src={$user.auth_data.photo_url || ''} width="w-10" />
 			</a> -->
-			<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
+			<div class="flex items-center">
+				<button use:popup={popupProfile}>
+					<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
+				</button>
+				<div class="card p-4 w-72 shadow-xl transition-none duration-0" data-popup="profile">
+					<ul class="space-y-4">
+						<a class="variant-filled-surface btn block md:hidden" type="button" href="/leaderboards"
+							>Leaderboards</a
+						>
+						<a class="variant-filled-surface btn block md:hidden" type="button" href="/matchmake"
+							>Matchmake</a
+						>
+						<form class="block" method="post" action="/logout">
+							<button class="btn w-full variant-filled-primary">Log Out</button>
+						</form>
+					</ul>
+					<div class="arrow bg-surface-100-800-token" />
+				</div>
+			</div>
 		</div>
 	</nav>
 {/if}

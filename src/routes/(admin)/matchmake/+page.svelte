@@ -107,22 +107,22 @@
 	}
 </script>
 
-<div class="h-full w-full flex flex-col justify-center items-center">
+<div class="h-full w-full flex flex-col justify-center items-center px-[5%]">
 	<div class="flex flex-col gap-4 justify-center items-center min-h-min h-3/4">
 		{#if loading}
 			<div>Loading...</div>
 		{:else if !loading && dataFetched}
-			<span class="uppercase text-9xl font-gt-walsheim-pro-medium">match found</span>
-			<!-- {#each users as user, idx (idx)}
-				<p>{user.personal_data.name.first} {user.personal_data.name.last}</p>
-			{/each} -->
+			<span
+				class="uppercase text-center text-3xl md:text-4xl xl:text-9xl font-gt-walsheim-pro-medium"
+				>match found</span
+			>
 			<div class="flex gap-2 text-end">
-				<p class="text-3xl">
+				<p class="text-xl md:text-3xl">
 					{users[0].personal_data.name.first}
 					{users[0].personal_data.name.last}
 				</p>
-				<span class="uppercase font-gt-walsheim-pro-medium text-3xl">vs</span>
-				<p class="text-3xl">
+				<span class="uppercase font-gt-walsheim-pro-medium text-xl md:text-3xl">vs</span>
+				<p class="text-xl md:text-3xl">
 					{users[1].personal_data.name.first}
 					{users[1].personal_data.name.last}
 				</p>
@@ -135,26 +135,23 @@
 							<label class="label">
 								<span>Score for {user.personal_data.name.first} {user.personal_data.name.last}</span
 								>
-								<input
-									class="input"
-									type="text"
-									name={`score-${user.auth_data.uid}`}
-									required
-								/>
+								<input class="input" type="text" name={`score-${user.auth_data.uid}`} required />
 							</label>
 						{/each}
 					</div>
-					<button class="mx-auto variant-filled-primary rounded-md p-2">Submit</button>
+					<button class="mx-auto variant-filled-secondary rounded-md p-2">Submit</button>
 				</form>
 			</div>
 		{/if}
 
 		<!-- FOR TESTING PURPOSES -->
-		<!-- <span class="uppercase text-9xl font-gt-walsheim-pro-medium">match found</span>
+		<!-- <span class="uppercase text-center text-3xl md:text-5xl xl:text-9xl font-gt-walsheim-pro-medium"
+			>match found</span
+		>
 		<div class="flex gap-2 text-end">
-			<p class="text-3xl">First Last</p>
-			<span class="uppercase font-gt-walsheim-pro-medium text-3xl">vs</span>
-			<p class="text-3xl">First Last</p>
+			<p class="text-xl md:text-3xl">First Last</p>
+			<span class="uppercase font-gt-walsheim-pro-medium text-xl md:text-3xl">vs</span>
+			<p class="text-xl md:text-3xl">First Last</p>
 		</div>
 		<span>Skill to perform: Skill</span>
 		<div class="flex flex-col gap-4">

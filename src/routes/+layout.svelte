@@ -1,5 +1,6 @@
 <script lang="ts">
-	import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
+	// import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
+	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
 	import { currentUser } from '$lib/store';
@@ -11,7 +12,7 @@
 	export let data;
 
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-	
+
 	$: currentUser.set({
 		auth_data: {
 			email: data.user?.auth_data.email || '',

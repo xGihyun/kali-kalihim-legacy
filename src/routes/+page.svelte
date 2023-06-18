@@ -2,6 +2,7 @@
 	import type { UserData } from '$lib/types';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
+	import { arnis_bg } from '../assets/images';
 
 	$: user = getContext<Writable<UserData>>('user');
 </script>
@@ -73,26 +74,45 @@
 			</form>
 		</div>
 	{:else if !$user.auth_data.is_logged_in && !$user.auth_data.is_registered}
-		<h1 class="font-gt-walsheim-pro-medium text-center text-9xl uppercase select-none mb-10">
-			Kali Kalihim
-		</h1>
-		<div class="flex gap-4 flex-col">
-			<form class="contents" method="post" action="?/login">
-				<div>
-					<label class="label">
-						<span>Email</span>
-						<input class="input" type="email" name="email" required />
-					</label>
-		
-					<label class="label">
-						<span>Password</span>
-						<input class="input" type="password" name="password" required />
-					</label>
+		<div class="h-full w-full flex items-center">
+			<!-- <div class="h-full relative w-full max-w-1/2 select-none">
+				<div class="absolute h-full w-40 bg-gradient-to-l right-0 from-surface-900" />
+				<img
+					src={arnis_bg}
+					class="object-cover h-full max-w-1/2 w-full object-left"
+					draggable="false"
+					alt="arnis"
+				/>
+			</div> -->
+			<img
+				src={arnis_bg}
+				class="object-cover h-full max-w-1/2 w-full object-[10%] hidden lg:block"
+				draggable="false"
+				alt="arnis"
+			/>
+			<div class="flex flex-col h-full items-center justify-center w-full">
+				<h1 class="font-gt-walsheim-pro-medium text-center text-5xl md:text-7xl 2xl:text-9xl uppercase select-none mb-10">
+					Kali Kalihim
+				</h1>
+				<div class="flex gap-4 flex-col">
+					<form class="contents" method="post" action="?/login">
+						<div>
+							<label class="label">
+								<span>Email</span>
+								<input class="input" type="email" name="email" required />
+							</label>
+
+							<label class="label">
+								<span>Password</span>
+								<input class="input" type="password" name="password" required />
+							</label>
+						</div>
+						<button class="btn mx-auto flex variant-filled-primary">
+							<span class="text-xl">Submit</span>
+						</button>
+					</form>
 				</div>
-				<button class="btn mx-auto flex variant-filled-primary">
-					<span class="text-xl">Submit</span>
-				</button>
-			</form>
+			</div>
 		</div>
 	{/if}
 </div>
