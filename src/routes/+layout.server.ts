@@ -21,8 +21,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatches
 	);
 
-	console.log(pendingMatches)
-
 	// console.log('\nlayout.server')
 	// console.log(locals.userData)
 	return {

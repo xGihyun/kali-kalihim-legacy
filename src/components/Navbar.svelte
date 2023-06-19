@@ -77,7 +77,7 @@
 					<Bell styles="w-5 h-5" />
 				</button>
 				<div class="card p-4 w-72 shadow-xl transition-none duration-0" data-popup="notifications">
-					<ul class="space-y-4">
+					<ul class="space-y-4 max-h-[75vh] overflow-auto">
 						{#each notifications as notification, idx (idx)}
 							<li class="flex flex-col items-start">
 								{#each notification.players as player, playerIdx (playerIdx)}
@@ -99,10 +99,7 @@
 					<div class="arrow bg-surface-100-800-token" />
 				</div>
 			</div>
-
-			<!-- <a href="/profile">
-				<Avatar src={$user.auth_data.photo_url || ''} width="w-10" />
-			</a> -->
+			
 			<div class="flex items-center">
 				<button use:popup={popupProfile}>
 					<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />

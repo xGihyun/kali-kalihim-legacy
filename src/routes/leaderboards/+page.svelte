@@ -25,8 +25,8 @@
 					<tr
 						class={`${
 							user.auth_data.uid === $currentUser.auth_data.uid
-								? 'text-tertiary-400'
-								: 'text-secondary-200'
+								? 'text-tertiary-600-300-token'
+								: 'text-secondary-700-200-token'
 						}`}
 					>
 						<td

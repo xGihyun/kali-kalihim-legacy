@@ -111,7 +111,6 @@ export const actions = {
 			locals.userData = userData;
 
 			console.log('\nRegistered:');
-			console.log(locals.userData);
 
 			currentUser.update(
 				(val) =>
@@ -166,7 +165,6 @@ export const actions = {
 			locals.userData = userData;
 
 			console.log('\nLogged in:');
-			console.log(locals.userData);
 
 			currentUser.update(
 				(val) =>
