@@ -1,11 +1,11 @@
 import { db } from '$lib/firebase/firebase';
-import type { UserData } from '$lib/types';
+import type { PendingMatch, UserData } from '$lib/types';
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
-	const section = data.get('section')?.toString();
+	const section = data.get('section')?.toString() as string;
 	const userCollection = collection(db, 'users');
 	const q = query(userCollection, where('personal_data.section', '==', section));
 	const allUsersDocs = await getDocs(q);
@@ -18,24 +18,34 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const allUsers = allUsersDocs.docs.map((user) => user.data() as UserData);
 	const shuffledUsers = shuffleArray(allUsers);
-	const pairedUsers = [];
+	const pendingMatch: PendingMatch[] = [];
 
 	// Pair shuffled users for a randomized 1v1 match
 	for (let i = 0; i < totalUsers; i += 2) {
 		const user1 = shuffledUsers[i];
 		const user2 = shuffledUsers[i + 1];
+		const currentDate = Timestamp.fromDate(new Date());
+
 		if (!user2) {
 			break;
 		}
-		pairedUsers.push([user1, user2]);
+
+		pendingMatch.push({
+			players: [user1, user2],
+			section: section,
+			timestamp: currentDate,
+			skill: getRandomArnisSkill()
+		});
 	}
 
 	const response = {
 		section,
-		pairedUsers
+		pendingMatch
 	};
 
 	const responseString = JSON.stringify(response);
+	// const pendingMatchCollection = collection(db, `pending_matches`);
+	// await addDoc(pendingMatchCollection, response);
 
 	return new Response(responseString, { headers: { 'Content-Type': 'application/json' } });
 };
@@ -48,4 +58,27 @@ function shuffleArray(users: UserData[]) {
 		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
 	}
 	return shuffled;
+}
+
+function getRandomArnisSkill() {
+	const skills = [
+		'Strikes',
+		'Blocks',
+		'Forward Sinawali',
+		'Sideward Sinawali',
+		'Reversed Sinawali',
+		'Guerrero',
+		'Cabellero',
+		'Triangle',
+		'Reversed Triangle'
+	];
+	// const footworks = ['Guerrero', 'Cabellero', 'Triangle', 'Reversed Triangle'];
+
+	const randomSkillIndex = Math.floor(Math.random() * skills.length);
+	// const randomFootworkIndex = Math.floor(Math.random() * footworks.length);
+
+	const randomSkill = skills[randomSkillIndex];
+	// const randomFootwork = skills[randomFootworkIndex];
+
+	return randomSkill;
 }

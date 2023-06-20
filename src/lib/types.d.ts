@@ -27,8 +27,10 @@ export type UserPersonalData = {
 	contact_number: number;
 };
 
-export type PendingMatches = {
+export type PendingMatch = {
 	players: UserData[];
+	section: string;
+	skill: string;
 	timestamp: Timestamp;
 };
 

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import type { PendingMatches, UserData } from '$lib/types';
+	import type { PendingMatch, UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
 	import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 	import { db } from '$lib/firebase/firebase';
 	import { onDestroy } from 'svelte';
 	import { Bell } from '../assets/icons';
 
-	export let notifications: PendingMatches[];
+	export let notifications: PendingMatch[];
 
 	const user = getContext<Writable<UserData>>('user');
 	const initials = $user.personal_data.name.first[0] + $user.personal_data.name.last[0];
@@ -52,7 +52,7 @@
 		const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
 		const unsubNotifications = onSnapshot(q, (snapshot) => {
 			notifications = snapshot.docs.map(
-				(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatches
+				(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
 			);
 		});
 
@@ -72,34 +72,41 @@
 			<a class="variant-filled-secondary btn hidden md:block" type="button" href="/matchmake"
 				>Matchmake</a
 			>
+			<a class="variant-filled-secondary btn hidden md:block" type="button" href="/pending-matches"
+				>Pending Matches</a
+			>
 			<div class="flex items-center">
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
 					<Bell styles="w-5 h-5" />
 				</button>
 				<div class="card p-4 w-72 shadow-xl transition-none duration-0" data-popup="notifications">
-					<ul class="space-y-4 max-h-[75vh] overflow-auto">
-						{#each notifications as notification, idx (idx)}
-							<li class="flex flex-col items-start">
-								{#each notification.players as player, playerIdx (playerIdx)}
-									{#if player.auth_data.uid !== $user.auth_data.uid}
-										<p>
-											Match VS
-											<span class="font-bold"
-												>{player.personal_data.name.first} {player.personal_data.name.last}</span
-											>
-										</p>
-									{/if}
-								{/each}
-								<span class="text-sm opacity-50"
-									>{getTimeSince(timestampToDate(notification.timestamp))}</span
-								>
-							</li>
-						{/each}
-					</ul>
+					{#if notifications.length > 0}
+						<ul class="space-y-4 max-h-[75vh] overflow-auto">
+							{#each notifications as notification, idx (idx)}
+								<li class="flex flex-col items-start">
+									{#each notification.players as player, playerIdx (playerIdx)}
+										{#if player.auth_data.uid !== $user.auth_data.uid}
+											<p>
+												Match VS
+												<span class="font-bold"
+													>{player.personal_data.name.first} {player.personal_data.name.last}</span
+												>
+											</p>
+										{/if}
+									{/each}
+									<span class="text-sm opacity-50"
+										>{getTimeSince(timestampToDate(notification.timestamp))}</span
+									>
+								</li>
+							{/each}
+						</ul>
+					{:else}
+						<span class="opacity-50 justify-center w-full flex">No matches</span>
+					{/if}
 					<div class="arrow bg-surface-100-800-token" />
 				</div>
 			</div>
-			
+
 			<div class="flex items-center">
 				<button use:popup={popupProfile}>
 					<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />

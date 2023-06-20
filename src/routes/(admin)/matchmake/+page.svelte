@@ -1,35 +1,12 @@
 <script lang="ts">
+	import { sections } from '$lib/data';
 	import { db } from '$lib/firebase/firebase';
-	import type { UserData } from '$lib/types';
-	import { Timestamp, addDoc, collection } from 'firebase/firestore';
+	import type { PendingMatch } from '$lib/types';
+	import { addDoc, collection } from 'firebase/firestore';
 
-	let dataFetched = false;
-
-	function getRandomArnisSkill() {
-		const skills = [
-			'Strikes',
-			'Blocks',
-			'Forward Sinawali',
-			'Sideward Sinawali',
-			'Reversed Sinawali',
-			'Guerrero',
-			'Cabellero',
-			'Triangle',
-			'Reversed Triangle'
-		];
-		// const footworks = ['Guerrero', 'Cabellero', 'Triangle', 'Reversed Triangle'];
-
-		const randomSkillIndex = Math.floor(Math.random() * skills.length);
-		// const randomFootworkIndex = Math.floor(Math.random() * footworks.length);
-
-		const randomSkill = skills[randomSkillIndex];
-		// const randomFootwork = skills[randomFootworkIndex];
-
-		return randomSkill;
-	}
-
-	let pairedUsers: UserData[][] = [];
+	let pendingMatch: PendingMatch[] = [];
 	let section: string;
+	let dataFetched = false;
 	let loading = false;
 
 	async function matchmake(event: SubmitEvent) {
@@ -48,12 +25,12 @@
 			return;
 		}
 
-		const data: { section: string; pairedUsers: UserData[][] } = await response.json();
+		const data: { section: string; pendingMatch: PendingMatch[] } = await response.json();
 
 		section = data.section;
-		pairedUsers = data.pairedUsers;
+		pendingMatch = data.pendingMatch;
 
-		if (!pairedUsers) {
+		if (!pendingMatch) {
 			loading = false;
 			console.log('Not enough participants');
 			return;
@@ -63,55 +40,60 @@
 		dataFetched = true;
 
 		// Add pending match to their notifications
-		pairedUsers.forEach((users) => addPendingMatch(users));
+		pendingMatch.forEach((users) => addPendingMatch(users, section));
 	}
 
-	function addPendingMatch(users: UserData[]) {
-		const currentDate = new Date();
-
-		const pendingMatchData = {
-			players: [...users],
-			timestamp: Timestamp.fromDate(currentDate)
+	async function addPendingMatch(users: PendingMatch, section: string) {
+		const pendingMatchData: PendingMatch = {
+			players: [...users.players],
+			section,
+			skill: users.skill,
+			timestamp: users.timestamp
 		};
 
-		users.forEach(async (user) => {
-			const pendingMatchCollection = collection(db, `users/${user.auth_data.uid}/pending_matches`);
+		const pendingMatchCollection = collection(db, 'pending_matches');
+		await addDoc(pendingMatchCollection, pendingMatchData);
 
-			await addDoc(pendingMatchCollection, pendingMatchData);
+		users.players.forEach(async (user) => {
+			const userPendingMatchCollection = collection(
+				db,
+				`users/${user.auth_data.uid}/pending_matches`
+			);
+			await addDoc(userPendingMatchCollection, pendingMatchData);
 		});
 	}
 
-	function addMatchHistory(users: UserData[]) {
-		const currentDate = new Date();
+	// function addToMatchHistory(users: UserData[]) {
+	// 	const currentDate = new Date();
 
-		const matchHistoryData = {
-			players: [...users],
-			timestamp: Timestamp.fromDate(currentDate)
-		};
+	// 	const matchHistoryData = {
+	// 		players: [...users],
+	// 		timestamp: Timestamp.fromDate(currentDate)
+	// 	};
 
-		users.forEach(async (user) => {
-			const matchHistoryCollection = collection(db, `users/${user.auth_data.uid}/match_history`);
+	// 	users.forEach(async (user) => {
+	// 		const matchHistoryCollection = collection(db, `users/${user.auth_data.uid}/match_history`);
 
-			await addDoc(matchHistoryCollection, matchHistoryData);
-		});
-	}
+	// 		await addDoc(matchHistoryCollection, matchHistoryData);
+	// 	});
+	// }
 
-	async function handleSubmit(event: SubmitEvent, users: UserData[]) {
-		const form = event?.target as HTMLFormElement;
-		const formData = new FormData(form);
-		const response = await fetch('/api/submit-score', {
-			method: 'POST',
-			body: formData
-		});
+	// async function handleSubmit(event: SubmitEvent, users: UserData[]) {
+	// 	const form = event?.target as HTMLFormElement;
+	// 	const formData = new FormData(form);
+	// 	const response = await fetch('/api/submit-score', {
+	// 		method: 'POST',
+	// 		body: formData
+	// 	});
 
-		if (response.ok) {
-			console.log('Scores submitted successfully!');
-			form.reset();
-			addMatchHistory(users);
-		} else {
-			console.error('Error submitting form: ', response.statusText);
-		}
-	}
+	// 	if (response.ok) {
+	// 		console.log('Scores submitted successfully!');
+	// 		form.reset();
+	// 		addToMatchHistory(users);
+	// 	} else {
+	// 		console.error('Error submitting form: ', response.statusText);
+	// 	}
+	// }
 </script>
 
 <div class="h-full w-full flex flex-col justify-center items-center px-[5%]">
@@ -135,13 +117,13 @@
 							<!-- <th>Rating</th> -->
 						</tr>
 					</thead>
-					{#each pairedUsers as users, idx (idx)}
+					{#each pendingMatch as match, idx (idx)}
 						<tbody>
 							<tr>
 								<td>
 									<span>
-										{users[0].personal_data.name.first}
-										{users[0].personal_data.name.last}
+										{match.players[0].personal_data.name.first}
+										{match.players[0].personal_data.name.last}
 									</span>
 								</td>
 								<td>
@@ -149,11 +131,11 @@
 								</td>
 								<td>
 									<span>
-										{users[1].personal_data.name.first}
-										{users[1].personal_data.name.last}
+										{match.players[1].personal_data.name.first}
+										{match.players[1].personal_data.name.last}
 									</span>
 								</td>
-								<td>{getRandomArnisSkill()}</td>
+								<td>{match.skill}</td>
 								<!-- <td>{user.score}</td> -->
 							</tr>
 						</tbody>
@@ -190,14 +172,12 @@
 			<label class="label">
 				<span>Section</span>
 				<select class="input" size="1" name="section" required>
-					<option value="section-1">Section 1</option>
-					<option value="section-2">Section 2</option>
-					<option value="section-3">Section 3</option>
-					<option value="section-4">Section 4</option>
-					<option value="section-5">Section 5</option>
+					{#each sections as [key, value], idx (idx)}
+						<option value={key}>{value}</option>
+					{/each}
 				</select>
 			</label>
-			<button class="variant-filled-primary rounded-md p-2">Find Match</button>
+			<button class="variant-filled-primary rounded-md p-2">Matchmake</button>
 		</form>
 	</div>
 </div>
