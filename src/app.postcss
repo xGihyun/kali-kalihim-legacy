@@ -9,6 +9,11 @@
 	font-family: gt-walsheim-pro, sans-serif;
 }
 
+html,
+body {
+	@apply h-full overflow-hidden;
+}
+
 @font-face {
 	font-family: gt-walsheim-pro;
 	src: url('assets/fonts/gt-walsheim-pro/GTWalsheimPro-Regular.ttf');
@@ -31,4 +36,9 @@
 	font-family: gt-walsheim-pro-thin;
 	src: url('assets/fonts/gt-walsheim-pro/GTWalsheimPro-Thin.ttf');
 	font-display: swap;
+}
+
+/* Firefox */
+* {
+	scrollbar-width: thin;
 }

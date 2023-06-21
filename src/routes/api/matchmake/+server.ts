@@ -1,7 +1,7 @@
 import { db } from '$lib/firebase/firebase';
 import type { PendingMatch, UserData } from '$lib/types';
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { Timestamp, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { Timestamp, collection, getDocs, query, where } from 'firebase/firestore';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
@@ -25,6 +25,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		const user1 = shuffledUsers[i];
 		const user2 = shuffledUsers[i + 1];
 		const currentDate = Timestamp.fromDate(new Date());
+		const skillToPerform = getRandomArnisSkill().skill
+		const footworkToPerform = getRandomArnisSkill().footwork
 
 		if (!user2) {
 			break;
@@ -34,7 +36,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			players: [user1, user2],
 			section: section,
 			timestamp: currentDate,
-			skill: getRandomArnisSkill()
+			skill: skillToPerform,
+			footwork: footworkToPerform
 		});
 	}
 
@@ -66,19 +69,18 @@ function getRandomArnisSkill() {
 		'Blocks',
 		'Forward Sinawali',
 		'Sideward Sinawali',
-		'Reversed Sinawali',
-		'Guerrero',
-		'Cabellero',
-		'Triangle',
-		'Reversed Triangle'
+		'Reversed Sinawali'
 	];
-	// const footworks = ['Guerrero', 'Cabellero', 'Triangle', 'Reversed Triangle'];
+	const footworks = ['Guerrero', 'Cabellero', 'Triangle', 'Reversed Triangle'];
 
 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
-	// const randomFootworkIndex = Math.floor(Math.random() * footworks.length);
+	const randomFootworkIndex = Math.floor(Math.random() * footworks.length);
 
 	const randomSkill = skills[randomSkillIndex];
-	// const randomFootwork = skills[randomFootworkIndex];
+	const randomFootwork = footworks[randomFootworkIndex];
 
-	return randomSkill;
+	return {
+		skill: randomSkill,
+		footwork: randomFootwork
+	};
 }

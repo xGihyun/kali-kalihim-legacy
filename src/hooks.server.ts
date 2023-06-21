@@ -1,9 +1,8 @@
 /** @type {import('@sveltejs/kit').Handle} */
 
-import { auth, db } from '$lib/firebase/firebase';
+import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
 import { redirect } from '@sveltejs/kit';
-import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
 // https://kit.svelte.dev/docs/hooks

@@ -1,9 +1,10 @@
-import type { Timestamp } from "firebase/firestore";
+import type { Timestamp } from 'firebase/firestore';
 
 export type UserData = {
 	auth_data: UserAuthData;
 	personal_data: UserPersonalData;
 	score: number;
+	rank: number;
 };
 
 export type UserAuthData = {
@@ -31,9 +32,6 @@ export type PendingMatch = {
 	players: UserData[];
 	section: string;
 	skill: string;
+	footwork: string;
 	timestamp: Timestamp;
 };
-
-// export type PerformanceData = {
-
-// }

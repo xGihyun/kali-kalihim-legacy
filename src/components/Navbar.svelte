@@ -62,17 +62,17 @@
 
 {#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 	<nav
-		class="flex fixed h-20 w-full shrink-0 items-center justify-between gap-5 border-b-[1px] border-neutral-800 px-[5%] py-5"
+		class="flex h-20 w-full shrink-0 items-center justify-between gap-5 bg-surface-100-800-token px-[5%] py-5 z-50"
 	>
 		<a href="/" class="font-gt-walsheim-pro-medium text-2xl md:text-4xl uppercase">Kali Kalihim</a>
 		<div class="flex items-center gap-5">
-			<a class="variant-filled-secondary btn hidden md:block" type="button" href="/leaderboards"
+			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/leaderboards"
 				>Leaderboards</a
 			>
-			<a class="variant-filled-secondary btn hidden md:block" type="button" href="/matchmake"
+			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/matchmake"
 				>Matchmake</a
 			>
-			<a class="variant-filled-secondary btn hidden md:block" type="button" href="/pending-matches"
+			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/pending-matches"
 				>Pending Matches</a
 			>
 			<div class="flex items-center">

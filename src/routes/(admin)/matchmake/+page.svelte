@@ -48,7 +48,8 @@
 			players: [...users.players],
 			section,
 			skill: users.skill,
-			timestamp: users.timestamp
+			footwork: users.footwork,
+			timestamp: users.timestamp,
 		};
 
 		const pendingMatchCollection = collection(db, 'pending_matches');
@@ -62,41 +63,9 @@
 			await addDoc(userPendingMatchCollection, pendingMatchData);
 		});
 	}
-
-	// function addToMatchHistory(users: UserData[]) {
-	// 	const currentDate = new Date();
-
-	// 	const matchHistoryData = {
-	// 		players: [...users],
-	// 		timestamp: Timestamp.fromDate(currentDate)
-	// 	};
-
-	// 	users.forEach(async (user) => {
-	// 		const matchHistoryCollection = collection(db, `users/${user.auth_data.uid}/match_history`);
-
-	// 		await addDoc(matchHistoryCollection, matchHistoryData);
-	// 	});
-	// }
-
-	// async function handleSubmit(event: SubmitEvent, users: UserData[]) {
-	// 	const form = event?.target as HTMLFormElement;
-	// 	const formData = new FormData(form);
-	// 	const response = await fetch('/api/submit-score', {
-	// 		method: 'POST',
-	// 		body: formData
-	// 	});
-
-	// 	if (response.ok) {
-	// 		console.log('Scores submitted successfully!');
-	// 		form.reset();
-	// 		addToMatchHistory(users);
-	// 	} else {
-	// 		console.error('Error submitting form: ', response.statusText);
-	// 	}
-	// }
 </script>
 
-<div class="h-full w-full flex flex-col justify-center items-center px-[5%]">
+<div class="h-full w-full flex flex-col justify-center items-center">
 	<div class="flex flex-col gap-4 justify-center items-center min-h-min h-3/4">
 		{#if loading}
 			<div>Loading...</div>
@@ -114,6 +83,7 @@
 							<th>VS</th>
 							<th>Player 2</th>
 							<th>Skill to Perform</th>
+							<th>Footwork to Perform</th>
 							<!-- <th>Rating</th> -->
 						</tr>
 					</thead>
@@ -136,31 +106,10 @@
 									</span>
 								</td>
 								<td>{match.skill}</td>
+								<td>{match.footwork}</td>
 								<!-- <td>{user.score}</td> -->
 							</tr>
 						</tbody>
-
-						<!-- <div class="flex flex-col gap-4">
-							<form class="contents" on:submit|preventDefault={(e) => handleSubmit(e, users)}>
-								<div>
-									{#each users as user, idx (idx)}
-										<label class="label">
-											<span
-												>Score for {user.personal_data.name.first}
-												{user.personal_data.name.last}</span
-											>
-											<input
-												class="input"
-												type="text"
-												name={`score-${user.auth_data.uid}`}
-												required
-											/>
-										</label>
-									{/each}
-								</div>
-								<button class="mx-auto variant-filled-secondary rounded-md p-2">Submit</button>
-							</form>
-						</div> -->
 					{/each}
 				</table>
 			</div>

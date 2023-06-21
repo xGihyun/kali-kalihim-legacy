@@ -33,13 +33,20 @@
 			section: data.user?.personal_data.section || '',
 			sex: data.user?.personal_data.sex || ''
 		},
-		score: data.user?.score || 0
+		score: data.user?.score || 0,
+		rank: data.user?.rank || 0
 	});
 
 	setContext('user', currentUser);
 </script>
 
-<Navbar notifications={data.notifications || []} />
-<main class="h-screen">
-	<slot />
-</main>
+<div class="flex w-full h-screen flex-col overflow-hidden">
+	<Navbar notifications={data.notifications || []} />
+	<div class="flex w-full flex-auto h-full overflow-hidden">
+		<main class="flex-1 overflow-y-auto overflow-x-hidden relative flex flex-col">
+			<div class="flex-1 px-[5%] py-10 flex flex-col items-center justify-center">
+				<slot />
+			</div>
+		</main>
+	</div>
+</div>

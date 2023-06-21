@@ -7,7 +7,7 @@
 	$: user = getContext<Writable<UserData>>('user');
 </script>
 
-<div class="flex h-full flex-col items-center justify-center">
+<div class="h-full w-full flex flex-col justify-center items-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 		<div>Hello {$user.personal_data.name.first}</div>
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
@@ -75,18 +75,9 @@
 		</div>
 	{:else if !$user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<div class="h-full w-full flex items-center">
-			<!-- <div class="h-full relative w-full max-w-1/2 select-none">
-				<div class="absolute h-full w-40 bg-gradient-to-l right-0 from-surface-900" />
-				<img
-					src={arnis_bg}
-					class="object-cover h-full max-w-1/2 w-full object-left"
-					draggable="false"
-					alt="arnis"
-				/>
-			</div> -->
 			<img
 				src={arnis_bg}
-				class="object-cover h-full max-w-1/2 w-full object-[10%] hidden lg:block"
+				class="object-cover h-full max-w-[50vw] w-full object-[10%] hidden lg:block"
 				draggable="false"
 				alt="arnis"
 			/>

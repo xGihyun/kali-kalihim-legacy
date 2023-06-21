@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { db } from '$lib/firebase/firebase.js';
 	import type { UserData } from '$lib/types.js';
-	import { getContext } from 'svelte';
+	import { collection, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
+	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	export let data;
@@ -8,9 +10,21 @@
 	let users = data.users;
 
 	$: currentUser = getContext<Writable<UserData>>('user');
+
+	if (data.user?.auth_data.uid) {
+		const usersCollection = collection(db, 'users');
+		const q = query(usersCollection, orderBy('score', 'desc'));
+		const unsubRank = onSnapshot(q, async (snapshot) => {
+			snapshot.docs.map((user, index) => {
+				console.log(user.data() as UserData)
+			});
+		});
+
+		onDestroy(() => unsubRank())
+	}
 </script>
 
-<div class="flex h-full flex-col items-center justify-center px-[5%]">
+<div class="h-full w-full flex flex-col justify-center items-center">
 	<div class="table-container max-w-5xl">
 		<table class="table table-compact table-hover">
 			<thead>

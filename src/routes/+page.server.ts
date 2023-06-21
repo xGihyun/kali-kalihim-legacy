@@ -1,6 +1,15 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { redirect, error } from '@sveltejs/kit';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { redirect } from '@sveltejs/kit';
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	orderBy,
+	query,
+	setDoc,
+	updateDoc
+} from 'firebase/firestore';
 import { currentUser } from '$lib/store';
 import { defaultPersonalData } from '$lib/default';
 import {
@@ -46,7 +55,8 @@ export const actions = {
 				...val.personal_data,
 				...newPersonalData
 			},
-			score: val.score
+			score: val.score,
+			rank: val.rank
 		}));
 
 		const userRef = doc(db, 'users', userUid);
@@ -78,6 +88,10 @@ export const actions = {
 			return;
 		}
 
+		const usersCollection = collection(db, 'users');
+		const q = query(usersCollection, orderBy('score', 'desc'));
+		const usersDocs = await getDocs(q);
+
 		const signInMethodsForEmail = await fetchSignInMethodsForEmail(auth, email);
 		const isEmailAvailable = signInMethodsForEmail.length !== 0;
 
@@ -100,7 +114,8 @@ export const actions = {
 				personal_data: {
 					...defaultPersonalData
 				},
-				score: 0
+				score: 0,
+				rank: usersDocs.size
 			};
 
 			await setDoc(userRef, newUserData);
@@ -121,7 +136,8 @@ export const actions = {
 						personal_data: {
 							...userData.personal_data
 						},
-						score: val.score
+						score: val.score,
+						rank: val.rank
 					})
 			);
 
@@ -149,7 +165,8 @@ export const actions = {
 					personal_data: {
 						...defaultPersonalData
 					},
-					score: 0
+					score: 0,
+					rank: usersDocs.size
 				};
 
 				await setDoc(userRef, newUserData);
@@ -175,7 +192,8 @@ export const actions = {
 						personal_data: {
 							...userData.personal_data
 						},
-						score: val.score
+						score: val.score,
+						rank: val.rank
 					})
 			);
 
