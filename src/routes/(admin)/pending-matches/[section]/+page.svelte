@@ -48,37 +48,41 @@
 
 <div class="h-full w-full flex flex-col justify-center items-center">
 	<span class="text-center text-lg">{section}</span>
-	<div class="table-container max-w-5xl overflow-hidden">
+	<div class="table-container max-w-5xl">
 		<table class="table table-interactive table-compact table-hover">
 			<thead>
-				<tr>
+				<tr class="text-sm md:text-base">
 					<th>Player 1</th>
 					<th>VS</th>
 					<th>Player 2</th>
-					<th>Skill to Perform</th>
-					<th>Footwork to Perform</th>
+					<th>Skill</th>
+					<th>Footwork</th>
 				</tr>
 			</thead>
 			{#each matches as match, idx (idx)}
 				<tbody>
 					<tr on:click={() => toggleRow(idx)}>
 						<td>
-							<span>
+							<p class="text-xs md:text-sm">
 								{match.players[0].personal_data.name.first}
 								{match.players[0].personal_data.name.last}
-							</span>
+							</p>
 						</td>
 						<td>
 							<span class="text-primary-500-400-token uppercase">vs</span>
 						</td>
 						<td>
-							<span>
+							<p class="text-xs md:text-sm">
 								{match.players[1].personal_data.name.first}
 								{match.players[1].personal_data.name.last}
-							</span>
+							</p>
 						</td>
-						<td>{match.skill}</td>
-						<td>{match.footwork}</td>
+						<td>
+							<p class="text-xs md:text-sm">{match.skill}</p>
+						</td>
+						<td>
+							<p class="text-xs md:text-sm">{match.footwork}</p>
+						</td>
 					</tr>
 				</tbody>
 
@@ -109,9 +113,8 @@
 											</label>
 										{/each}
 									</div>
-									<button
-										class="btn variant-ghost-surface"
-										on:click={() => (clickedRow = null)}>Close</button
+									<button class="btn variant-ghost-surface" on:click={() => (clickedRow = null)}
+										>Close</button
 									>
 									<button class="variant-filled-primary btn">Submit</button>
 								</form>

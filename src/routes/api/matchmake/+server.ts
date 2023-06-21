@@ -18,21 +18,21 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const allUsers = allUsersDocs.docs.map((user) => user.data() as UserData);
 	const shuffledUsers = shuffleArray(allUsers);
-	const pendingMatch: PendingMatch[] = [];
+	const pendingMatches: PendingMatch[] = [];
 
 	// Pair shuffled users for a randomized 1v1 match
 	for (let i = 0; i < totalUsers; i += 2) {
 		const user1 = shuffledUsers[i];
 		const user2 = shuffledUsers[i + 1];
 		const currentDate = Timestamp.fromDate(new Date());
-		const skillToPerform = getRandomArnisSkill().skill
-		const footworkToPerform = getRandomArnisSkill().footwork
+		const skillToPerform = getRandomArnisSkill().skill;
+		const footworkToPerform = getRandomArnisSkill().footwork;
 
 		if (!user2) {
 			break;
 		}
 
-		pendingMatch.push({
+		pendingMatches.push({
 			players: [user1, user2],
 			section: section,
 			timestamp: currentDate,
@@ -43,12 +43,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const response = {
 		section,
-		pendingMatch
+		pendingMatches
 	};
 
 	const responseString = JSON.stringify(response);
-	// const pendingMatchCollection = collection(db, `pending_matches`);
-	// await addDoc(pendingMatchCollection, response);
 
 	return new Response(responseString, { headers: { 'Content-Type': 'application/json' } });
 };

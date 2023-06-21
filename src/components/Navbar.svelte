@@ -72,8 +72,10 @@
 			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/matchmake"
 				>Matchmake</a
 			>
-			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/pending-matches"
-				>Pending Matches</a
+			<a
+				class="hover:variant-soft-primary btn hidden md:block"
+				type="button"
+				href="/pending-matches">Pending Matches</a
 			>
 			<div class="flex items-center">
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
@@ -88,7 +90,7 @@
 										{#if player.auth_data.uid !== $user.auth_data.uid}
 											<p>
 												Match VS
-												<span class="font-bold"
+												<span class="font-bold text-sm md:text-base"
 													>{player.personal_data.name.first} {player.personal_data.name.last}</span
 												>
 											</p>
@@ -113,11 +115,20 @@
 				</button>
 				<div class="card p-4 w-72 shadow-xl transition-none duration-0" data-popup="profile">
 					<ul class="space-y-4">
-						<a class="variant-filled-surface btn block md:hidden" type="button" href="/leaderboards"
-							>Leaderboards</a
+						<a
+							class="variant-soft-surface btn block md:hidden"
+							type="button"
+							href="/leaderboards">Leaderboards</a
 						>
-						<a class="variant-filled-surface btn block md:hidden" type="button" href="/matchmake"
-							>Matchmake</a
+						<a
+							class="variant-soft-surface btn block md:hidden"
+							type="button"
+							href="/matchmake">Matchmake</a
+						>
+						<a
+							class="variant-soft-surface btn block md:hidden"
+							type="button"
+							href="/pending-matches">Pending Matches</a
 						>
 						<form class="block" method="post" action="/logout">
 							<button class="btn w-full variant-filled-primary">Log Out</button>

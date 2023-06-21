@@ -4,7 +4,7 @@
 	import type { PendingMatch } from '$lib/types';
 	import { addDoc, collection } from 'firebase/firestore';
 
-	let pendingMatch: PendingMatch[] = [];
+	let pendingMatches: PendingMatch[] = [];
 	let section: string;
 	let dataFetched = false;
 	let loading = false;
@@ -25,12 +25,12 @@
 			return;
 		}
 
-		const data: { section: string; pendingMatch: PendingMatch[] } = await response.json();
+		const data: { section: string; pendingMatches: PendingMatch[] } = await response.json();
 
 		section = data.section;
-		pendingMatch = data.pendingMatch;
+		pendingMatches = data.pendingMatches;
 
-		if (!pendingMatch) {
+		if (!pendingMatches) {
 			loading = false;
 			console.log('Not enough participants');
 			return;
@@ -40,7 +40,7 @@
 		dataFetched = true;
 
 		// Add pending match to their notifications
-		pendingMatch.forEach((users) => addPendingMatch(users, section));
+		pendingMatches.forEach((users) => addPendingMatch(users, section));
 	}
 
 	async function addPendingMatch(users: PendingMatch, section: string) {
@@ -49,7 +49,7 @@
 			section,
 			skill: users.skill,
 			footwork: users.footwork,
-			timestamp: users.timestamp,
+			timestamp: users.timestamp
 		};
 
 		const pendingMatchCollection = collection(db, 'pending_matches');
@@ -66,7 +66,7 @@
 </script>
 
 <div class="h-full w-full flex flex-col justify-center items-center">
-	<div class="flex flex-col gap-4 justify-center items-center min-h-min h-3/4">
+	<div class="flex w-full flex-col gap-4 justify-center items-center min-h-min h-3/4">
 		{#if loading}
 			<div>Loading...</div>
 		{:else if !loading && dataFetched}
@@ -78,36 +78,38 @@
 			<div class="table-container max-w-5xl">
 				<table class="table table-compact table-hover">
 					<thead>
-						<tr>
+						<tr class="text-sm md:text-base">
 							<th>Player 1</th>
 							<th>VS</th>
 							<th>Player 2</th>
-							<th>Skill to Perform</th>
-							<th>Footwork to Perform</th>
-							<!-- <th>Rating</th> -->
+							<th>Skill</th>
+							<th>Footwork</th>
 						</tr>
 					</thead>
-					{#each pendingMatch as match, idx (idx)}
+					{#each pendingMatches as match, idx (idx)}
 						<tbody>
 							<tr>
 								<td>
-									<span>
+									<p class="text-xs md:text-sm">
 										{match.players[0].personal_data.name.first}
 										{match.players[0].personal_data.name.last}
-									</span>
+									</p>
 								</td>
 								<td>
 									<span class="text-primary-500-400-token uppercase">vs</span>
 								</td>
 								<td>
-									<span>
+									<p class="text-xs md:text-sm">
 										{match.players[1].personal_data.name.first}
 										{match.players[1].personal_data.name.last}
-									</span>
+									</p>
 								</td>
-								<td>{match.skill}</td>
-								<td>{match.footwork}</td>
-								<!-- <td>{user.score}</td> -->
+								<td>
+									<p class="text-xs md:text-sm">{match.skill}</p>
+								</td>
+								<td>
+									<p class="text-xs md:text-sm">{match.footwork}</p>
+								</td>
 							</tr>
 						</tbody>
 					{/each}
