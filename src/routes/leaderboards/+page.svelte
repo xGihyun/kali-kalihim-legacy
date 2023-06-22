@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { db } from '$lib/firebase/firebase.js';
 	import type { UserData } from '$lib/types.js';
-	import { collection, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
+	import { updateRank } from '$lib/utils/update.js';
+	import { collection, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
@@ -15,18 +16,29 @@
 		const usersCollection = collection(db, 'users');
 		const q = query(usersCollection, orderBy('score', 'desc'));
 		const unsubRank = onSnapshot(q, async (snapshot) => {
-			snapshot.docs.map((user, index) => {
-				console.log(user.data() as UserData)
-			});
+			const updatedUsers = await Promise.all(
+				snapshot.docs.map(async (user, index) => {
+					const userRef = doc(db, 'users', user.id);
+					await updateDoc(userRef, { 'rank.number': index + 1 });
+
+					await updateRank(userRef);
+
+					return user.data() as UserData;
+				})
+			);
+
+			users = updatedUsers;
+
+			console.log('Leaderboards snapshot ran.');
 		});
 
-		onDestroy(() => unsubRank())
+		onDestroy(() => unsubRank());
 	}
 </script>
 
-<div class="h-full w-full flex flex-col justify-center items-center">
+<div class="flex h-full w-full flex-col items-center justify-center">
 	<div class="table-container max-w-5xl">
-		<table class="table table-compact table-hover">
+		<table class="table-compact table-hover table">
 			<thead>
 				<tr>
 					<th>Name</th>
@@ -51,8 +63,8 @@
 								<span /></span
 							></td
 						>
-						<td>{user.personal_data.section}</td>
-						<td>{user.score}</td>
+						<td class="w-1/4">{user.personal_data.section}</td>
+						<td class="w-1/4">{user.score} {user.rank.title}</td>
 					</tr>
 				{/each}
 			</tbody>

@@ -4,7 +4,10 @@ export type UserData = {
 	auth_data: UserAuthData;
 	personal_data: UserPersonalData;
 	score: number;
-	rank: number;
+	rank: {
+		number: number;
+		title: string;
+	};
 };
 
 export type UserAuthData = {
@@ -34,4 +37,10 @@ export type PendingMatch = {
 	skill: string;
 	footwork: string;
 	timestamp: Timestamp;
+};
+
+export type MatchSet = {
+	section: string;
+	set: number;
+	status: string;
 };

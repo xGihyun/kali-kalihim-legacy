@@ -25,7 +25,7 @@
 			return;
 		}
 
-		const data: { section: string; pendingMatches: PendingMatch[] } = await response.json();
+		const data: { section: string; pendingMatches: PendingMatch[]; matchSetId: string } = await response.json();
 
 		section = data.section;
 		pendingMatches = data.pendingMatches;
@@ -40,11 +40,11 @@
 		dataFetched = true;
 
 		// Add pending match to their notifications
-		pendingMatches.forEach((users) => addPendingMatch(users, section));
+		pendingMatches.forEach((users) => addPendingMatch(users, section, data.matchSetId));
 	}
 
-	async function addPendingMatch(users: PendingMatch, section: string) {
-		const pendingMatchData: PendingMatch = {
+	async function addPendingMatch(users: PendingMatch, section: string, id: string) {
+		const matchData: PendingMatch = {
 			players: [...users.players],
 			section,
 			skill: users.skill,
@@ -52,31 +52,31 @@
 			timestamp: users.timestamp
 		};
 
-		const pendingMatchCollection = collection(db, 'pending_matches');
-		await addDoc(pendingMatchCollection, pendingMatchData);
+		const matchesCollection = collection(db, `match_sets/${id}/matches`);
+		await addDoc(matchesCollection, matchData);
 
 		users.players.forEach(async (user) => {
 			const userPendingMatchCollection = collection(
 				db,
 				`users/${user.auth_data.uid}/pending_matches`
 			);
-			await addDoc(userPendingMatchCollection, pendingMatchData);
+			await addDoc(userPendingMatchCollection, matchData);
 		});
 	}
 </script>
 
-<div class="h-full w-full flex flex-col justify-center items-center">
-	<div class="flex w-full flex-col gap-4 justify-center items-center min-h-min h-3/4">
+<div class="flex h-full w-full flex-col items-center justify-center">
+	<div class="flex h-3/4 min-h-min w-full flex-col items-center justify-center gap-4">
 		{#if loading}
 			<div>Loading...</div>
 		{:else if !loading && dataFetched}
 			<span
-				class="uppercase text-center text-3xl md:text-4xl xl:text-9xl font-gt-walsheim-pro-medium"
+				class="font-gt-walsheim-pro-medium text-center text-3xl uppercase md:text-4xl xl:text-9xl"
 				>match found</span
 			>
 			<span class="text-center text-lg">{section}</span>
 			<div class="table-container max-w-5xl">
-				<table class="table table-compact table-hover">
+				<table class="table-compact table-hover table">
 					<thead>
 						<tr class="text-sm md:text-base">
 							<th>Player 1</th>
@@ -118,7 +118,7 @@
 		{/if}
 	</div>
 	<!-- I don't know if this is the best way for form actions + SvelteKit endpoint -->
-	<div class="flex-col items-center flex gap-4">
+	<div class="flex flex-col items-center gap-4">
 		<form class="contents" on:submit|preventDefault={matchmake}>
 			<label class="label">
 				<span>Section</span>

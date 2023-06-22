@@ -47,6 +47,7 @@ export const actions = {
 		};
 
 		currentUser.update((val) => ({
+			...val,
 			auth_data: {
 				...val.auth_data,
 				is_registered: true
@@ -54,9 +55,7 @@ export const actions = {
 			personal_data: {
 				...val.personal_data,
 				...newPersonalData
-			},
-			score: val.score,
-			rank: val.rank
+			}
 		}));
 
 		const userRef = doc(db, 'users', userUid);
@@ -115,7 +114,10 @@ export const actions = {
 					...defaultPersonalData
 				},
 				score: 0,
-				rank: usersDocs.size
+				rank: {
+					number: usersDocs.size,
+					title: 'likas'
+				}
 			};
 
 			await setDoc(userRef, newUserData);
@@ -130,14 +132,13 @@ export const actions = {
 			currentUser.update(
 				(val) =>
 					(val = {
+						...val,
 						auth_data: {
 							...userData.auth_data
 						},
 						personal_data: {
 							...userData.personal_data
-						},
-						score: val.score,
-						rank: val.rank
+						}
 					})
 			);
 
@@ -166,7 +167,10 @@ export const actions = {
 						...defaultPersonalData
 					},
 					score: 0,
-					rank: usersDocs.size
+					rank: {
+						number: usersDocs.size,
+						title: 'likas'
+					}
 				};
 
 				await setDoc(userRef, newUserData);
@@ -186,14 +190,13 @@ export const actions = {
 			currentUser.update(
 				(val) =>
 					(val = {
+						...val,
 						auth_data: {
 							...userData.auth_data
 						},
 						personal_data: {
 							...userData.personal_data
-						},
-						score: val.score,
-						rank: val.rank
+						}
 					})
 			);
 

@@ -25,5 +25,8 @@ export const defaultUserData: UserData = {
 	auth_data: defaultAuthData,
 	personal_data: defaultPersonalData,
 	score: 0,
-	rank: 0
+	rank: {
+		number: 0,
+		title: ''
+	}
 };

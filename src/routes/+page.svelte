@@ -2,16 +2,23 @@
 	import type { UserData } from '$lib/types';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
-	import { arnis_bg } from '../assets/images';
+	// import { arnis_bg } from '../assets/images';
 
 	$: user = getContext<Writable<UserData>>('user');
 </script>
 
-<div class="h-full w-full flex flex-col justify-center items-center">
+<div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-		<div>Hello {$user.personal_data.name.first}</div>
+		<div class="flex flex-col">
+			<span>(rank logo)</span>
+			<span>{$user.rank.title}</span>
+			<span>#{$user.rank.number}</span>
+			<p>
+				Hello {$user.personal_data.name.first}
+			</p>
+		</div>
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
-		<div class="p-4 variant-filled-surface rounded-md">
+		<div class="variant-filled-surface rounded-md p-4">
 			<form method="post" action="?/register">
 				<label class="label">
 					<span>First Name</span>
@@ -74,18 +81,20 @@
 			</form>
 		</div>
 	{:else if !$user.auth_data.is_logged_in && !$user.auth_data.is_registered}
-		<div class="h-full w-full flex items-center">
-			<img
+		<div class="flex h-full w-full items-center">
+			<!-- <img
 				src={arnis_bg}
-				class="object-cover h-full max-w-[50vw] w-full object-[10%] hidden lg:block"
+				class="hidden h-full w-full max-w-[50vw] object-cover object-[10%] lg:block"
 				draggable="false"
 				alt="arnis"
-			/>
-			<div class="flex flex-col h-full items-center justify-center w-full">
-				<h1 class="font-gt-walsheim-pro-medium text-center text-5xl md:text-7xl 2xl:text-9xl uppercase select-none mb-10">
+			/> -->
+			<div class="flex h-full w-full flex-col items-center justify-center">
+				<h1
+					class="font-gt-walsheim-pro-medium mb-10 select-none text-center text-5xl uppercase md:text-7xl 2xl:text-9xl"
+				>
 					Kali Kalihim
 				</h1>
-				<div class="flex gap-4 flex-col">
+				<div class="flex flex-col gap-4">
 					<form class="contents" method="post" action="?/login">
 						<div>
 							<label class="label">
@@ -98,7 +107,7 @@
 								<input class="input" type="password" name="password" required />
 							</label>
 						</div>
-						<button class="btn mx-auto flex variant-filled-primary">
+						<button class="btn variant-filled-primary mx-auto flex">
 							<span class="text-xl">Submit</span>
 						</button>
 					</form>

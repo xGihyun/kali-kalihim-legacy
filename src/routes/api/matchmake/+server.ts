@@ -1,14 +1,14 @@
 import { db } from '$lib/firebase/firebase';
-import type { PendingMatch, UserData } from '$lib/types';
+import type { MatchSet, PendingMatch, UserData } from '$lib/types';
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { Timestamp, collection, getDocs, query, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
 	const section = data.get('section')?.toString() as string;
 	const userCollection = collection(db, 'users');
-	const q = query(userCollection, where('personal_data.section', '==', section));
-	const allUsersDocs = await getDocs(q);
+	const userQuery = query(userCollection, where('personal_data.section', '==', section));
+	const allUsersDocs = await getDocs(userQuery);
 	const totalUsers = allUsersDocs.size;
 
 	if (totalUsers < 2) {
@@ -34,16 +34,26 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		pendingMatches.push({
 			players: [user1, user2],
-			section: section,
+			section,
 			timestamp: currentDate,
 			skill: skillToPerform,
 			footwork: footworkToPerform
 		});
 	}
 
+	const matchesCollection = collection(db, 'match_sets');
+	const matchQuery = query(matchesCollection, where('section', '==', section));
+	const matchDocs = await getDocs(matchQuery);
+	const matchSet = await addDoc(matchesCollection, {
+		section,
+		set: matchDocs.size + 1,
+		status: 'pending'
+	});
+
 	const response = {
 		section,
-		pendingMatches
+		pendingMatches,
+		matchSetId: matchSet.id
 	};
 
 	const responseString = JSON.stringify(response);

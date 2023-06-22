@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { sections } from '$lib/data';
-
 </script>
 
 <div class="h-full w-full flex flex-col justify-center items-center px-[5%]">
