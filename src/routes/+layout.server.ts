@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ locals, setHeaders }) => {
 		return;
 	}
 
-	setHeaders({ 'cache-control': 'max-age=30, stale-while-revalidate=1800' });
+	setHeaders({ 'cache-control': 'max-age=30, stale-while-revalidate=600' });
 
 	const pendingMatchesCollection = collection(
 		db,

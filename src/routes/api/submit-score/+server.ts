@@ -2,8 +2,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { updated } from '$app/stores';
-import { updateRank } from '$lib/utils/update';
+import { updateOverallRankings, updateRankTitle } from '$lib/utils/update';
 
 // NOTE: May or may not be used later
 export const POST: RequestHandler = async ({ request }) => {
@@ -48,9 +47,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 				await updateDoc(userRef, { score: finalScore });
 
-				await updateRank(userRef);
+				await updateRankTitle(userRef);
+				// await updateSectionRankings(userData.personal_data.section);
 			}
 		}
+
+		await updateOverallRankings();
 
 		console.log('Submitted scores successfully!');
 

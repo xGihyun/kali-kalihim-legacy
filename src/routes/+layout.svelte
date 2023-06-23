@@ -45,7 +45,7 @@
 <div class="flex h-screen w-full flex-col overflow-hidden">
 	<Navbar notifications={data.notifications || []} />
 	<div class="flex h-full w-full flex-auto overflow-hidden">
-		<main class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
 			<div class="flex flex-1 flex-col items-center justify-center px-[5%] py-10">
 				<slot />
 			</div>

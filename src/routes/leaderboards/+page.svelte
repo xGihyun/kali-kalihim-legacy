@@ -2,49 +2,21 @@
 	import { sectionMap } from '$lib/data';
 	import { db } from '$lib/firebase/firebase';
 	import type { UserData } from '$lib/types';
-	import { updateRank } from '$lib/utils/update';
-	import {
-		collection,
-		doc,
-		onSnapshot,
-		orderBy,
-		query,
-		updateDoc,
-		writeBatch
-	} from 'firebase/firestore';
+	import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	export let data;
 
-	let users = data.users;
-
 	$: currentUser = getContext<Writable<UserData>>('user');
+
+	let users = data.users;
 
 	if (data.user?.auth_data.uid) {
 		const usersCollection = collection(db, 'users');
 		const q = query(usersCollection, orderBy('score', 'desc'));
 		const unsubRank = onSnapshot(q, async (snapshot) => {
-			const batch = writeBatch(db);
-			const updatedUsers = await Promise.all(
-				snapshot.docs.map(async (user, index) => {
-					const userRef = doc(db, 'users', user.id);
-
-					// WIP
-					batch.update(userRef, { 'rank.number': index + 1 });
-
-					// await updateDoc(userRef, { 'rank.number': index + 1 });
-					await updateRank(userRef);
-
-					console.log('leaderboards snapshot: ' + user.id);
-
-					return user.data() as UserData;
-				})
-			);
-
-			await batch.commit();
-
-			users = updatedUsers;
+			users = snapshot.docs.map((user) => user.data() as UserData);
 
 			console.log('Global leaderboards snapshot ran. (client)');
 		});

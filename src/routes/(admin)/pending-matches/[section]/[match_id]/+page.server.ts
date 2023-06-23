@@ -3,9 +3,7 @@ import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
 import type { MatchSet, PendingMatch } from '$lib/types';
 
-export const load: PageServerLoad = async ({ params, setHeaders }) => {
-	// setHeaders({ 'cache-control': 'max-age=30, stale-while-revalidate=1800' });
-	
+export const load: PageServerLoad = async ({ params }) => {
 	const matchId = params.match_id;
 
 	const matchSetRef = doc(db, `match_sets/${matchId}`);

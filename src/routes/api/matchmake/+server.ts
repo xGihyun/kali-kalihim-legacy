@@ -1,5 +1,5 @@
 import { db } from '$lib/firebase/firebase';
-import type { MatchSet, PendingMatch, UserData } from '$lib/types';
+import type { PendingMatch, UserData } from '$lib/types';
 import { error, type RequestHandler } from '@sveltejs/kit';
 import { Timestamp, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 

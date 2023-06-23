@@ -81,7 +81,7 @@
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
 					<Bell styles="w-5 h-5" />
 				</button>
-				<div class="card p-4 w-72 shadow-xl transition-none duration-0" data-popup="notifications">
+				<div class="fixed card p-4 w-72 shadow-xl transition-none duration-0" data-popup="notifications">
 					{#if notifications.length > 0}
 						<ul class="space-y-4 max-h-[75vh] overflow-auto">
 							{#each notifications as notification, idx (idx)}
@@ -113,7 +113,7 @@
 				<button use:popup={popupProfile}>
 					<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
 				</button>
-				<div class="card p-4 w-72 shadow-xl transition-none duration-0" data-popup="profile">
+				<div class="fixed card p-4 w-72 shadow-xl transition-none duration-0" data-popup="profile">
 					<ul class="space-y-4">
 						<a
 							class="variant-soft-surface btn block md:hidden"
