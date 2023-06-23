@@ -18,6 +18,8 @@ export async function handle({ event, resolve }) {
 	// If there is no user, do nothing
 	if (!session) return await resolve(event);
 
+	console.log('User exists.');
+
 	// Fetch data from firestore and set the locals
 	const userRef = doc(db, 'users', session);
 	const docSnap = await getDoc(userRef);

@@ -49,7 +49,7 @@
 
 	if ($user.auth_data.uid) {
 		const pendingMatchesCollection = collection(db, `users/${$user.auth_data.uid}/pending_matches`);
-		const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
+		const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
 		const unsubNotifications = onSnapshot(q, (snapshot) => {
 			notifications = snapshot.docs.map(
 				(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch

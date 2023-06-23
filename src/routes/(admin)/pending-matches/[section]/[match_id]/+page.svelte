@@ -1,14 +1,11 @@
 <script lang="ts">
-	import { sectionMap } from '$lib/data.js';
 	import { db } from '$lib/firebase/firebase';
 	import type { UserData } from '$lib/types';
 	import { Timestamp, addDoc, collection } from 'firebase/firestore';
 
 	export let data;
 
-	const section = data.section;
-	const matches = data.matches;
-	const matchSet = data.matchSet;
+	$: matches = data.matches;
 
 	let clickedRow: number | null = null;
 
@@ -49,84 +46,82 @@
 	}
 </script>
 
-<div class="flex h-full w-full flex-col items-center justify-center">
-	<span class="text-center text-lg">{sectionMap.get(section)}</span>
-	<span class="text-center text-lg">Match {matchSet.set}</span>
-	<div class="table-container max-w-5xl">
-		<table class="table-interactive table-compact table-hover table">
-			<thead>
-				<tr class="text-sm md:text-base">
-					<th>Player 1</th>
-					<th>VS</th>
-					<th>Player 2</th>
-					<th>Skill</th>
-					<th>Footwork</th>
+<div class="table-container max-w-5xl">
+	<table class="table-interactive table-compact table-hover table">
+		<thead>
+			<tr class="text-sm md:text-base">
+				<th>Player 1</th>
+				<th>VS</th>
+				<th>Player 2</th>
+				<th>Skill</th>
+				<th>Footwork</th>
+			</tr>
+		</thead>
+		{#each matches as match, idx (idx)}
+			<tbody>
+				<tr on:click={() => toggleRow(idx)}>
+					<td class="w-80">
+						<p class="text-xs md:text-sm">
+							{match.players[0].personal_data.name.first}
+							{match.players[0].personal_data.name.last}
+						</p>
+					</td>
+					<td>
+						<span class="text-primary-500-400-token uppercase">vs</span>
+					</td>
+					<td class="w-80">
+						<p class="text-xs md:text-sm">
+							{match.players[1].personal_data.name.first}
+							{match.players[1].personal_data.name.last}
+						</p>
+					</td>
+					<td class="w-40">
+						<p class="text-xs md:text-sm">{match.skill}</p>
+					</td>
+					<td class="w-40">
+						<p class="text-xs md:text-sm">{match.footwork}</p>
+					</td>
 				</tr>
-			</thead>
-			{#each matches as match, idx (idx)}
-				<tbody>
-					<tr on:click={() => toggleRow(idx)}>
-						<td>
-							<p class="text-xs md:text-sm">
-								{match.players[0].personal_data.name.first}
-								{match.players[0].personal_data.name.last}
-							</p>
-						</td>
-						<td>
-							<span class="text-primary-500-400-token uppercase">vs</span>
-						</td>
-						<td>
-							<p class="text-xs md:text-sm">
-								{match.players[1].personal_data.name.first}
-								{match.players[1].personal_data.name.last}
-							</p>
-						</td>
-						<td>
-							<p class="text-xs md:text-sm">{match.skill}</p>
-						</td>
-						<td>
-							<p class="text-xs md:text-sm">{match.footwork}</p>
-						</td>
-					</tr>
-				</tbody>
+			</tbody>
 
-				<!-- Modal -->
-				{#if clickedRow === idx}
-					<div class="bg-surface-backdrop-token fixed left-0 top-0 z-[999] h-full w-full">
-						<div class="flex h-full w-full items-center justify-center">
-							<div
-								class="bg-surface-100-800-token rounded-container-token w-modal space-y-4 p-4 shadow-xl"
+			<!-- Modal -->
+			{#if clickedRow === idx}
+				<div class="bg-surface-backdrop-token fixed left-0 top-0 z-[999] h-full w-full">
+					<div class="flex h-full w-full items-center justify-center">
+						<div
+							class="bg-surface-100-800-token rounded-container-token w-modal space-y-4 p-4 shadow-xl"
+						>
+							<form
+								class="space-y-4"
+								on:submit|preventDefault={(e) => handleSubmit(e, match.players)}
 							>
-								<form
-									class="contents"
-									on:submit|preventDefault={(e) => handleSubmit(e, match.players)}
-								>
-									<div>
-										{#each match.players as user, idx (idx)}
-											<label class="label">
-												<span
-													>Score for {user.personal_data.name.first}
-													{user.personal_data.name.last}</span
-												>
-												<input
-													class="input"
-													type="text"
-													name={`score-${user.auth_data.uid}`}
-													required
-												/>
-											</label>
-										{/each}
-									</div>
-									<button class="btn variant-ghost-surface" on:click={() => (clickedRow = null)}
-										>Close</button
+								{#each match.players as user, idx (idx)}
+									<label class="label">
+										<span
+											>Score for {user.personal_data.name.first}
+											{user.personal_data.name.last}</span
+										>
+										<input
+											class="input"
+											type="text"
+											name={`score-${user.auth_data.uid}`}
+											required
+										/>
+									</label>
+								{/each}
+								<div class="flex justify-end gap-4">
+									<button
+										class="btn variant-ghost-surface"
+										type="button"
+										on:click={() => (clickedRow = null)}>Cancel</button
 									>
-									<button class="variant-filled-primary btn">Submit</button>
-								</form>
-							</div>
+									<button class="variant-filled-primary btn" type="submit">Submit</button>
+								</div>
+							</form>
 						</div>
 					</div>
-				{/if}
-			{/each}
-		</table>
-	</div>
+				</div>
+			{/if}
+		{/each}
+	</table>
 </div>

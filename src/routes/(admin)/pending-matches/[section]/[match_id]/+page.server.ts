@@ -3,12 +3,14 @@ import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
 import type { MatchSet, PendingMatch } from '$lib/types';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, setHeaders }) => {
+	// setHeaders({ 'cache-control': 'max-age=30, stale-while-revalidate=1800' });
+	
 	const matchId = params.match_id;
 
 	const matchSetRef = doc(db, `match_sets/${matchId}`);
 	const matchSetDoc = await getDoc(matchSetRef);
-  const matchSet = matchSetDoc.data() as MatchSet
+	const matchSet = matchSetDoc.data() as MatchSet;
 
 	const matchesCollection = collection(db, `match_sets/${matchId}/matches`);
 	const matchesDocs = await getDocs(matchesCollection);
@@ -17,6 +19,6 @@ export const load: PageServerLoad = async ({ params }) => {
 	return {
 		matchId,
 		matches,
-    matchSet
+		matchSet
 	};
 };

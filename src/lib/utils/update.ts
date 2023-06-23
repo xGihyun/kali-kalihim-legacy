@@ -17,4 +17,6 @@ export async function updateRank(userRef: DocumentReference<DocumentData>) {
 		updatedRankTitle = 'grandmaster';
 	}
 	await updateDoc(userRef, { 'rank.title': updatedRankTitle });
+
+	console.log('Rank has been updated.')
 }
