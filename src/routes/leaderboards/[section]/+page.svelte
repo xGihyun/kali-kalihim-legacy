@@ -8,13 +8,11 @@
 
 	export let data;
 
+	$: users = data.users;
 	$: currentUser = getContext<Writable<UserData>>('user');
 
-	let users = data.users;
-	let section = data.section;
-
 	const usersCollection = collection(db, 'users');
-	const q = query(usersCollection, where('personal_data.section', '==', section));
+	const q = query(usersCollection, where('personal_data.section', '==', data.section));
 	const unsubRank = onSnapshot(q, async (snapshot) => {
 		users = snapshot.docs.map((user) => user.data() as UserData).sort((a, b) => b.score - a.score);
 
@@ -28,9 +26,9 @@
 	<table class="table-compact table-hover table">
 		<thead>
 			<tr>
-				<th>Name</th>
-				<th>Section</th>
-				<th>Rating</th>
+				<th class="text-sm md:text-base">Name</th>
+				<th class="text-sm md:text-base">Section</th>
+				<th class="text-sm md:text-base">Rating</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -42,16 +40,26 @@
 							: 'text-secondary-700-200-token'
 					}`}
 				>
-					<td
-						><span class="font-bold text-white">#{idx + 1}</span>
-						<span>
-							{user.personal_data.name.first}
-							{user.personal_data.name.last}
-							<span /></span
-						></td
-					>
-					<td class="w-1/4">{sectionMap.get(user.personal_data.section)}</td>
-					<td class="w-1/4">{user.score} {user.rank.title}</td>
+					<td>
+						<p class="text-xs md:text-sm">
+							<span class="font-bold text-white">#{idx + 1}</span>
+							<span>
+								{user.personal_data.name.first}
+								{user.personal_data.name.last}
+							</span>
+						</p>
+					</td>
+					<td class="w-1/4">
+						<p class="text-xs md:text-sm">
+							{sectionMap.get(user.personal_data.section)}
+						</p>
+					</td>
+					<td class="w-1/4">
+						<p class="text-xs md:text-sm">
+							{user.score}
+							{user.rank.title}
+						</p>
+					</td>
 				</tr>
 			{/each}
 		</tbody>

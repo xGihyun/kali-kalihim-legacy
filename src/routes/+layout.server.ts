@@ -20,6 +20,8 @@ export const load: LayoutServerLoad = async ({ locals, setHeaders }) => {
 		(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
 	);
 
+	console.log('Root +layout.server.ts ran.')
+
 	return {
 		user: locals.userData,
 		notifications: pendingMatches

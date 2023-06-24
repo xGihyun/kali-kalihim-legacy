@@ -1,5 +1,5 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { redirect } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import {
 	collection,
 	doc,
@@ -19,7 +19,7 @@ import {
 } from 'firebase/auth';
 import type { UserData, UserPersonalData } from '$lib/types.js';
 
-export const actions = {
+export const actions: Actions = {
 	register: async ({ request, locals }) => {
 		const userUid = locals.userData.auth_data.uid;
 

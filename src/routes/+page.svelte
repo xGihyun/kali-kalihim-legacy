@@ -14,7 +14,7 @@
 			<span>{$user.rank.title}</span>
 			<span>#{$user.rank.number}</span>
 			<p>
-				Hello {$user.personal_data.name.first}
+				{$user.personal_data.name.first}
 			</p>
 		</div>
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
