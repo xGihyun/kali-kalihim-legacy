@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
 	);
 
-	setHeaders({ 'cache-control': 'max-age=60, stale-while-revalidate=300' });
+	setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
 
 	return {
 		pendingMatches
