@@ -20,8 +20,6 @@ export const load: LayoutServerLoad = async ({ params, setHeaders }) => {
 		})
 		.sort((a, b) => a.data.set - b.data.set);
 
-	setHeaders({ 'cache-control': 'max-age=30, stale-while-revalidate=600' });
-
 	return {
 		section,
 		matchSets
