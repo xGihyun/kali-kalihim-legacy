@@ -2,15 +2,16 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { updateOverallRankings, updateRankTitle } from '$lib/utils/update';
+import { updateOverallRankings, updateRankTitle, updateSectionRankings } from '$lib/utils/update';
 
-// NOTE: May or may not be used later
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const data = await request.formData();
 
 		let scores: number[] = [];
 		let difference: number;
+
+		// Variable not used yet
 		let result = {
 			winner: '',
 			loser: ''
@@ -48,7 +49,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				await updateDoc(userRef, { score: finalScore });
 
 				await updateRankTitle(userRef);
-				// await updateSectionRankings(userData.personal_data.section);
+				await updateSectionRankings(userData.personal_data.section);
 			}
 		}
 

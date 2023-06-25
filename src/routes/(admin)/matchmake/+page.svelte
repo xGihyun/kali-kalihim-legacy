@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sections } from '$lib/data';
+	import { sectionMap, sections } from '$lib/data';
 	import { db } from '$lib/firebase/firebase';
 	import type { PendingMatch } from '$lib/types';
 	import { addDoc, collection } from 'firebase/firestore';
@@ -74,7 +74,7 @@
 				class="font-gt-walsheim-pro-medium text-center text-3xl uppercase md:text-4xl xl:text-9xl"
 				>match found</span
 			>
-			<span class="text-center text-lg">{section}</span>
+			<span class="text-center text-lg">{sectionMap.get(section)}</span>
 			<div class="table-container max-w-5xl">
 				<table class="table-compact table-hover table">
 					<thead>

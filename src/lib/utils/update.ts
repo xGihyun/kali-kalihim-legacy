@@ -28,7 +28,10 @@ export async function updateRankTitle(userRef: DocumentReference<DocumentData>) 
 		updatedRankTitle = 'lakan';
 	} else if (updatedScore >= 300) {
 		updatedRankTitle = 'grandmaster';
+	} else {
+		updatedRankTitle = '';
 	}
+
 	await updateDoc(userRef, { 'rank.title': updatedRankTitle });
 
 	console.log('Rank has been updated.');
@@ -43,21 +46,24 @@ export async function updateOverallRankings() {
 	usersDocs.docs.forEach(async (user, index) => {
 		const userRef = doc(db, 'users', user.id);
 
-		batch.update(userRef, { 'rank.number': index + 1 });
+		batch.update(userRef, { 'rank.number.overall': index + 1 });
 	});
 
 	await batch.commit();
 }
 
-// export async function updateSectionRankings(section: string) {
-// 	const usersCollection = collection(db, 'users');
-// 	const q = query(usersCollection, where('personal_data.section', '==', section));
-// 	const usersDocs = await getDocs(q);
-// 	const batch = writeBatch(db);
+export async function updateSectionRankings(section: string) {
+	const usersCollection = collection(db, 'users');
+	const q = query(usersCollection, where('personal_data.section', '==', section));
+	const usersDocs = await getDocs(q);
+	const batch = writeBatch(db);
 
-// 	usersDocs.docs
-// 		.sort((a, b) => (b.data() as UserData).score - (a.data() as UserData).score)
-// 		.forEach((user) => {
-// 			const userRef = doc(db, 'users', user.id);
-// 		});
-// }
+	usersDocs.docs
+		.sort((a, b) => (b.data() as UserData).score - (a.data() as UserData).score)
+		.forEach((user, index) => {
+			const userRef = doc(db, 'users', user.id);
+			batch.update(userRef, { 'rank.number.section': index + 1 });
+		});
+
+	await batch.commit();
+}

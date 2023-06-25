@@ -11,18 +11,15 @@ export const actions: Actions = {
 			return;
 		}
 
-		console.log('Resetting writable...');
-		currentUser.set({
-			...defaultUserData
-		});
-
-		console.log('Logging out, deleting cookies now, and redirecting to homepage...');
-		cookies.delete('session');
-
 		const userRef = doc(db, 'users', locals.userData.auth_data.uid);
 
 		// Set login to false in the database
 		await setDoc(userRef, { auth_data: { is_logged_in: false } }, { merge: true });
+
+		console.log('Resetting writable...');
+		currentUser.set({
+			...defaultUserData
+		});
 
 		locals.userData = {
 			...defaultUserData
@@ -31,6 +28,9 @@ export const actions: Actions = {
 		// Log out user from Google
 		await signOut(auth);
 		console.log("The user has been logged out, now redirecting to '/'");
+
+		console.log('Deleting cookies...');
+		cookies.delete('session');
 
 		throw redirect(302, '/');
 	}

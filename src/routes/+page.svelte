@@ -1,21 +1,65 @@
 <script lang="ts">
+	import { sectionMap } from '$lib/data';
 	import type { UserData } from '$lib/types';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	// import { arnis_bg } from '../assets/images';
 
+	export let data;
+
+	$: pendingMatches = data.pendingMatches || [];
+	
 	$: user = getContext<Writable<UserData>>('user');
 </script>
 
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-		<div class="flex flex-col">
-			<span>(rank logo)</span>
-			<span>{$user.rank.title}</span>
-			<span>#{$user.rank.number}</span>
-			<p>
-				{$user.personal_data.name.first}
-			</p>
+		<div class="flex flex-col items-center justify-center gap-10">
+			<div class="flex flex-col items-center justify-center gap-4">
+				<span class="text-4xl uppercase">(rank logo)</span>
+				<span class="text-3xl uppercase">{$user.rank.title}</span>
+				<div class="flex flex-col items-center">
+					<span>
+						{$user.personal_data.name.first}
+						{$user.personal_data.name.last}
+					</span>
+					<span>
+						{sectionMap.get($user.personal_data.section)}
+					</span>
+				</div>
+				<div class="flex gap-4">
+					<div class="flex flex-col">
+						<span>Overall Ranking:</span>
+						<span class="text-secondary-700-200-token text-2xl">#{$user.rank.number.overall}</span>
+					</div>
+					<div class="flex flex-col">
+						<span>Section Ranking:</span>
+						<span class="text-secondary-700-200-token text-2xl">#{$user.rank.number.section}</span>
+					</div>
+				</div>
+			</div>
+			<div>
+				{#if pendingMatches.length > 0}
+					<ul class="max-h-[75vh] space-y-4 overflow-auto">
+						<!-- {#each data.pendingMatches as match, idx (idx)} -->
+						<li class="flex flex-col items-start">
+							{#each pendingMatches[0].players as player, playerIdx (playerIdx)}
+								{#if player.auth_data.uid !== $user.auth_data.uid}
+									<div class="flex flex-col items-center">
+										<span>Upcoming match VS:</span>
+										<span class="text-sm font-bold md:text-base"
+											>{player.personal_data.name.first} {player.personal_data.name.last}</span
+										>
+									</div>
+								{/if}
+							{/each}
+						</li>
+						<!-- {/each} -->
+					</ul>
+				{:else}
+					<span class="flex w-full justify-center opacity-50">No upcoming match</span>
+				{/if}
+			</div>
 		</div>
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<div class="variant-filled-surface rounded-md p-4">

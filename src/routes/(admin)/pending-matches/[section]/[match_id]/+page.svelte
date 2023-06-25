@@ -96,6 +96,20 @@
 								on:submit|preventDefault={(e) => handleSubmit(e, match.players)}
 							>
 								{#each match.players as user, idx (idx)}
+									{#if data.matchSet.set === 1}
+										<label class="label">
+											<span
+												>Initial score for {user.personal_data.name.first}
+												{user.personal_data.name.last}</span
+											>
+											<input
+												class="input"
+												type="text"
+												name={`score-${user.auth_data.uid}`}
+												required
+											/>
+										</label>
+									{/if}
 									<label class="label">
 										<span
 											>Score for {user.personal_data.name.first}

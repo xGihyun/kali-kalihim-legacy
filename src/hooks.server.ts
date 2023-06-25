@@ -1,5 +1,3 @@
-/** @type {import('@sveltejs/kit').Handle} */
-
 import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
 import { redirect } from '@sveltejs/kit';
@@ -28,23 +26,6 @@ export async function handle({ event, resolve }) {
 		const data = docSnap.data() as UserData;
 		event.locals.userData = data;
 	}
-
-	// onAuthStateChanged(auth, (user) => {
-	// 	if (user) {
-	// 		console.log('User has logged in!');
-	// 	} else {
-	// 		console.log('User has logged out!');
-	// 	}
-	// });
-
-	// if (
-	// 	event.url.pathname === '/register' &&
-	// 	event.locals.userData.auth_data.is_logged_in &&
-	// 	event.locals.userData.auth_data.is_registered
-	// ) {
-	// 	console.log(`User ${event.locals.userData.auth_data.email} is logged in.`);
-	// 	throw redirect(302, '/');
-	// }
 
 	return await resolve(event);
 }

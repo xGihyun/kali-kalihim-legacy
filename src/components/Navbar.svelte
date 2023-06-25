@@ -3,21 +3,21 @@
 	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import type { PendingMatch, UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
-	import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
-	import { db } from '$lib/firebase/firebase';
-	import { onDestroy } from 'svelte';
-	import { Bell } from '../assets/icons';
+	// import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
+	// import { db } from '$lib/firebase/firebase';
+	// import { onDestroy } from 'svelte';
+	// import { Bell } from '../assets/icons';
 
-	export let notifications: PendingMatch[];
+	// export let notifications: PendingMatch[];
 
 	const user = getContext<Writable<UserData>>('user');
 	const initials = $user.personal_data.name.first[0] + $user.personal_data.name.last[0];
 
-	const popupNotification: PopupSettings = {
-		event: 'click',
-		target: 'notifications',
-		placement: 'bottom'
-	};
+	// const popupNotification: PopupSettings = {
+	// 	event: 'click',
+	// 	target: 'notifications',
+	// 	placement: 'bottom'
+	// };
 
 	const popupProfile: PopupSettings = {
 		event: 'click',
@@ -25,39 +25,39 @@
 		placement: 'bottom'
 	};
 
-	function timestampToDate(timestamp: Timestamp): Date {
-		return new Timestamp(timestamp.seconds, timestamp.nanoseconds).toDate();
-	}
+	// function timestampToDate(timestamp: Timestamp): Date {
+	// 	return new Timestamp(timestamp.seconds, timestamp.nanoseconds).toDate();
+	// }
 
-	function getTimeSince(date: Date): string {
-		const currentTime = new Date();
-		const timeDifference = Math.floor((currentTime.getTime() - date.getTime()) / 1000);
+	// function getTimeSince(date: Date): string {
+	// 	const currentTime = new Date();
+	// 	const timeDifference = Math.floor((currentTime.getTime() - date.getTime()) / 1000);
 
-		if (timeDifference < 60) {
-			return `${timeDifference} seconds ago`;
-		} else if (timeDifference < 3600) {
-			const minutes = Math.floor(timeDifference / 60);
-			return `${minutes} minutes ago`;
-		} else if (timeDifference < 86400) {
-			const hours = Math.floor(timeDifference / 3600);
-			return `${hours} hours ago`;
-		} else {
-			const days = Math.floor(timeDifference / 86400);
-			return `${days} days ago`;
-		}
-	}
+	// 	if (timeDifference < 60) {
+	// 		return `${timeDifference} seconds ago`;
+	// 	} else if (timeDifference < 3600) {
+	// 		const minutes = Math.floor(timeDifference / 60);
+	// 		return `${minutes} minutes ago`;
+	// 	} else if (timeDifference < 86400) {
+	// 		const hours = Math.floor(timeDifference / 3600);
+	// 		return `${hours} hours ago`;
+	// 	} else {
+	// 		const days = Math.floor(timeDifference / 86400);
+	// 		return `${days} days ago`;
+	// 	}
+	// }
 
-	if ($user.auth_data.uid) {
-		const pendingMatchesCollection = collection(db, `users/${$user.auth_data.uid}/pending_matches`);
-		const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
-		const unsubNotifications = onSnapshot(q, (snapshot) => {
-			notifications = snapshot.docs.map(
-				(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
-			);
-		});
+	// if ($user.auth_data.uid) {
+	// 	const pendingMatchesCollection = collection(db, `users/${$user.auth_data.uid}/pending_matches`);
+	// 	const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
+	// 	const unsubNotifications = onSnapshot(q, (snapshot) => {
+	// 		notifications = snapshot.docs.map(
+	// 			(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
+	// 		);
+	// 	});
 
-		onDestroy(() => unsubNotifications());
-	}
+	// 	onDestroy(() => unsubNotifications());
+	// }
 </script>
 
 {#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
@@ -77,7 +77,8 @@
 				type="button"
 				href="/pending-matches">Pending Matches</a
 			>
-			<div class="flex items-center">
+
+			<!-- <div class="flex items-center">
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
 					<Bell styles="w-5 h-5" />
 				</button>
@@ -107,7 +108,7 @@
 					{/if}
 					<div class="arrow bg-surface-100-800-token" />
 				</div>
-			</div>
+			</div> -->
 
 			<div class="flex items-center">
 				<button use:popup={popupProfile}>

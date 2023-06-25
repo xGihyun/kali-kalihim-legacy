@@ -34,7 +34,10 @@
 		},
 		score: data.user?.score || 0,
 		rank: {
-			number: data.user?.rank.number || 0,
+			number: {
+				overall: data.user?.rank.number.overall || 0,
+				section: data.user?.rank.number.section || 0
+			},
 			title: data.user?.rank.title || ''
 		}
 	});
@@ -43,7 +46,7 @@
 </script>
 
 <div class="flex h-screen w-full flex-col overflow-hidden">
-	<Navbar notifications={data.notifications || []} />
+	<Navbar />
 	<div class="flex h-full w-full flex-auto overflow-hidden">
 		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
 			<div class="flex flex-1 flex-col items-center justify-center px-[5%] py-10">

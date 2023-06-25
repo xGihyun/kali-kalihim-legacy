@@ -3,21 +3,46 @@ import { redirect, type Actions } from '@sveltejs/kit';
 import {
 	collection,
 	doc,
+	getCountFromServer,
 	getDoc,
 	getDocs,
 	orderBy,
 	query,
 	setDoc,
-	updateDoc
+	updateDoc,
+	where
 } from 'firebase/firestore';
 import { currentUser } from '$lib/store';
-import { defaultPersonalData } from '$lib/default';
+import { defaultUserData } from '$lib/default';
 import {
 	signInWithEmailAndPassword,
 	createUserWithEmailAndPassword,
 	fetchSignInMethodsForEmail
 } from 'firebase/auth';
-import type { UserData, UserPersonalData } from '$lib/types.js';
+import type { PendingMatch, UserData, UserPersonalData, UserRankingData } from '$lib/types.js';
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ locals, setHeaders }) => {
+	if (!locals.userData) {
+		return;
+	}
+
+	const pendingMatchesCollection = collection(
+		db,
+		`users/${locals.userData.auth_data.uid}/pending_matches`
+	);
+	const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
+	const getPendingMatchesDocs = await getDocs(q);
+	const pendingMatches: PendingMatch[] = getPendingMatchesDocs.docs.map(
+		(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
+	);
+
+	setHeaders({ 'cache-control': 'max-age=30, stale-while-revalidate=600' });
+
+	return {
+		pendingMatches
+	};
+};
 
 export const actions: Actions = {
 	register: async ({ request, locals }) => {
@@ -26,6 +51,8 @@ export const actions: Actions = {
 		if (!userUid) {
 			return;
 		}
+
+		const userRef = doc(db, 'users', userUid);
 
 		const data = await request.formData();
 		const firstName = data.get('first-name')?.toString().trim();
@@ -46,6 +73,28 @@ export const actions: Actions = {
 			sex: sex || ''
 		};
 
+		const usersCollection = collection(db, 'users');
+		const usersInSectionCollection = query(
+			usersCollection,
+			where('personal_data.section', '==', section || '')
+		);
+		const usersSnapshot = await getCountFromServer(usersCollection);
+		const usersInSectionSnapshot = await getCountFromServer(usersInSectionCollection);
+		const usersSnapshotCount = usersSnapshot.data().count;
+		const usersInSectionSnapshotCount = usersInSectionSnapshot.data().count;
+
+		console.log(usersSnapshotCount);
+		console.log(usersInSectionSnapshotCount);
+
+		// Add + 1 to usersInSectionSnapshotCount since the user's section is still not set in the db, therefore not counting the user
+		const newRankingData: UserRankingData = {
+			number: {
+				overall: usersSnapshotCount,
+				section: usersInSectionSnapshotCount + 1
+			},
+			title: ''
+		};
+
 		currentUser.update((val) => ({
 			...val,
 			auth_data: {
@@ -55,29 +104,26 @@ export const actions: Actions = {
 			personal_data: {
 				...val.personal_data,
 				...newPersonalData
+			},
+			rank: {
+				...val.rank,
+				...newRankingData
 			}
 		}));
 
-		const userRef = doc(db, 'users', userUid);
-
-		await setDoc(
-			userRef,
-			{
-				auth_data: {
-					is_registered: true
-				},
-				personal_data: newPersonalData
-			},
-			{ merge: true }
-		);
+		await updateDoc(userRef, {
+			'auth_data.is_registered': true,
+			personal_data: newPersonalData,
+			rank: {
+				...newRankingData
+			}
+		});
 
 		console.log('Now registered!');
 
 		throw redirect(302, '/');
 	},
 	login: async ({ request, cookies, locals }) => {
-		console.log('Logging in!');
-
 		const data = await request.formData();
 		const email = data.get('email')?.toString().trim();
 		const password = data.get('password')?.toString().trim();
@@ -87,9 +133,7 @@ export const actions: Actions = {
 			return;
 		}
 
-		const usersCollection = collection(db, 'users');
-		const q = query(usersCollection, orderBy('score', 'desc'));
-		const usersDocs = await getDocs(q);
+		console.log('Logging in!');
 
 		const signInMethodsForEmail = await fetchSignInMethodsForEmail(auth, email);
 		const isEmailAvailable = signInMethodsForEmail.length !== 0;
@@ -101,6 +145,7 @@ export const actions: Actions = {
 			const userRef = doc(db, 'users', user.uid);
 
 			const newUserData: UserData = {
+				...defaultUserData,
 				auth_data: {
 					email: user.email,
 					is_logged_in: true,
@@ -109,14 +154,6 @@ export const actions: Actions = {
 					role: 'user',
 					uid: user.uid,
 					username: user.displayName
-				},
-				personal_data: {
-					...defaultPersonalData
-				},
-				score: 0,
-				rank: {
-					number: usersDocs.size,
-					title: 'likas'
 				}
 			};
 
@@ -127,7 +164,7 @@ export const actions: Actions = {
 
 			locals.userData = userData;
 
-			console.log('\nRegistered:');
+			console.log('\nRegistered.');
 
 			currentUser.update(
 				(val) =>
@@ -148,36 +185,8 @@ export const actions: Actions = {
 			const user = result.user;
 
 			const userRef = doc(db, 'users', user.uid);
-			const docSnap = await getDoc(userRef);
 
-			// Theoretically, there should already be a document
-			if (!docSnap.exists()) {
-				// throw error(404, 'User has no document.');
-				const newUserData: UserData = {
-					auth_data: {
-						email: user.email,
-						is_logged_in: true,
-						is_registered: false,
-						photo_url: user.photoURL,
-						role: 'user',
-						uid: user.uid,
-						username: user.displayName
-					},
-					personal_data: {
-						...defaultPersonalData
-					},
-					score: 0,
-					rank: {
-						number: usersDocs.size,
-						title: 'likas'
-					}
-				};
-
-				await setDoc(userRef, newUserData);
-			} else {
-				// User document exists, update the auth_data field
-				await updateDoc(userRef, { 'auth_data.is_logged_in': true });
-			}
+			await updateDoc(userRef, { 'auth_data.is_logged_in': true });
 
 			// Get the updated user data
 			const userDoc = await getDoc(userRef);
@@ -185,7 +194,7 @@ export const actions: Actions = {
 
 			locals.userData = userData;
 
-			console.log('\nLogged in:');
+			console.log('\nLogged in.');
 
 			currentUser.update(
 				(val) =>
