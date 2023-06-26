@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sections } from '$lib/data';
+	import { sectionsMap } from '$lib/data';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	$: section = 'All';
@@ -27,7 +27,7 @@
 				on:click={() => (section = 'All')}>All</a
 			>
 		</li>
-		{#each sections as [key, value], idx (idx)}
+		{#each sectionsMap as [key, value], idx (idx)}
 			<li class="flex">
 				<a
 					class={`flex-1 px-4 py-2 ${

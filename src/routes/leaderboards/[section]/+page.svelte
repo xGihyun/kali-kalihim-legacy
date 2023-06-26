@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sectionMap } from '$lib/data.js';
+	import { sectionsMap } from '$lib/data.js';
 	import { db } from '$lib/firebase/firebase.js';
 	import type { UserData } from '$lib/types.js';
 	import { collection, onSnapshot, query, where } from 'firebase/firestore';
@@ -51,7 +51,7 @@
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							{sectionMap.get(user.personal_data.section)}
+							{sectionsMap.get(user.personal_data.section)}
 						</p>
 					</td>
 					<td class="w-1/4">

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sectionMap, sections } from '$lib/data';
+	import { sectionsMap } from '$lib/data';
 	import { db } from '$lib/firebase/firebase';
 	import type { PendingMatch } from '$lib/types';
 	import { addDoc, collection } from 'firebase/firestore';
@@ -25,7 +25,8 @@
 			return;
 		}
 
-		const data: { section: string; pendingMatches: PendingMatch[]; matchSetId: string } = await response.json();
+		const data: { section: string; pendingMatches: PendingMatch[]; matchSetId: string } =
+			await response.json();
 
 		section = data.section;
 		pendingMatches = data.pendingMatches;
@@ -74,7 +75,7 @@
 				class="font-gt-walsheim-pro-medium text-center text-3xl uppercase md:text-4xl xl:text-9xl"
 				>match found</span
 			>
-			<span class="text-center text-lg">{sectionMap.get(section)}</span>
+			<span class="text-center text-lg">{sectionsMap.get(section)}</span>
 			<div class="table-container max-w-5xl">
 				<table class="table-compact table-hover table">
 					<thead>
@@ -123,7 +124,7 @@
 			<label class="label">
 				<span>Section</span>
 				<select class="input" size="1" name="section" required>
-					{#each sections as [key, value], idx (idx)}
+					{#each sectionsMap as [key, value], idx (idx)}
 						<option value={key}>{value}</option>
 					{/each}
 				</select>

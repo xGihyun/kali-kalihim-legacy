@@ -1,3 +1,4 @@
+import { footworks, skills } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
 import type { PendingMatch, UserData } from '$lib/types';
 import { error, type RequestHandler } from '@sveltejs/kit';
@@ -72,15 +73,6 @@ function shuffleArray(users: UserData[]) {
 }
 
 function getRandomArnisSkill() {
-	const skills = [
-		'Strikes',
-		'Blocks',
-		'Forward Sinawali',
-		'Sideward Sinawali',
-		'Reversed Sinawali'
-	];
-	const footworks = ['Guerrero', 'Cabellero', 'Triangle', 'Reversed Triangle'];
-
 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
 	const randomFootworkIndex = Math.floor(Math.random() * footworks.length);
 

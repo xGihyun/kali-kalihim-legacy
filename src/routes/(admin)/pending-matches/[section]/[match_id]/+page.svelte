@@ -105,7 +105,7 @@
 											<input
 												class="input"
 												type="text"
-												name={`score-${user.auth_data.uid}`}
+												name={`initial-score-${user.auth_data.uid}`}
 												required
 											/>
 										</label>

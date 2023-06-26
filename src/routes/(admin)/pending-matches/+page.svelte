@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { sections } from '$lib/data';
+	import { sectionsMap } from '$lib/data';
 </script>
 
-<div class="h-full w-full flex flex-col justify-center items-center px-[5%]">
-	{#each sections as [key, value], idx (idx)}
+<div class="flex h-full w-full flex-col items-center justify-center px-[5%]">
+	{#each sectionsMap as [key, value], idx (idx)}
 		<a class="btn variant-soft-secondary" href={`pending-matches/${key}`}>{value}</a>
 	{/each}
 </div>

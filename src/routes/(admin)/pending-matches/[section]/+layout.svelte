@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { sectionMap } from '$lib/data.js';
+	import { sectionsMap } from '$lib/data.js';
 	import { db } from '$lib/firebase/firebase.js';
 	import type { MatchSet } from '$lib/types.js';
 	import { TabGroup, TabAnchor } from '@skeletonlabs/skeleton';
@@ -35,7 +35,7 @@
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if matchSets.length > 0}
 		<h1 class="font-gt-walsheim-pro-medium mb-5 text-center text-2xl uppercase">
-			{sectionMap.get(data.section)}
+			{sectionsMap.get(data.section)}
 		</h1>
 		<TabGroup justify="justify-center">
 			{#each matchSets as matchSet, idx (idx)}

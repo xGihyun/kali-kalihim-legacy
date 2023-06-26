@@ -7,3 +7,4 @@ export const currentUser = writable<UserData>({
 });
 
 export const allUsers = writable<UserData[]>([]);
+export const selectedPowerCard = writable<string | null>(null);

@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { sectionMap } from '$lib/data';
+	import { PowerCard } from '$lib/components';
+	import { powerCardsMap, sectionsMap } from '$lib/data';
+	import { selectedPowerCard } from '$lib/store.js';
 	import type { UserData } from '$lib/types';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
@@ -8,7 +10,7 @@
 	export let data;
 
 	$: pendingMatches = data.pendingMatches || [];
-	
+
 	$: user = getContext<Writable<UserData>>('user');
 </script>
 
@@ -24,7 +26,7 @@
 						{$user.personal_data.name.last}
 					</span>
 					<span>
-						{sectionMap.get($user.personal_data.section)}
+						{sectionsMap.get($user.personal_data.section)}
 					</span>
 				</div>
 				<div class="flex gap-4">
@@ -60,6 +62,14 @@
 					<span class="flex w-full justify-center opacity-50">No upcoming match</span>
 				{/if}
 			</div>
+			<div class="flex gap-2">
+				{#each powerCardsMap as [key, value], idx (idx)}
+					<button class="btn variant-filled-secondary" on:click={() => selectedPowerCard.set(key)}>
+						{value}
+					</button>
+				{/each}
+			</div>
+			<PowerCard />
 		</div>
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<div class="variant-filled-surface rounded-md p-4">

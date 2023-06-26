@@ -4,9 +4,9 @@
 	import '../app.postcss';
 	import { currentUser } from '$lib/store';
 	import { setContext } from 'svelte';
-	import { Navbar } from '../components';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
+	import { Navbar } from '$lib/components';
 
 	export let data;
 
