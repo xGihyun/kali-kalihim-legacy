@@ -1,17 +1,32 @@
 <script lang="ts">
 	import { PowerCard } from '$lib/components';
 	import { powerCardsMap, sectionsMap } from '$lib/data';
+	import { db } from '$lib/firebase/firebase.js';
 	import { selectedPowerCard } from '$lib/store.js';
-	import type { UserData } from '$lib/types';
-	import { getContext } from 'svelte';
+	import type { PendingMatch, UserData } from '$lib/types';
+	import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	// import { arnis_bg } from '../assets/images';
 
 	export let data;
 
-	$: pendingMatches = data.pendingMatches || [];
+	$: pendingMatch = data?.latestPendingMatch;
 
 	$: user = getContext<Writable<UserData>>('user');
+
+	const pendingMatchesCollection = collection(
+		db,
+		`users/${data.user?.auth_data.uid}/pending_matches`
+	);
+	const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
+	const unsubPendingMatch = onSnapshot(q, (snapshot) => {
+		pendingMatch = snapshot.docs.shift()?.data() as PendingMatch;
+
+		console.log('Pending match snapshot ran.');
+	});
+
+	onDestroy(() => unsubPendingMatch());
 </script>
 
 <div class="flex h-full w-full flex-col items-center justify-center">
@@ -40,18 +55,31 @@
 					</div>
 				</div>
 			</div>
+
 			<div>
-				{#if pendingMatches.length > 0}
+				{#if pendingMatch}
 					<ul class="max-h-[75vh] space-y-4 overflow-auto">
 						<!-- {#each data.pendingMatches as match, idx (idx)} -->
 						<li class="flex flex-col items-start">
-							{#each pendingMatches[0].players as player, playerIdx (playerIdx)}
+							{#each pendingMatch.players as player, playerIdx (playerIdx)}
 								{#if player.auth_data.uid !== $user.auth_data.uid}
-									<div class="flex flex-col items-center">
-										<span>Upcoming match VS:</span>
-										<span class="text-sm font-bold md:text-base"
-											>{player.personal_data.name.first} {player.personal_data.name.last}</span
-										>
+									<div class="flex flex-col items-center gap-4">
+										<div class="flex flex-col items-center">
+											<span>Upcoming match VS:</span>
+											<span class="text-sm font-bold md:text-base"
+												>{player.personal_data.name.first} {player.personal_data.name.last}</span
+											>
+										</div>
+										<div class="flex flex-col items-center">
+											<div class="flex flex-col items-center">
+												<span>Skill to perform:</span>
+												<span class="text-tertiary-400">{pendingMatch.skill}</span>
+											</div>
+											<div class="flex flex-col items-center">
+												<span>Footwork to perform:</span>
+												<span class="text-tertiary-400">{pendingMatch.footwork}</span>
+											</div>
+										</div>
 									</div>
 								{/if}
 							{/each}
@@ -62,14 +90,23 @@
 					<span class="flex w-full justify-center opacity-50">No upcoming match</span>
 				{/if}
 			</div>
+
 			<div class="flex gap-2">
 				{#each powerCardsMap as [key, value], idx (idx)}
-					<button class="btn variant-filled-secondary" on:click={() => selectedPowerCard.set(key)}>
-						{value}
+					<button
+						class="btn variant-filled-secondary"
+						on:click={() => {
+							selectedPowerCard.set(key);
+						}}
+					>
+						{value.name}
 					</button>
 				{/each}
 			</div>
-			<PowerCard />
+
+			{#if $selectedPowerCard}
+				<PowerCard />
+			{/if}
 		</div>
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<div class="variant-filled-surface rounded-md p-4">

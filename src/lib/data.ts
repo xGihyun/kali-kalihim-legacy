@@ -1,3 +1,29 @@
+import {
+	AncientsProtection,
+	DoubleEdgedSword,
+	ExtraWind,
+	TwistOfFate,
+	ViralxRival,
+	WarlordsDomain
+} from './components/powercards';
+import {
+	AncientsProtectionAbility,
+	DoubleEdgedSwordAbility,
+	ExtraWindAbility,
+	TwistOfFateAbility,
+	ViralxRivalAbility,
+	WarlordsDomainAbility
+} from './components/powercards/ability';
+import {
+	ancientsProtection,
+	doubleEdgedSword,
+	extraWind,
+	twistOfFate,
+	viralxRival,
+	warlordsDomain
+} from './components/powercards/ability/functions';
+import type { PowerCard } from './types';
+
 export const skills = [
 	'Strikes',
 	'Blocks',
@@ -16,11 +42,59 @@ export const sectionsMap: Map<string, string> = new Map([
 	['section-5', 'Section 5']
 ]);
 
-export const powerCardsMap: Map<string, string> = new Map([
-	["warlord's-domain", "Wardlord's Domain"],
-	['double-edged-sword', 'Double-edged Sword'],
-	['extra-wind', 'Extra Wind'],
-	["ancient's-protection", "Ancient's Protection"],
-	['viral-x-rival', 'Viral x Rival'],
-	['twist-of-fate', 'Twist of Fate']
+export const powerCardsMap: Map<string, PowerCard> = new Map([
+	[
+		"warlord's-domain",
+		{
+			name: "Warlord's Domain",
+			components: { card: WarlordsDomain, ability: WarlordsDomainAbility },
+			function: warlordsDomain,
+			used: false
+		}
+	],
+	[
+		'double-edged-sword',
+		{
+			name: 'Double-edged Sword',
+			components: { card: DoubleEdgedSword, ability: DoubleEdgedSwordAbility },
+			function: doubleEdgedSword,
+			used: false
+		}
+	],
+	[
+		'extra-wind',
+		{
+			name: 'Extra Wind',
+			components: { card: ExtraWind, ability: ExtraWindAbility },
+			function: extraWind,
+			used: false
+		}
+	],
+	[
+		"ancient's-protection",
+		{
+			name: "Ancient's Protection",
+			components: { card: AncientsProtection, ability: AncientsProtectionAbility },
+			function: ancientsProtection,
+			used: false
+		}
+	],
+	[
+		'viral-x-rival',
+		{
+			name: 'Viral x Rival',
+			components: { card: ViralxRival, ability: ViralxRivalAbility },
+			function: viralxRival,
+			used: false
+		}
+	],
+	[
+		'twist-of-fate',
+		{
+			name: 'Twist of Fate',
+			components: { card: TwistOfFate, ability: TwistOfFateAbility },
+			function: twistOfFate,
+			used: false
+		}
+	]
 ]);

@@ -33,14 +33,15 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	);
 	const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
 	const getPendingMatchesDocs = await getDocs(q);
-	const pendingMatches: PendingMatch[] = getPendingMatchesDocs.docs.map(
-		(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
-	);
+	const latestPendingMatch = getPendingMatchesDocs.docs.shift()?.data() as PendingMatch;
+	// const pendingMatches: PendingMatch[] = getPendingMatchesDocs.docs.map(
+	// 	(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
+	// );
 
 	setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
 
 	return {
-		pendingMatches
+		latestPendingMatch
 	};
 };
 

@@ -2,7 +2,7 @@
 	import { skills } from '$lib/data';
 </script>
 
-<div class="card">
+<div class="">
 	Warlord's Domain
 	<!-- <div>
 		Choose a skill:

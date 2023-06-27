@@ -49,3 +49,13 @@ export type MatchSet = {
 	set: number;
 	status: string;
 };
+
+export type PowerCard = {
+	components: {
+		card: ConstructorOfATypedSvelteComponent;
+		ability: ConstructorOfATypedSvelteComponent;
+	};
+	name: string;
+	function: (...T) => Promise<T>;
+	used: boolean;
+};
