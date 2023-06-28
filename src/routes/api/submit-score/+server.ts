@@ -39,13 +39,8 @@ export const POST: RequestHandler = async ({ request }) => {
 				console.log(initialScore);
 
 				const userRef = doc(db, 'users', uid);
-				// const userDoc = await getDoc(userRef);
-				// const userData = userDoc.data() as UserData;
 
 				await setDoc(userRef, { score: initialScore }, { merge: true });
-
-				// await updateRankTitle(userRef);
-				// await updateSectionRankings(userData.personal_data.section);
 			}
 
 			if (name.startsWith('score-')) {
@@ -60,19 +55,49 @@ export const POST: RequestHandler = async ({ request }) => {
 				const userRef = doc(db, 'users', uid);
 				const userDoc = await getDoc(userRef);
 				const userData = userDoc.data() as UserData;
+				const userPowerCards = userData.power_cards;
 				const currentScore = userData.score;
+
+				const isProtected = userPowerCards.find(
+					(card) => card.key === "ancient's-protection" && card.activated
+				);
+				const isDoubledDown = userPowerCards.find(
+					(card) => card.key === 'double-edged-sword' && card.activated
+				);
 
 				let finalScore: number;
 
 				if (score === Math.min(...scores)) {
-					finalScore = currentScore + (score - difference);
+					const reducedScore = score - difference;
+
+					if (isProtected) {
+						finalScore = currentScore;
+					} else if (isDoubledDown) {
+						finalScore = currentScore + reducedScore * 2;
+					} else {
+						finalScore = currentScore + reducedScore;
+					}
+
 					result.loser = name;
 				} else {
-					finalScore = currentScore + (score + difference);
+					const addedScore = score + difference;
+
+					if (isDoubledDown) {
+						finalScore = currentScore + addedScore * 2;
+					} else {
+						finalScore = currentScore + addedScore;
+					}
+
 					result.winner = name;
 				}
 
-				await updateDoc(userRef, { score: finalScore });
+				userPowerCards.forEach((card) => {
+					if (card.activated) {
+						card.used = true;
+					}
+				});
+
+				await updateDoc(userRef, { score: finalScore, power_cards: userPowerCards });
 
 				await updateRankTitle(userRef);
 				await updateSectionRankings(userData.personal_data.section);

@@ -6,5 +6,6 @@ export const currentUser = writable<UserData>({
 	...defaultUserData
 });
 
-export const allUsers = writable<UserData[]>([]);
 export const selectedPowerCard = writable<string | null>(null);
+export const latestOpponent = writable<UserData>();
+export const allUsersInSection = writable<UserData[]>([]);

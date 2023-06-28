@@ -2,9 +2,9 @@
 	import { PowerCard } from '$lib/components';
 	import { powerCardsMap, sectionsMap } from '$lib/data';
 	import { db } from '$lib/firebase/firebase.js';
-	import { selectedPowerCard } from '$lib/store.js';
+	import { latestOpponent, selectedPowerCard } from '$lib/store.js';
 	import type { PendingMatch, UserData } from '$lib/types';
-	import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+	import { collection, doc, getDoc, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	// import { arnis_bg } from '../assets/images';
@@ -13,15 +13,35 @@
 
 	$: pendingMatch = data?.latestPendingMatch;
 
+	$: latestOpponent.set(
+		pendingMatch?.players.find(
+			(player) => player.auth_data.uid !== data.user?.auth_data.uid
+		) as UserData
+	);
+
+	// $: allUsersInSection.set(data.allUsersInSection || []);
+
 	$: user = getContext<Writable<UserData>>('user');
+	$: opponent = getContext<Writable<UserData>>('opponent');
 
 	const pendingMatchesCollection = collection(
 		db,
 		`users/${data.user?.auth_data.uid}/pending_matches`
 	);
 	const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
-	const unsubPendingMatch = onSnapshot(q, (snapshot) => {
+
+	const unsubPendingMatch = onSnapshot(q, async (snapshot) => {
 		pendingMatch = snapshot.docs.shift()?.data() as PendingMatch;
+
+		const latestUpdatedOpponent = pendingMatch?.players.find(
+			(player) => player.auth_data.uid !== data.user?.auth_data.uid
+		) as UserData;
+
+		const opponentRef = doc(db, 'users', latestUpdatedOpponent.auth_data.uid || '');
+		const opponentDoc = await getDoc(opponentRef);
+		const opponentData = opponentDoc.data() as UserData;
+
+		$opponent = opponentData;
 
 		console.log('Pending match snapshot ran.');
 	});
@@ -57,40 +77,46 @@
 			</div>
 
 			<div>
-				{#if pendingMatch}
+				{#if pendingMatch && $opponent}
 					<ul class="max-h-[75vh] space-y-4 overflow-auto">
-						<!-- {#each data.pendingMatches as match, idx (idx)} -->
 						<li class="flex flex-col items-start">
-							{#each pendingMatch.players as player, playerIdx (playerIdx)}
-								{#if player.auth_data.uid !== $user.auth_data.uid}
-									<div class="flex flex-col items-center gap-4">
-										<div class="flex flex-col items-center">
-											<span>Upcoming match VS:</span>
-											<span class="text-sm font-bold md:text-base"
-												>{player.personal_data.name.first} {player.personal_data.name.last}</span
-											>
-										</div>
-										<div class="flex flex-col items-center">
-											<div class="flex flex-col items-center">
-												<span>Skill to perform:</span>
-												<span class="text-tertiary-400">{pendingMatch.skill}</span>
-											</div>
-											<div class="flex flex-col items-center">
-												<span>Footwork to perform:</span>
-												<span class="text-tertiary-400">{pendingMatch.footwork}</span>
-											</div>
-										</div>
+							<div class="flex flex-col items-center gap-4">
+								<div class="flex flex-col items-center">
+									<span>Upcoming match VS:</span>
+									<span class="text-sm font-bold md:text-base"
+										>{$opponent.personal_data.name.first}
+										{$opponent.personal_data.name.last}</span
+									>
+									{#if $opponent.power_cards.find((card) => card.activated && !card.used)}
+										<span>Opponent has activated:</span>
+										{#each $opponent.power_cards as card, idx (idx)}
+											{#if card.activated && !card.used}
+												<span class="text-tertiary-300 font-bold">{card.name}</span>
+											{/if}
+										{/each}
+									{:else}
+										<span>No power cards used</span>
+									{/if}
+								</div>
+								<div class="flex flex-col items-center">
+									<div class="flex flex-col items-center">
+										<span>Skill to perform:</span>
+										<span class="text-tertiary-400">{pendingMatch.skill}</span>
 									</div>
-								{/if}
-							{/each}
+									<div class="flex flex-col items-center">
+										<span>Footwork to perform:</span>
+										<span class="text-tertiary-400">{pendingMatch.footwork}</span>
+									</div>
+								</div>
+							</div>
 						</li>
-						<!-- {/each} -->
 					</ul>
 				{:else}
 					<span class="flex w-full justify-center opacity-50">No upcoming match</span>
 				{/if}
 			</div>
 
+			<!-- Put all power cards temporarily for dev purposes -->
 			<div class="flex gap-2">
 				{#each powerCardsMap as [key, value], idx (idx)}
 					<button
@@ -101,6 +127,22 @@
 					>
 						{value.name}
 					</button>
+				{/each}
+			</div>
+
+			<!-- The power cards that the user has -->
+			<div class="flex gap-2">
+				{#each $user.power_cards as card, idx (idx)}
+					{#if !(card.key === 'extra-wind' && card.activated)}
+						<button
+							class="btn variant-filled-primary"
+							on:click={() => {
+								selectedPowerCard.set(card.key);
+							}}
+						>
+							{card.name}
+						</button>
+					{/if}
 				{/each}
 			</div>
 

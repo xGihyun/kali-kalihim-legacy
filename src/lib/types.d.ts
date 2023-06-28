@@ -5,6 +5,7 @@ export type UserData = {
 	personal_data: UserPersonalData;
 	score: number;
 	rank: UserRankingData;
+	power_cards: UserPowerCard[];
 };
 
 export type UserAuthData = {
@@ -34,6 +35,13 @@ export type UserRankingData = {
 		section: number;
 	};
 	title: string;
+};
+
+export type UserPowerCard = {
+	activated: boolean;
+	key: string;
+	name: string;
+	used: boolean;
 };
 
 export type PendingMatch = {

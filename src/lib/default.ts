@@ -1,4 +1,10 @@
-import type { UserAuthData, UserData, UserPersonalData, UserRankingData } from './types';
+import type {
+	UserAuthData,
+	UserData,
+	UserPersonalData,
+	UserPowerCard,
+	UserRankingData
+} from './types';
 
 export const defaultAuthData: UserAuthData = {
 	email: '',
@@ -22,24 +28,19 @@ export const defaultPersonalData: UserPersonalData = {
 };
 
 export const defaultRankingData: UserRankingData = {
-	rank: {
-		number: {
-			overall: 0,
-			section: 0
-		},
-		title: ''
-	}
+	number: {
+		overall: 0,
+		section: 0
+	},
+	title: ''
 };
+
+export const defaultPowerCards: UserPowerCard[] = [];
 
 export const defaultUserData: UserData = {
 	auth_data: defaultAuthData,
 	personal_data: defaultPersonalData,
 	score: 0,
-	rank: {
-		number: {
-			overall: 0,
-			section: 0
-		},
-		title: ''
-	}
+	rank: defaultRankingData,
+	power_cards: defaultPowerCards
 };

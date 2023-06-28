@@ -23,18 +23,29 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	// Pair shuffled users for a randomized 1v1 match
 	for (let i = 0; i < totalUsers; i += 2) {
-		const user1 = shuffledUsers[i];
-		const user2 = shuffledUsers[i + 1];
+		// const user1 = shuffledUsers[i];
+		// const user2 = shuffledUsers[i + 1];
+		const users = [shuffledUsers[i], shuffledUsers[i + 1]];
+
+		users.forEach((user) => {
+			const changeOpponent = user.power_cards.find(
+				(card) => card.key === 'twist-of-fate' && card.activated
+			);
+			if (changeOpponent) {
+				// do something
+			}
+		});
+
 		const currentDate = Timestamp.fromDate(new Date());
 		const skillToPerform = getRandomArnisSkill().skill;
 		const footworkToPerform = getRandomArnisSkill().footwork;
 
-		if (!user2) {
+		if (users.length < 2) {
 			break;
 		}
 
 		pendingMatches.push({
-			players: [user1, user2],
+			players: users,
 			section,
 			timestamp: currentDate,
 			skill: skillToPerform,

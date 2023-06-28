@@ -27,12 +27,20 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		return;
 	}
 
+	// const allUsersCollection = collection(db, 'users');
+	// const usersInSectionQuery = query(
+	// 	allUsersCollection,
+	// 	where('personal_data.section', '==', locals.userData.personal_data.section)
+	// );
+	// const allUsersInSectionDocs = await getDocs(usersInSectionQuery);
+	// const allUsersInSection = allUsersInSectionDocs.docs.map((user) => user.data() as UserData);
+
 	const pendingMatchesCollection = collection(
 		db,
 		`users/${locals.userData.auth_data.uid}/pending_matches`
 	);
-	const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
-	const getPendingMatchesDocs = await getDocs(q);
+	const pendingMatchesQuery = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
+	const getPendingMatchesDocs = await getDocs(pendingMatchesQuery);
 	const latestPendingMatch = getPendingMatchesDocs.docs.shift()?.data() as PendingMatch;
 	// const pendingMatches: PendingMatch[] = getPendingMatchesDocs.docs.map(
 	// 	(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch

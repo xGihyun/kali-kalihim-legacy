@@ -2,7 +2,7 @@
 	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
-	import { currentUser } from '$lib/store';
+	import { allUsersInSection, currentUser, latestOpponent } from '$lib/store';
 	import { setContext } from 'svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -39,10 +39,13 @@
 				section: data.user?.rank.number.section || 0
 			},
 			title: data.user?.rank.title || ''
-		}
+		},
+		power_cards: data.user?.power_cards || []
 	});
 
 	setContext('user', currentUser);
+	setContext('opponent', latestOpponent);
+	setContext('usersInSection', allUsersInSection);
 </script>
 
 <div class="flex h-screen w-full flex-col overflow-hidden">
