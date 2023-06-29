@@ -2,7 +2,7 @@ import { footworks, skills } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
 import type { PendingMatch, UserData } from '$lib/types';
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { Timestamp, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
@@ -18,34 +18,20 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const allUsers = allUsersDocs.docs.map((user) => user.data() as UserData);
-	const shuffledUsers = shuffleArray(allUsers);
+	const { shuffled, persisted } = await shuffleArray(allUsers);
+	const shuffledUsers = shuffled;
+	const persistedUsers = persisted;
 	const pendingMatches: PendingMatch[] = [];
-
-	let temp: UserData[] = [];
 
 	// Pair shuffled users for a randomized 1v1 match
 	for (let i = 0; i < totalUsers; i += 2) {
-		// const user1 = shuffledUsers[i];
-		// const user2 = shuffledUsers[i + 1];
 		const users = [shuffledUsers[i], shuffledUsers[i + 1]];
-
-		// users.forEach((user, index) => {
-		// 	const changedOpponent = user.power_cards.find(
-		// 		(card) => card.key === 'twist-of-fate' && card.activated
-		// 	);
-		// 	if (changedOpponent) {
-		// 		// do something
-		// 		index < 1 ? temp.push(users.shift() as UserData) : temp.push(users.pop() as UserData);
-		// 	}
-		// });
 
 		const currentDate = Timestamp.fromDate(new Date());
 		const skillToPerform = getRandomArnisSkill().skill;
 		const footworkToPerform = getRandomArnisSkill().footwork;
 
-		if (users.length < 2) {
-			break;
-		}
+		if (!(users[0] && users[1])) break;
 
 		pendingMatches.push({
 			players: users,
@@ -54,6 +40,29 @@ export const POST: RequestHandler = async ({ request }) => {
 			skill: skillToPerform,
 			footwork: footworkToPerform
 		});
+	}
+
+	console.log('\nPersisted Users:');
+	console.log(persistedUsers);
+	console.log(persistedUsers.length);
+
+	if (persistedUsers.length > 0) {
+		console.log('\nNot empty');
+		for (let i = 0; i < persistedUsers.length; i++) {
+			const currentDate = Timestamp.fromDate(new Date());
+			const skillToPerform = getRandomArnisSkill().skill;
+			const footworkToPerform = getRandomArnisSkill().footwork;
+
+			if (!(persistedUsers[i][0] && persistedUsers[i][1])) break;
+
+			pendingMatches.push({
+				players: persistedUsers[i],
+				section,
+				timestamp: currentDate,
+				skill: skillToPerform,
+				footwork: footworkToPerform
+			});
+		}
 	}
 
 	const matchesCollection = collection(db, 'match_sets');
@@ -65,10 +74,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		status: 'pending'
 	});
 
+	console.log(pendingMatches);
+
+	pendingMatches.forEach((users) => addPendingMatch(users, section, matchSet.id));
+
 	const response = {
-		section,
-		pendingMatches,
-		matchSetId: matchSet.id
+		pendingMatches
 	};
 
 	const responseString = JSON.stringify(response);
@@ -77,13 +88,63 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // Fisher-Yates algorithm
-function shuffleArray(users: UserData[]) {
-	const shuffled = users.slice();
+async function shuffleArray(users: UserData[]) {
+	const persisted: UserData[][] = [];
+
+	for (const user of users) {
+		const persistOpponent = user.power_cards.find(
+			(card) => card.key === 'viral-x-rival' && card.activated
+		);
+
+		if (persistOpponent) {
+			const pendingMatchesCollection = collection(
+				db,
+				`users/${user.auth_data.uid}/pending_matches`
+			);
+			const pendingMatchesQuery = query(
+				pendingMatchesCollection,
+				orderBy('timestamp.seconds', 'desc')
+			);
+			const getPendingMatchesDocs = await getDocs(pendingMatchesQuery);
+			const latestPendingMatch = getPendingMatchesDocs.docs.shift()?.data() as PendingMatch;
+			const persistedPlayers = latestPendingMatch.players;
+
+			console.log(latestPendingMatch);
+
+			persisted.push(persistedPlayers);
+		}
+	}
+
+	console.log('\nPairs of persisted:');
+	console.log(persisted);
+
+	let updatedUsers: UserData[] = [...users];
+
+	console.log('\nBefore:');
+	console.log(users);
+
+	for (const pairs of persisted) {
+		for (const userInPair of pairs) {
+			updatedUsers = updatedUsers.filter((user) => user.auth_data.uid !== userInPair.auth_data.uid);
+		}
+	}
+
+	console.log('\nAfter:');
+	console.log(updatedUsers);
+
+	const shuffled = updatedUsers.slice();
+
 	for (let i = shuffled.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
-		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		if (shuffled[i] && shuffled[j]) {
+			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		}
 	}
-	return shuffled;
+
+	return {
+		shuffled,
+		persisted
+	};
 }
 
 function getRandomArnisSkill() {
@@ -97,4 +158,27 @@ function getRandomArnisSkill() {
 		skill: randomSkill,
 		footwork: randomFootwork
 	};
+}
+
+async function addPendingMatch(users: PendingMatch, section: string, id: string) {
+	const matchData: PendingMatch = {
+		players: [...users.players],
+		section,
+		skill: users.skill,
+		footwork: users.footwork,
+		timestamp: users.timestamp
+	};
+
+	const playerUids = users.players.map((user) => user.auth_data.uid);
+
+	const matchesCollection = collection(db, `match_sets/${id}/matches`);
+	await addDoc(matchesCollection, { ...matchData, uids: playerUids });
+
+	users.players.forEach(async (user) => {
+		const userPendingMatchCollection = collection(
+			db,
+			`users/${user.auth_data.uid}/pending_matches`
+		);
+		await addDoc(userPendingMatchCollection, matchData);
+	});
 }

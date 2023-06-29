@@ -5,12 +5,20 @@
 	import { addDoc, collection } from 'firebase/firestore';
 
 	let pendingMatches: PendingMatch[] = [];
-	let section: string;
+
+	// The one used for bind
+	let sectionValue: string;
+
+	// The one displayed
+	// Stored in a new variable to avoid bind's reactive nature
+	let selectedSection: string;
+
 	let dataFetched = false;
 	let loading = false;
 
-	async function matchmake(event: SubmitEvent) {
+	async function matchmake(event: SubmitEvent, section: string) {
 		loading = true;
+		selectedSection = section;
 
 		const form = event.target as HTMLFormElement;
 		const formData = new FormData(form);
@@ -25,10 +33,8 @@
 			return;
 		}
 
-		const data: { section: string; pendingMatches: PendingMatch[]; matchSetId: string } =
-			await response.json();
+		const data: { pendingMatches: PendingMatch[] } = await response.json();
 
-		section = data.section;
 		pendingMatches = data.pendingMatches;
 
 		if (!pendingMatches) {
@@ -39,32 +45,6 @@
 
 		loading = false;
 		dataFetched = true;
-
-		// Add pending match to their notifications
-		pendingMatches.forEach((users) => addPendingMatch(users, section, data.matchSetId));
-	}
-
-	async function addPendingMatch(users: PendingMatch, section: string, id: string) {
-		const matchData: PendingMatch = {
-			players: [...users.players],
-			section,
-			skill: users.skill,
-			footwork: users.footwork,
-			timestamp: users.timestamp
-		};
-
-		const playerUids = users.players.map((user) => user.auth_data.uid);
-
-		const matchesCollection = collection(db, `match_sets/${id}/matches`);
-		await addDoc(matchesCollection, { ...matchData, uids: playerUids });
-
-		users.players.forEach(async (user) => {
-			const userPendingMatchCollection = collection(
-				db,
-				`users/${user.auth_data.uid}/pending_matches`
-			);
-			await addDoc(userPendingMatchCollection, matchData);
-		});
 	}
 </script>
 
@@ -77,7 +57,7 @@
 				class="font-gt-walsheim-pro-medium text-center text-3xl uppercase md:text-4xl xl:text-9xl"
 				>match found</span
 			>
-			<span class="text-center text-lg">{sectionsMap.get(section)}</span>
+			<span class="text-center text-lg">{sectionsMap.get(selectedSection)}</span>
 			<div class="table-container max-w-5xl">
 				<table class="table-compact table-hover table">
 					<thead>
@@ -122,10 +102,10 @@
 	</div>
 	<!-- I don't know if this is the best way for form actions + SvelteKit endpoint -->
 	<div class="flex flex-col items-center gap-4">
-		<form class="contents" on:submit|preventDefault={matchmake}>
+		<form class="contents" on:submit|preventDefault={(e) => matchmake(e, sectionValue)}>
 			<label class="label">
 				<span>Section</span>
-				<select class="input" size="1" name="section" required>
+				<select class="input" size="1" name="section" required bind:value={sectionValue}>
 					{#each sectionsMap as [key, value], idx (idx)}
 						<option value={key}>{value}</option>
 					{/each}

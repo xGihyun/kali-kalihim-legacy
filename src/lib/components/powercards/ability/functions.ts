@@ -107,15 +107,6 @@ export async function viralxRival(userUid: string) {
 
 	userPowerCards[userPowerCardIndex].activated = true;
 
-	// const pendingMatchesCollection = collection(db, `users/${userUid}/pending_matches`);
-	// const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
-	// const getPendingMatchesDocs = await getDocs(q);
-	// const latestPendingMatch = getPendingMatchesDocs.docs.shift()?.data() as PendingMatch;
-	// const currentOpponent = latestPendingMatch.players.find(
-	// 	(user) => user.auth_data.uid !== userUid
-	// );
-
-	// WIP
 	await updateDoc(userRef, { power_cards: userPowerCards });
 }
 
