@@ -21,20 +21,23 @@ export const POST: RequestHandler = async ({ request }) => {
 	const shuffledUsers = shuffleArray(allUsers);
 	const pendingMatches: PendingMatch[] = [];
 
+	let temp: UserData[] = [];
+
 	// Pair shuffled users for a randomized 1v1 match
 	for (let i = 0; i < totalUsers; i += 2) {
 		// const user1 = shuffledUsers[i];
 		// const user2 = shuffledUsers[i + 1];
 		const users = [shuffledUsers[i], shuffledUsers[i + 1]];
 
-		users.forEach((user) => {
-			const changeOpponent = user.power_cards.find(
-				(card) => card.key === 'twist-of-fate' && card.activated
-			);
-			if (changeOpponent) {
-				// do something
-			}
-		});
+		// users.forEach((user, index) => {
+		// 	const changedOpponent = user.power_cards.find(
+		// 		(card) => card.key === 'twist-of-fate' && card.activated
+		// 	);
+		// 	if (changedOpponent) {
+		// 		// do something
+		// 		index < 1 ? temp.push(users.shift() as UserData) : temp.push(users.pop() as UserData);
+		// 	}
+		// });
 
 		const currentDate = Timestamp.fromDate(new Date());
 		const skillToPerform = getRandomArnisSkill().skill;

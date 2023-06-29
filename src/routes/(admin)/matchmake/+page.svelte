@@ -53,8 +53,10 @@
 			timestamp: users.timestamp
 		};
 
+		const playerUids = users.players.map((user) => user.auth_data.uid);
+
 		const matchesCollection = collection(db, `match_sets/${id}/matches`);
-		await addDoc(matchesCollection, matchData);
+		await addDoc(matchesCollection, { ...matchData, uids: playerUids });
 
 		users.players.forEach(async (user) => {
 			const userPendingMatchCollection = collection(

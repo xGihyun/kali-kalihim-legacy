@@ -9,8 +9,9 @@
 
 	const usersInSection = getContext<Writable<UserData[]>>('usersInSection');
 	const user = getContext<Writable<UserData>>('user');
+	const opponent = getContext<Writable<UserData>>('opponent');
 
-	let selectedOpponent: string;
+	let selectedOpponent: UserData;
 	let used = false;
 
 	$: {
@@ -32,7 +33,7 @@
 	}
 
 	function handleClick() {
-		twistOfFate($user.auth_data.uid || '', selectedOpponent);
+		twistOfFate($user, $opponent, selectedOpponent);
 		used = true;
 	}
 </script>

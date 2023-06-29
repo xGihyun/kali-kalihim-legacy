@@ -18,7 +18,6 @@
 			(player) => player.auth_data.uid !== data.user?.auth_data.uid
 		) as UserData
 	);
-
 	// $: allUsersInSection.set(data.allUsersInSection || []);
 
 	$: user = getContext<Writable<UserData>>('user');
@@ -41,7 +40,13 @@
 		const opponentDoc = await getDoc(opponentRef);
 		const opponentData = opponentDoc.data() as UserData;
 
-		$opponent = opponentData;
+		// console.log('current opponent (client): ');
+		// console.log($opponent);
+		// $opponent = opponentData;
+		latestOpponent.set(opponentData);
+
+		// console.log('new opponent (client): ');
+		// console.log($opponent);
 
 		console.log('Pending match snapshot ran.');
 	});
@@ -87,7 +92,7 @@
 										>{$opponent.personal_data.name.first}
 										{$opponent.personal_data.name.last}</span
 									>
-									{#if $opponent.power_cards.find((card) => card.activated && !card.used)}
+									<!-- {#if $opponent.power_cards.find((card) => card.activated && !card.used)}
 										<span>Opponent has activated:</span>
 										{#each $opponent.power_cards as card, idx (idx)}
 											{#if card.activated && !card.used}
@@ -96,7 +101,7 @@
 										{/each}
 									{:else}
 										<span>No power cards used</span>
-									{/if}
+									{/if} -->
 								</div>
 								<div class="flex flex-col items-center">
 									<div class="flex flex-col items-center">
