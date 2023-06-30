@@ -27,29 +27,38 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		return;
 	}
 
-	// const allUsersCollection = collection(db, 'users');
-	// const usersInSectionQuery = query(
-	// 	allUsersCollection,
-	// 	where('personal_data.section', '==', locals.userData.personal_data.section)
-	// );
-	// const allUsersInSectionDocs = await getDocs(usersInSectionQuery);
-	// const allUsersInSection = allUsersInSectionDocs.docs.map((user) => user.data() as UserData);
-
 	const pendingMatchesCollection = collection(
 		db,
 		`users/${locals.userData.auth_data.uid}/pending_matches`
 	);
-	const pendingMatchesQuery = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
+	const pendingMatchesQuery = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
 	const getPendingMatchesDocs = await getDocs(pendingMatchesQuery);
-	const latestPendingMatch = getPendingMatchesDocs.docs.shift()?.data() as PendingMatch;
-	// const pendingMatches: PendingMatch[] = getPendingMatchesDocs.docs.map(
-	// 	(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
-	// );
+
+	if (getPendingMatchesDocs.empty) {
+		console.log('No pending matches.');
+
+		return {
+			latestPendingMatch: undefined,
+			latestOpponent: undefined
+		};
+	}
+
+	const latestPendingMatch = JSON.parse(
+		JSON.stringify(getPendingMatchesDocs.docs.shift()?.data())
+	) as PendingMatch;
+	const latestOpponent = JSON.parse(
+		JSON.stringify(
+			latestPendingMatch.players.find(
+				(player) => player.auth_data.uid !== locals.userData.auth_data.uid
+			)
+		)
+	) as UserData;
 
 	setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
 
 	return {
-		latestPendingMatch
+		latestPendingMatch,
+		latestOpponent
 	};
 };
 
@@ -63,6 +72,7 @@ export const actions: Actions = {
 
 		const userRef = doc(db, 'users', userUid);
 
+		// TODO: Use Zod
 		const data = await request.formData();
 		const firstName = data.get('first-name')?.toString().trim();
 		const lastName = data.get('last-name')?.toString().trim();
@@ -104,21 +114,24 @@ export const actions: Actions = {
 			title: ''
 		};
 
-		currentUser.update((val) => ({
-			...val,
-			auth_data: {
-				...val.auth_data,
-				is_registered: true
-			},
-			personal_data: {
-				...val.personal_data,
-				...newPersonalData
-			},
-			rank: {
-				...val.rank,
-				...newRankingData
-			}
-		}));
+		currentUser.update(
+			(val) =>
+				(val = {
+					...val,
+					auth_data: {
+						...val.auth_data,
+						is_registered: true
+					},
+					personal_data: {
+						...val.personal_data,
+						...newPersonalData
+					},
+					rank: {
+						...val.rank,
+						...newRankingData
+					}
+				})
+		);
 
 		await updateDoc(userRef, {
 			'auth_data.is_registered': true,
@@ -156,7 +169,7 @@ export const actions: Actions = {
 			const newUserData: UserData = {
 				...defaultUserData,
 				auth_data: {
-					email: user.email,
+					email: user.email || '',
 					is_logged_in: true,
 					is_registered: false,
 					photo_url: user.photoURL,

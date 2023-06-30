@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { sectionsMap } from '$lib/data';
-	import { db } from '$lib/firebase/firebase';
 	import type { PendingMatch } from '$lib/types';
-	import { addDoc, collection } from 'firebase/firestore';
 
 	let pendingMatches: PendingMatch[] = [];
 

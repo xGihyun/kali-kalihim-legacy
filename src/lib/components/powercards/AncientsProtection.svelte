@@ -1,7 +1,4 @@
-
 <script lang="ts">
 </script>
 
-<div class="">
-	Ancient's Protection
-</div>
+<div class="">Ancient's Protection</div>

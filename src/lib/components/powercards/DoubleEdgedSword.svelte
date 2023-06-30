@@ -1,7 +1,4 @@
-
 <script lang="ts">
 </script>
 
-<div class="">
-	Double-edged Sword
-</div>
+<div class="">Double-edged Sword</div>

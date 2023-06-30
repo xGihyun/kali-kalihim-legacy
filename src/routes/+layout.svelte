@@ -23,8 +23,8 @@
 			role: data.user?.auth_data.role || ''
 		},
 		personal_data: {
-			age: data.user?.personal_data.age || -1,
-			contact_number: data.user?.personal_data.contact_number || -1,
+			age: data.user?.personal_data.age || 0,
+			contact_number: data.user?.personal_data.contact_number || 0,
 			name: {
 				first: data.user?.personal_data.name.first || '',
 				last: data.user?.personal_data.name.last || ''

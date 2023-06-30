@@ -26,6 +26,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		difference = Math.abs(scores[0] - scores[1]);
 
+		// TODO: Use Zod for input validation
 		for (const [name, value] of data.entries()) {
 			if (name.startsWith('initial-score-')) {
 				const uid = name.substring('initial-score-'.length);
@@ -59,31 +60,31 @@ export const POST: RequestHandler = async ({ request }) => {
 				const currentScore = userData.score;
 
 				const isProtected = userPowerCards.find(
-					(card) => card.key === "ancient's-protection" && card.activated
+					(card) => card.key === "ancient's-protection" && card.activated && !card.used
 				);
 				const isDoubledDown = userPowerCards.find(
-					(card) => card.key === 'double-edged-sword' && card.activated
+					(card) => card.key === 'double-edged-sword' && card.activated && !card.used
 				);
 
 				let finalScore: number;
 
 				if (score === Math.min(...scores)) {
-					const reducedScore = score - difference;
+					const reducedScore = score - difference * 2;
 
 					if (isProtected) {
-						finalScore = currentScore;
+						finalScore = currentScore + score;
 					} else if (isDoubledDown) {
-						finalScore = currentScore + reducedScore * 2;
+						finalScore = currentScore + reducedScore;
 					} else {
 						finalScore = currentScore + reducedScore;
 					}
 
 					result.loser = name;
 				} else {
-					const addedScore = score + difference;
+					const addedScore = score + difference * 2;
 
 					if (isDoubledDown) {
-						finalScore = currentScore + addedScore * 2;
+						finalScore = currentScore + addedScore;
 					} else {
 						finalScore = currentScore + addedScore;
 					}
@@ -98,7 +99,6 @@ export const POST: RequestHandler = async ({ request }) => {
 				});
 
 				await updateDoc(userRef, { score: finalScore, power_cards: userPowerCards });
-
 				await updateRankTitle(userRef);
 				await updateSectionRankings(userData.personal_data.section);
 			}

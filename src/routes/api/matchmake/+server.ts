@@ -42,12 +42,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	}
 
-	console.log('\nPersisted Users:');
-	console.log(persistedUsers);
-	console.log(persistedUsers.length);
-
 	if (persistedUsers.length > 0) {
-		console.log('\nNot empty');
 		for (let i = 0; i < persistedUsers.length; i++) {
 			const currentDate = Timestamp.fromDate(new Date());
 			const skillToPerform = getRandomArnisSkill().skill;
@@ -74,9 +69,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		status: 'pending'
 	});
 
-	console.log(pendingMatches);
-
-	pendingMatches.forEach((users) => addPendingMatch(users, section, matchSet.id));
+	pendingMatches.forEach(async (users) => await addPendingMatch(users, section, matchSet.id));
 
 	const response = {
 		pendingMatches
@@ -93,7 +86,7 @@ async function shuffleArray(users: UserData[]) {
 
 	for (const user of users) {
 		const persistOpponent = user.power_cards.find(
-			(card) => card.key === 'viral-x-rival' && card.activated
+			(card) => card.key === 'viral-x-rival' && card.activated && !card.used
 		);
 
 		if (persistOpponent) {
@@ -101,36 +94,22 @@ async function shuffleArray(users: UserData[]) {
 				db,
 				`users/${user.auth_data.uid}/pending_matches`
 			);
-			const pendingMatchesQuery = query(
-				pendingMatchesCollection,
-				orderBy('timestamp.seconds', 'desc')
-			);
+			const pendingMatchesQuery = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
 			const getPendingMatchesDocs = await getDocs(pendingMatchesQuery);
 			const latestPendingMatch = getPendingMatchesDocs.docs.shift()?.data() as PendingMatch;
 			const persistedPlayers = latestPendingMatch.players;
-
-			console.log(latestPendingMatch);
 
 			persisted.push(persistedPlayers);
 		}
 	}
 
-	console.log('\nPairs of persisted:');
-	console.log(persisted);
-
 	let updatedUsers: UserData[] = [...users];
-
-	console.log('\nBefore:');
-	console.log(users);
 
 	for (const pairs of persisted) {
 		for (const userInPair of pairs) {
 			updatedUsers = updatedUsers.filter((user) => user.auth_data.uid !== userInPair.auth_data.uid);
 		}
 	}
-
-	console.log('\nAfter:');
-	console.log(updatedUsers);
 
 	const shuffled = updatedUsers.slice();
 
@@ -170,8 +149,8 @@ async function addPendingMatch(users: PendingMatch, section: string, id: string)
 	};
 
 	const playerUids = users.players.map((user) => user.auth_data.uid);
-
 	const matchesCollection = collection(db, `match_sets/${id}/matches`);
+
 	await addDoc(matchesCollection, { ...matchData, uids: playerUids });
 
 	users.players.forEach(async (user) => {

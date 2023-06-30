@@ -8,7 +8,6 @@ import {
 	getDocs,
 	orderBy,
 	query,
-	setDoc,
 	updateDoc,
 	where,
 	writeBatch
@@ -32,7 +31,7 @@ export async function warlordsDomain(userUid: string, skill: string) {
 	const userPendingMatchesCollection = collection(db, `users/${userUid}/pending_matches`);
 	const userPendingMatchesQuery = query(
 		userPendingMatchesCollection,
-		orderBy('timestamp.seconds', 'desc')
+		orderBy('timestamp', 'desc')
 	);
 	const getUserPendingMatchesDocs = await getDocs(userPendingMatchesQuery);
 	const latestUserPendingMatch = getUserPendingMatchesDocs.docs.shift();
@@ -116,7 +115,7 @@ export async function twistOfFate(
 	newOpponent: UserData
 ) {
 	const batch = writeBatch(db);
-	const userRef = doc(db, 'users', user.auth_data.uid || '');
+	const userRef = doc(db, 'users', user.auth_data.uid);
 	const userDoc = await getDoc(userRef);
 	const userData = userDoc.data() as UserData;
 	const userPowerCards = userData.power_cards;
@@ -214,13 +213,7 @@ export async function twistOfFate(
 		where('uids', 'array-contains', newOpponent.auth_data.uid)
 	);
 
-	// console.log('Current opponent: ');
-	// console.log(currentOpponent);
-	// console.log('Selected opponent: ');
-	// console.log(newOpponent);
-
 	const getCurrentOpponentMatchSetMatch = await getDocs(currentOpponentMatchSetMatchesQuery);
-	// console.log(getCurrentOpponentMatchSetMatch.docs);
 	const currentOpponentMatchSetMatch = getCurrentOpponentMatchSetMatch.docs.shift();
 	const currentOpponentMatchSetMatchData = currentOpponentMatchSetMatch?.data() as PendingMatch;
 	const currentOpponentMatchSetMatchRef = doc(
@@ -234,7 +227,6 @@ export async function twistOfFate(
 		);
 
 	const getNewOpponentMatchSetMatch = await getDocs(newOpponentMatchSetMatchesQuery);
-	// console.log(getNewOpponentMatchSetMatch.docs);
 	const newOpponentMatchSetMatch = getNewOpponentMatchSetMatch.docs.shift();
 	const newOpponentMatchSetMatchData = newOpponentMatchSetMatch?.data() as PendingMatch;
 	const newOpponentMatchSetMatchRef = doc(
@@ -242,8 +234,6 @@ export async function twistOfFate(
 		`match_sets/${latestMatchSet?.id}/matches/${newOpponentMatchSetMatch?.id}`
 	);
 
-	// console.log('CurrentOpponentmatchsetid: ' + currentOpponentMatchSetMatch?.id);
-	// console.log('newOpponentmatchsetid: ' + newOpponentMatchSetMatch?.id);
 	const newOpponentMatchSetMatchPlayers = newOpponentMatchSetMatchData.players;
 	const newOpponentMatchSetOriginalOpponentIndex = newOpponentMatchSetMatchPlayers.findIndex(
 		(user) => user.auth_data.uid !== newOpponent.auth_data.uid
@@ -260,12 +250,6 @@ export async function twistOfFate(
 		players: currentOpponentMatchSetMatchPlayers
 	});
 	batch.update(newOpponentMatchSetMatchRef, { players: newOpponentMatchSetMatchPlayers });
-
-	// console.log('current:');
-	// console.log(currentOpponentMatchSetMatch?.data());
-	// console.log('new:');
-	// console.log(newOpponentMatchSetMatch?.data());
-
 	batch.update(userRef, { power_cards: userPowerCards });
 
 	await batch.commit();

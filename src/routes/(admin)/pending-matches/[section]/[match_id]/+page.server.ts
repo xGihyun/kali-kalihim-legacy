@@ -12,7 +12,9 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 
 	const matchesCollection = collection(db, `match_sets/${matchId}/matches`);
 	const matchesDocs = await getDocs(matchesCollection);
-	const matches = matchesDocs.docs.map((match) => match.data() as PendingMatch);
+	const matches = matchesDocs.docs.map(
+		(match) => JSON.parse(JSON.stringify(match.data())) as PendingMatch
+	);
 
 	setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
 

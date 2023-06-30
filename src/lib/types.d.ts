@@ -10,10 +10,10 @@ export type UserData = {
 
 export type UserAuthData = {
 	username: string | null;
-	email: string | null;
+	email: string;
 	photo_url: string | null;
 	is_logged_in: boolean;
-	uid: string | null;
+	uid: string;
 	is_registered: boolean;
 	role: string;
 };

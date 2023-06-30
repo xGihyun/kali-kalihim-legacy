@@ -1,7 +1,4 @@
-
 <script lang="ts">
 </script>
 
-<div class="">
-	Viral x Rival
-</div>
+<div class="">Viral x Rival</div>

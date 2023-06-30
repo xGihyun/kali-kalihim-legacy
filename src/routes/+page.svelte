@@ -2,58 +2,90 @@
 	import { PowerCard } from '$lib/components';
 	import { powerCardsMap, sectionsMap } from '$lib/data';
 	import { db } from '$lib/firebase/firebase.js';
-	import { latestOpponent, selectedPowerCard } from '$lib/store.js';
+	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store.js';
 	import type { PendingMatch, UserData } from '$lib/types';
-	import { collection, doc, getDoc, onSnapshot, orderBy, query } from 'firebase/firestore';
+	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	// import { arnis_bg } from '../assets/images';
 
 	export let data;
 
-	$: pendingMatch = data?.latestPendingMatch;
-
-	$: latestOpponent.set(
-		pendingMatch?.players.find(
-			(player) => player.auth_data.uid !== data.user?.auth_data.uid
-		) as UserData
-	);
-	// $: allUsersInSection.set(data.allUsersInSection || []);
-
 	$: user = getContext<Writable<UserData>>('user');
 	$: opponent = getContext<Writable<UserData>>('opponent');
 
+	$: pendingMatch = data?.latestPendingMatch;
+
+	$: if (data.latestOpponent) {
+		console.log('Opponent exists');
+		latestOpponent.set(data.latestOpponent);
+	}
+
+	// Subscribe to pending match changes
 	const pendingMatchesCollection = collection(
 		db,
 		`users/${data.user?.auth_data.uid}/pending_matches`
 	);
-	const q = query(pendingMatchesCollection, orderBy('timestamp.seconds', 'desc'));
+	const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
 
-	const unsubPendingMatch = onSnapshot(q, async (snapshot) => {
-		pendingMatch = snapshot.docs.shift()?.data() as PendingMatch;
+	const unsubPendingMatch = onSnapshot(q, (snapshot) => {
+		if (snapshot.empty) return;
 
-		const latestUpdatedOpponent = pendingMatch?.players.find(
+		const newMatch = snapshot.docs.shift()?.data() as PendingMatch;
+		const newOpponent = newMatch.players.find(
 			(player) => player.auth_data.uid !== data.user?.auth_data.uid
 		) as UserData;
 
-		const opponentRef = doc(db, 'users', latestUpdatedOpponent.auth_data.uid || '');
-		const opponentDoc = await getDoc(opponentRef);
-		const opponentData = opponentDoc.data() as UserData;
+		pendingMatch = newMatch;
+		latestOpponent.set(newOpponent);
 
-		// console.log('current opponent (client): ');
-		// console.log($opponent);
-		// $opponent = opponentData;
-		latestOpponent.set(opponentData);
-
-		// console.log('new opponent (client): ');
-		// console.log($opponent);
-
-		console.log('Pending match snapshot ran.');
+		console.log('Pending matches snapshot ran.');
 	});
 
-	onDestroy(() => unsubPendingMatch());
+	// Subscribe to user changes
+	const userRef = doc(db, 'users', data.user?.auth_data.uid || '');
+
+	const unsubUser = onSnapshot(userRef, (snapshot) => {
+		if (!snapshot.exists()) return;
+
+		const updatedUserData = snapshot.data() as UserData;
+
+		currentUser.update(
+			(val) =>
+				(val = {
+					...val,
+					...updatedUserData
+				})
+		);
+
+		console.log('User snapshot ran.');
+	});
+
+	// Subscribe to opponent changes
+	// Helps in checking if they've used power cards
+	$: if (data.latestOpponent) {
+		const opponentRef = doc(db, 'users', data.latestOpponent?.auth_data.uid || '');
+
+		const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
+			if (!snapshot.exists()) return;
+
+			const updatedOpponentData = snapshot.data() as UserData;
+
+			latestOpponent.update((val) => (val = updatedOpponentData));
+
+			console.log('Opponent snapshot ran.');
+		});
+
+		onDestroy(() => unsubOpponent());
+	}
+
+	onDestroy(() => {
+		unsubPendingMatch();
+		unsubUser();
+	});
 </script>
 
+<!-- TODO: MAKE STUFF LOOK GOOD -->
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 		<div class="flex flex-col items-center justify-center gap-10">
@@ -88,20 +120,22 @@
 							<div class="flex flex-col items-center gap-4">
 								<div class="flex flex-col items-center">
 									<span>Upcoming match VS:</span>
-									<span class="text-sm font-bold md:text-base"
-										>{$opponent.personal_data.name.first}
-										{$opponent.personal_data.name.last}</span
-									>
-									<!-- {#if $opponent.power_cards.find((card) => card.activated && !card.used)}
-										<span>Opponent has activated:</span>
-										{#each $opponent.power_cards as card, idx (idx)}
-											{#if card.activated && !card.used}
-												<span class="text-tertiary-300 font-bold">{card.name}</span>
-											{/if}
-										{/each}
-									{:else}
-										<span>No power cards used</span>
-									{/if} -->
+									<span class="text-sm font-bold md:text-base">
+										{$opponent.personal_data.name.first}
+										{$opponent.personal_data.name.last}
+									</span>
+									{#if $opponent.power_cards}
+										{#if $opponent.power_cards.find((card) => card.activated && !card.used)}
+											<span>Opponent has activated:</span>
+											{#each $opponent.power_cards as card, idx (idx)}
+												{#if card.activated && !card.used}
+													<span class="text-tertiary-300 font-bold">{card.name}</span>
+												{/if}
+											{/each}
+										{:else}
+											<span>No power cards used</span>
+										{/if}
+									{/if}
 								</div>
 								<div class="flex flex-col items-center">
 									<div class="flex flex-col items-center">
@@ -138,16 +172,16 @@
 			<!-- The power cards that the user has -->
 			<div class="flex gap-2">
 				{#each $user.power_cards as card, idx (idx)}
-					{#if !(card.key === 'extra-wind' && card.activated)}
-						<button
-							class="btn variant-filled-primary"
-							on:click={() => {
-								selectedPowerCard.set(card.key);
-							}}
-						>
-							{card.name}
-						</button>
-					{/if}
+					<button
+						class={`btn variant-filled-primary ${card.used ? 'opacity-50' : 'opacity-100'} ${
+							card.activated && !card.used ? 'border-2 border-green-500' : 'border-none'
+						}`}
+						on:click={() => {
+							selectedPowerCard.set(card.key);
+						}}
+					>
+						{card.name}
+					</button>
 				{/each}
 			</div>
 

@@ -42,7 +42,7 @@
 			class="btn variant-filled-primary"
 			type="button"
 			on:click={() => {
-				extraWind($user.auth_data.uid || '', selectedPowerCard);
+				extraWind($user.auth_data.uid, selectedPowerCard);
 				used = true;
 			}}
 		>
