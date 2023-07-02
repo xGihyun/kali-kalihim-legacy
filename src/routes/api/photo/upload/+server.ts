@@ -8,17 +8,20 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	const data = await request.formData();
 	const photo = data.get('file') as File;
+	const photoArrayBuffer = await photo.arrayBuffer();
+	const photoBytes = new Uint8Array(photoArrayBuffer);
 
-	console.log(photo);
-	if (!photo) return new Response();
+	if (!photo) {
+		console.log('No photo.');
+		return new Response();
+	}
 
 	const fileName = `${userUID}_${photo.name}`;
 
-	// Undefined???
 	const storageRef = ref(storage, `profilePictures/${fileName}`);
 
 	try {
-		const snapshot = await uploadBytes(storageRef, photo);
+		const snapshot = await uploadBytes(storageRef, photoBytes);
 
 		const downloadURL = await getDownloadURL(snapshot.ref);
 
@@ -28,7 +31,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	} catch (error) {
 		console.error('Error uploading profile picture: ', error);
 	}
-
 	return new Response();
 };
 

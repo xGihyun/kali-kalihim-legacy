@@ -1,23 +1,13 @@
 <script lang="ts">
 	import { PowerCard } from '$lib/components';
 	import { sectionsMap } from '$lib/data';
-	import { db, storage } from '$lib/firebase/firebase.js';
+	import { db } from '$lib/firebase/firebase';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store.js';
 	import type { Match, UserData } from '$lib/types';
 	import { Avatar } from '@skeletonlabs/skeleton';
-	import {
-		collection,
-		doc,
-		getDoc,
-		onSnapshot,
-		orderBy,
-		query,
-		updateDoc
-	} from 'firebase/firestore';
+	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
-	import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-	// import { arnis_bg } from '../assets/images';
 
 	export let data;
 
@@ -28,129 +18,61 @@
 	$: opponent = getContext<Writable<UserData>>('opponent');
 
 	$: pendingMatch = data?.latestPendingMatch;
-
-	$: if (data.latestOpponent) {
-		console.log('Opponent exists');
-		latestOpponent.set(data.latestOpponent);
-	}
-
 	$: initials = $user.personal_data.name.first[0] + $user.personal_data.name.last[0];
 
-	// Subscribe to pending match changes
-	const pendingMatchesCollection = collection(
-		db,
-		`users/${data.user?.auth_data.uid}/pending_matches`
-	);
-	const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
-
-	const unsubPendingMatch = onSnapshot(q, (snapshot) => {
-		if (snapshot.empty) return;
-
-		const newMatch = snapshot.docs.shift()?.data() as Match;
-		const newOpponent = newMatch.players.find(
-			(player) => player.auth_data.uid !== data.user?.auth_data.uid
-		) as UserData;
-
-		pendingMatch = newMatch;
-		latestOpponent.set(newOpponent);
-
-		console.log('Pending matches snapshot ran.');
-	});
-
 	// Subscribe to user changes
-	const userRef = doc(db, 'users', data.user?.auth_data.uid || '');
+	$: if (data.user) {
+		const userRef = doc(db, 'users', data.user.auth_data.uid);
 
-	const unsubUser = onSnapshot(userRef, (snapshot) => {
-		if (!snapshot.exists()) return;
+		const unsubUser = onSnapshot(userRef, (snapshot) => {
+			if (!snapshot.exists()) return;
 
-		const updatedUserData = snapshot.data() as UserData;
+			const updatedUserData = snapshot.data() as UserData;
 
-		currentUser.update(
-			(val) =>
-				(val = {
-					...val,
-					...updatedUserData
-				})
+			currentUser.update(
+				(val) =>
+					(val = {
+						...val,
+						...updatedUserData
+					})
+			);
+
+			console.log('User snapshot ran.');
+		});
+
+		const pendingMatchesCollection = collection(
+			db,
+			`users/${data.user.auth_data.uid}/pending_matches`
 		);
+		const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
 
-		console.log('User snapshot ran.');
-	});
+		const unsubPendingMatch = onSnapshot(q, (snapshot) => {
+			if (snapshot.empty) return;
 
-	// async function handleFileUpload() {
-	// 	if (!selectedFile) return;
+			const newMatch = snapshot.docs.shift()?.data() as Match;
+			const newOpponent = newMatch.players.find(
+				(player) => player.auth_data.uid !== data.user?.auth_data.uid
+			) as UserData;
 
-	// 	// Doesn't work???
-	// 	// const formData = new FormData();
+			pendingMatch = newMatch;
+			latestOpponent.set(newOpponent);
 
-	// 	// formData.append('file', selectedFile);
+			console.log('Pending matches snapshot ran.');
+		});
 
-	// 	// const response = await fetch('./api/photo/upload', {
-	// 	// 	method: 'POST',
-	// 	// 	body: formData
-	// 	// });
+		onDestroy(() => {
+			unsubUser();
+			unsubPendingMatch();
+		});
+	}
 
-	// 	// if (response.ok) {
-	// 	// 	console.log('Successfully changed profile picture.');
-	// 	// } else {
-	// 	// 	console.error('Error changing profile picture.');
-	// 	// }
-
-	// 	const fileName = `${$user.auth_data.uid}_${selectedFile.name}`;
-	// 	const storageRef = ref(storage, `profilePictures/${fileName}`);
-
-	// 	try {
-	// 		const snapshot = await uploadBytes(storageRef, selectedFile);
-
-	// 		const downloadURL = await getDownloadURL(snapshot.ref);
-
-	// 		await updateProfilePicture(downloadURL, $user.auth_data.uid);
-
-	// 		console.log('Profile picture uploaded successfully!');
-	// 	} catch (error) {
-	// 		console.error('Error uploading profile picture: ', error);
-	// 	}
-	// }
-
-	// async function removePhoto() {
-	// 	if (!$user.auth_data.photo_url) return;
-
-	// 	const response = await fetch('./api/photo/remove', {
-	// 		method: 'POST'
-	// 	});
-
-	// 	if (response.ok) {
-	// 		console.log('Successfully removed profile picture.');
-	// 	} else {
-	// 		console.error('Error removing profile picture.');
-	// 	}
-	// }
-
-	// function handleSelectedFile(e: Event) {
-	// 	const target = e.currentTarget as HTMLInputElement;
-
-	// 	if (!target.files) return;
-
-	// 	selectedFile = target.files[0];
-
-	// 	handleFileUpload();
-	// }
-
-	// async function updateProfilePicture(downloadURL: string, userUID: string) {
-	// 	try {
-	// 		const userRef = doc(db, 'users', userUID);
-	// 		const userDoc = await getDoc(userRef);
-
-	// 		if (userDoc.exists()) {
-	// 			await updateDoc(userRef, { 'auth_data.photo_url': downloadURL });
-	// 		}
-	// 	} catch (error) {
-	// 		console.error('Error updating profile picture: ', error);
-	// 	}
-	// }
 	// Subscribe to opponent changes
 	// Helps in checking if they've used power cards
 	$: if (data.latestOpponent) {
-		const opponentRef = doc(db, 'users', data.latestOpponent?.auth_data.uid || '');
+		console.log('Opponent exists');
+		latestOpponent.set(data.latestOpponent);
+
+		const opponentRef = doc(db, 'users', data.latestOpponent.auth_data.uid || '');
 
 		const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
 			if (!snapshot.exists()) return;
@@ -165,10 +87,49 @@
 		onDestroy(() => unsubOpponent());
 	}
 
-	onDestroy(() => {
-		unsubPendingMatch();
-		unsubUser();
-	});
+	// Profile picture
+	async function handleFileUpload() {
+		if (!selectedFile) return;
+
+		const formData = new FormData();
+
+		formData.append('file', selectedFile);
+
+		const response = await fetch('./api/photo/upload', {
+			method: 'POST',
+			body: formData
+		});
+
+		if (response.ok) {
+			console.log('Successfully changed profile picture.');
+		} else {
+			console.error('Error changing profile picture.');
+		}
+	}
+
+	async function removePhoto() {
+		if (!$user.auth_data.photo_url) return;
+
+		const response = await fetch('./api/photo/remove', {
+			method: 'POST'
+		});
+
+		if (response.ok) {
+			console.log('Successfully removed profile picture.');
+		} else {
+			console.error('Error removing profile picture.');
+		}
+	}
+
+	function handleSelectedFile(e: Event) {
+		const target = e.target as HTMLInputElement;
+
+		if (!target.files) return;
+
+		selectedFile = target.files[0];
+
+		handleFileUpload();
+	}
 
 	// TODO: Change selected image to .webp format and optimize resolution (if possible)
 </script>
@@ -181,17 +142,18 @@
 				<span class="text-4xl uppercase">(rank logo)</span>
 				<span class="text-3xl uppercase">{$user.rank.title}</span>
 				<Avatar src={$user.auth_data.photo_url || ''} width="w-20" {initials} />
-				<!-- <button class="btn variant-ghost" on:click={() => uploadInputEl.click()}>
+				<button class="btn variant-ghost" on:click={() => uploadInputEl.click()}>
 					Change photo
-				</button> -->
-				<!-- <button class="btn variant-ghost" on:click={removePhoto}>Remove photo</button>
+				</button>
+				<button class="btn variant-ghost" on:click={removePhoto}>Remove photo</button>
 				<input
 					type="file"
 					accept="image/*"
-					on:change={handleSelectedFile}
+					name="photo"
 					hidden
+					on:change={handleSelectedFile}
 					bind:this={uploadInputEl}
-				/> -->
+				/>
 				<div class="flex flex-col items-center">
 					<span>
 						{$user.personal_data.name.first}
