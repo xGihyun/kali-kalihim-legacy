@@ -76,77 +76,77 @@
 		console.log('User snapshot ran.');
 	});
 
-	async function handleFileUpload() {
-		if (!selectedFile) return;
+	// async function handleFileUpload() {
+	// 	if (!selectedFile) return;
 
-		// Doesn't work???
-		// const formData = new FormData();
+	// 	// Doesn't work???
+	// 	// const formData = new FormData();
 
-		// formData.append('file', selectedFile);
+	// 	// formData.append('file', selectedFile);
 
-		// const response = await fetch('./api/photo/upload', {
-		// 	method: 'POST',
-		// 	body: formData
-		// });
+	// 	// const response = await fetch('./api/photo/upload', {
+	// 	// 	method: 'POST',
+	// 	// 	body: formData
+	// 	// });
 
-		// if (response.ok) {
-		// 	console.log('Successfully changed profile picture.');
-		// } else {
-		// 	console.error('Error changing profile picture.');
-		// }
+	// 	// if (response.ok) {
+	// 	// 	console.log('Successfully changed profile picture.');
+	// 	// } else {
+	// 	// 	console.error('Error changing profile picture.');
+	// 	// }
 
-		const fileName = `${$user.auth_data.uid}_${selectedFile.name}`;
-		const storageRef = ref(storage, `profilePictures/${fileName}`);
+	// 	const fileName = `${$user.auth_data.uid}_${selectedFile.name}`;
+	// 	const storageRef = ref(storage, `profilePictures/${fileName}`);
 
-		try {
-			const snapshot = await uploadBytes(storageRef, selectedFile);
+	// 	try {
+	// 		const snapshot = await uploadBytes(storageRef, selectedFile);
 
-			const downloadURL = await getDownloadURL(snapshot.ref);
+	// 		const downloadURL = await getDownloadURL(snapshot.ref);
 
-			await updateProfilePicture(downloadURL, $user.auth_data.uid);
+	// 		await updateProfilePicture(downloadURL, $user.auth_data.uid);
 
-			console.log('Profile picture uploaded successfully!');
-		} catch (error) {
-			console.error('Error uploading profile picture: ', error);
-		}
-	}
+	// 		console.log('Profile picture uploaded successfully!');
+	// 	} catch (error) {
+	// 		console.error('Error uploading profile picture: ', error);
+	// 	}
+	// }
 
-	async function removePhoto() {
-		if (!$user.auth_data.photo_url) return;
+	// async function removePhoto() {
+	// 	if (!$user.auth_data.photo_url) return;
 
-		const response = await fetch('./api/photo/remove', {
-			method: 'POST'
-		});
+	// 	const response = await fetch('./api/photo/remove', {
+	// 		method: 'POST'
+	// 	});
 
-		if (response.ok) {
-			console.log('Successfully removed profile picture.');
-		} else {
-			console.error('Error removing profile picture.');
-		}
-	}
+	// 	if (response.ok) {
+	// 		console.log('Successfully removed profile picture.');
+	// 	} else {
+	// 		console.error('Error removing profile picture.');
+	// 	}
+	// }
 
-	function handleSelectedFile(e: Event) {
-		const target = e.currentTarget as HTMLInputElement;
+	// function handleSelectedFile(e: Event) {
+	// 	const target = e.currentTarget as HTMLInputElement;
 
-		if (!target.files) return;
+	// 	if (!target.files) return;
 
-		selectedFile = target.files[0];
+	// 	selectedFile = target.files[0];
 
-		handleFileUpload();
-	}
+	// 	handleFileUpload();
+	// }
 
-	async function updateProfilePicture(downloadURL: string, userUID: string) {
-		try {
-			const userRef = doc(db, 'users', userUID);
-			const userDoc = await getDoc(userRef);
+	// async function updateProfilePicture(downloadURL: string, userUID: string) {
+	// 	try {
+	// 		const userRef = doc(db, 'users', userUID);
+	// 		const userDoc = await getDoc(userRef);
 
-			if (userDoc.exists()) {
-				await updateDoc(userRef, { 'auth_data.photo_url': downloadURL });
-			}
-		} catch (error) {
-			console.error('Error updating profile picture: ', error);
-		}
-	}
+	// 		if (userDoc.exists()) {
+	// 			await updateDoc(userRef, { 'auth_data.photo_url': downloadURL });
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Error updating profile picture: ', error);
+	// 	}
+	// }
 	// Subscribe to opponent changes
 	// Helps in checking if they've used power cards
 	$: if (data.latestOpponent) {
@@ -181,17 +181,17 @@
 				<span class="text-4xl uppercase">(rank logo)</span>
 				<span class="text-3xl uppercase">{$user.rank.title}</span>
 				<Avatar src={$user.auth_data.photo_url || ''} width="w-20" {initials} />
-				<button class="btn variant-ghost" on:click={() => uploadInputEl.click()}>
+				<!-- <button class="btn variant-ghost" on:click={() => uploadInputEl.click()}>
 					Change photo
-				</button>
-				<button class="btn variant-ghost" on:click={removePhoto}>Remove photo</button>
+				</button> -->
+				<!-- <button class="btn variant-ghost" on:click={removePhoto}>Remove photo</button>
 				<input
 					type="file"
 					accept="image/*"
 					on:change={handleSelectedFile}
 					hidden
 					bind:this={uploadInputEl}
-				/>
+				/> -->
 				<div class="flex flex-col items-center">
 					<span>
 						{$user.personal_data.name.first}
