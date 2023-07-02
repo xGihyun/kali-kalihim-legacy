@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { sectionsMap } from '$lib/data';
-	import type { PendingMatch } from '$lib/types';
+	import type { Match } from '$lib/types';
 
-	let pendingMatches: PendingMatch[] = [];
+	let pendingMatches: Match[] = [];
 
 	// The one used for bind
 	let sectionValue: string;
@@ -31,7 +31,7 @@
 			return;
 		}
 
-		const data: { pendingMatches: PendingMatch[] } = await response.json();
+		const data: { pendingMatches: Match[] } = await response.json();
 
 		pendingMatches = data.pendingMatches;
 

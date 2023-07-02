@@ -34,7 +34,7 @@ export async function updateRankTitle(userRef: DocumentReference<DocumentData>) 
 
 	await updateDoc(userRef, { 'rank.title': updatedRankTitle });
 
-	console.log('Rank has been updated.');
+	console.log('Rank title updated.');
 }
 
 export async function updateOverallRankings() {
@@ -43,13 +43,15 @@ export async function updateOverallRankings() {
 	const usersDocs = await getDocs(q);
 	const batch = writeBatch(db);
 
-	usersDocs.docs.forEach(async (user, index) => {
+	usersDocs.docs.forEach((user, index) => {
 		const userRef = doc(db, 'users', user.id);
 
 		batch.update(userRef, { 'rank.number.overall': index + 1 });
 	});
 
 	await batch.commit();
+
+	console.log('Overall rankings updated.');
 }
 
 export async function updateSectionRankings(section: string) {
@@ -66,4 +68,6 @@ export async function updateSectionRankings(section: string) {
 		});
 
 	await batch.commit();
+
+	console.log('Section rankings updated.');
 }

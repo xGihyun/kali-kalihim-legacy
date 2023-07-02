@@ -27,7 +27,9 @@
 			where('personal_data.section', '==', $user.personal_data.section)
 		);
 		const allUsersInSectionDocs = await getDocs(q);
-		const allUsers = allUsersInSectionDocs.docs.map((user) => user.data() as UserData);
+		const allUsers = allUsersInSectionDocs.docs
+			.map((user) => user.data() as UserData)
+			.filter((userData) => userData.auth_data.uid !== $user.auth_data.uid);
 
 		allUsersInSection.set(allUsers);
 	}

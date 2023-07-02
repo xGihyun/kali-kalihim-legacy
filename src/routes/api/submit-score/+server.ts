@@ -1,12 +1,23 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	setDoc,
+	updateDoc,
+	where
+} from 'firebase/firestore';
 import { updateOverallRankings, updateRankTitle, updateSectionRankings } from '$lib/utils/update';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const data = await request.formData();
+		const matchSetId = data.get('matchSetId')?.toString() || '';
+		const userUid = data.get('userUid')?.toString() || '';
 
 		let scores: number[] = [];
 		let difference: number;
@@ -105,6 +116,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		await updateOverallRankings();
+		await updateMatchStatus(matchSetId, userUid);
 
 		console.log('Submitted scores successfully!');
 
@@ -117,3 +129,17 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	return new Response();
 };
+
+async function updateMatchStatus(id: string, userUid: string) {
+	const matchSetMatchesCollection = collection(db, `match_sets/${id}/matches`);
+	const matchSetMatchQuery = query(
+		matchSetMatchesCollection,
+		where('uids', 'array-contains', userUid),
+		where('status', '==', 'pending')
+	);
+	const getMatchSetMatch = await getDocs(matchSetMatchQuery);
+	const matchSetMatch = getMatchSetMatch.docs.shift();
+	const matchSetMatchRef = doc(db, `match_sets/${id}/matches/${matchSetMatch?.id}`);
+
+	await updateDoc(matchSetMatchRef, { status: 'finished' });
+}

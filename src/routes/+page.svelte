@@ -1,15 +1,29 @@
 <script lang="ts">
 	import { PowerCard } from '$lib/components';
 	import { powerCardsMap, sectionsMap } from '$lib/data';
-	import { db } from '$lib/firebase/firebase.js';
+	import { auth, db, storage } from '$lib/firebase/firebase.js';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store.js';
-	import type { PendingMatch, UserData } from '$lib/types';
-	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
+	import type { Match, UserData } from '$lib/types';
+	import { Avatar } from '@skeletonlabs/skeleton';
+	import {
+		collection,
+		doc,
+		getDoc,
+		onSnapshot,
+		orderBy,
+		query,
+		updateDoc
+	} from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
+	import { FileDropzone } from '@skeletonlabs/skeleton';
+	import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 	// import { arnis_bg } from '../assets/images';
 
 	export let data;
+
+	let selectedFile: File | null = null;
+	let uploadInputEl: HTMLInputElement;
 
 	$: user = getContext<Writable<UserData>>('user');
 	$: opponent = getContext<Writable<UserData>>('opponent');
@@ -21,6 +35,8 @@
 		latestOpponent.set(data.latestOpponent);
 	}
 
+	$: initials = $user.personal_data.name.first[0] + $user.personal_data.name.last[0];
+
 	// Subscribe to pending match changes
 	const pendingMatchesCollection = collection(
 		db,
@@ -31,7 +47,7 @@
 	const unsubPendingMatch = onSnapshot(q, (snapshot) => {
 		if (snapshot.empty) return;
 
-		const newMatch = snapshot.docs.shift()?.data() as PendingMatch;
+		const newMatch = snapshot.docs.shift()?.data() as Match;
 		const newOpponent = newMatch.players.find(
 			(player) => player.auth_data.uid !== data.user?.auth_data.uid
 		) as UserData;
@@ -83,6 +99,80 @@
 		unsubPendingMatch();
 		unsubUser();
 	});
+
+	async function handleFileUpload() {
+		if (!selectedFile) return;
+
+		// Doesn't work???
+		// const formData = new FormData();
+
+		// formData.append('file', selectedFile);
+
+		// const response = await fetch('./api/photo/upload', {
+		// 	method: 'POST',
+		// 	body: formData
+		// });
+
+		// if (response.ok) {
+		// 	console.log('Successfully changed profile picture.');
+		// } else {
+		// 	console.error('Error changing profile picture.');
+		// }
+
+		const fileName = `${$user.auth_data.uid}_${selectedFile.name}`;
+		const storageRef = ref(storage, `profilePictures/${fileName}`);
+
+		try {
+			const snapshot = await uploadBytes(storageRef, selectedFile);
+
+			const downloadURL = await getDownloadURL(snapshot.ref);
+
+			await updateProfilePicture(downloadURL, $user.auth_data.uid);
+
+			console.log('Profile picture uploaded successfully!');
+		} catch (error) {
+			console.error('Error uploading profile picture: ', error);
+		}
+	}
+
+	async function removePhoto() {
+		if (!$user.auth_data.photo_url) return;
+
+		const response = await fetch('./api/photo/remove', {
+			method: 'POST'
+		});
+
+		if (response.ok) {
+			console.log('Successfully removed profile picture.');
+		} else {
+			console.error('Error removing profile picture.');
+		}
+	}
+
+	function handleSelectedFile(e: Event) {
+		const target = e.currentTarget as HTMLInputElement;
+
+		if (!target.files) return;
+
+		selectedFile = target.files[0];
+
+		handleFileUpload();
+	}
+
+	async function updateProfilePicture(downloadURL: string, userUID: string) {
+		try {
+			const userRef = doc(db, 'users', userUID);
+			const userDoc = await getDoc(userRef);
+
+			if (userDoc.exists()) {
+				await updateDoc(userRef, { 'auth_data.photo_url': downloadURL });
+			}
+		} catch (error) {
+			console.error('Error updating profile picture: ', error);
+		}
+	}
+
+	// TODO: Change selected image to .webp format and optimize resolution (if possible)
 </script>
 
 <!-- TODO: MAKE STUFF LOOK GOOD -->
@@ -92,6 +182,18 @@
 			<div class="flex flex-col items-center justify-center gap-4">
 				<span class="text-4xl uppercase">(rank logo)</span>
 				<span class="text-3xl uppercase">{$user.rank.title}</span>
+				<Avatar src={$user.auth_data.photo_url || ''} width="w-20" {initials} />
+				<button class="btn variant-ghost" on:click={() => uploadInputEl.click()}>
+					Change photo
+				</button>
+				<button class="btn variant-ghost" on:click={removePhoto}>Remove photo</button>
+				<input
+					type="file"
+					accept="image/*"
+					on:change={handleSelectedFile}
+					hidden
+					bind:this={uploadInputEl}
+				/>
 				<div class="flex flex-col items-center">
 					<span>
 						{$user.personal_data.name.first}
@@ -156,7 +258,7 @@
 			</div>
 
 			<!-- Put all power cards temporarily for dev purposes -->
-			<div class="flex gap-2">
+			<!-- <div class="flex gap-2">
 				{#each powerCardsMap as [key, value], idx (idx)}
 					<button
 						class="btn variant-filled-secondary"
@@ -167,7 +269,7 @@
 						{value.name}
 					</button>
 				{/each}
-			</div>
+			</div> -->
 
 			<!-- The power cards that the user has -->
 			<div class="flex gap-2">

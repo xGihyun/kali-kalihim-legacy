@@ -44,11 +44,12 @@ export type UserPowerCard = {
 	used: boolean;
 };
 
-export type PendingMatch = {
+export type Match = {
 	players: UserData[];
 	section: string;
 	skill: string;
 	footwork: string;
+	status: string;
 	timestamp: Timestamp;
 };
 

@@ -25,9 +25,9 @@
 						<svelte:component this={powerCard.components.ability} />
 					</div>
 					<!-- Temporary cancel button -->
-					<button class="btn variant-ghost-surface" type="button" on:click={cancelPowerCard}
-						>Cancel</button
-					>
+					<button class="btn variant-ghost-surface" type="button" on:click={cancelPowerCard}>
+						Cancel
+					</button>
 				{:else}
 					<div class="card mx-auto aspect-[1/1.3] w-1/2 p-4">
 						<svelte:component this={powerCard.components.card} />
@@ -37,12 +37,17 @@
 							Would you like to use {powerCard.name} ?
 						</span>
 						<div class="flex justify-end gap-4">
-							<button class="btn variant-ghost-surface" type="button" on:click={cancelPowerCard}
-								>No</button
+							<button class="btn variant-ghost-surface" type="button" on:click={cancelPowerCard}>
+								No
+							</button>
+							<button
+								class="variant-filled-primary btn"
+								type="button"
+								on:click={confirmPowerCard}
+								data-sveltekit-preload-code="hover"
 							>
-							<button class="variant-filled-primary btn" type="button" on:click={confirmPowerCard}
-								>Yes</button
-							>
+								Yes
+							</button>
 						</div>
 					</div>
 				{/if}

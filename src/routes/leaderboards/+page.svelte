@@ -45,7 +45,7 @@
 				>
 					<td>
 						<p class="text-xs md:text-sm">
-							<span class="font-bold text-white">#{idx + 1}</span>
+							<span class="font-bold text-token">#{idx + 1}</span>
 							<span>
 								{user.personal_data.name.first}
 								{user.personal_data.name.last}

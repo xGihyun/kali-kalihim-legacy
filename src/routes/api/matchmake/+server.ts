@@ -1,6 +1,6 @@
 import { footworks, skills } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
-import type { PendingMatch, UserData } from '$lib/types';
+import type { Match, UserData } from '$lib/types';
 import { error, type RequestHandler } from '@sveltejs/kit';
 import { Timestamp, addDoc, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 
@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	const { shuffled, persisted } = await shuffleArray(allUsers);
 	const shuffledUsers = shuffled;
 	const persistedUsers = persisted;
-	const pendingMatches: PendingMatch[] = [];
+	const pendingMatches: Match[] = [];
 
 	// Pair shuffled users for a randomized 1v1 match
 	for (let i = 0; i < totalUsers; i += 2) {
@@ -38,7 +38,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			section,
 			timestamp: currentDate,
 			skill: skillToPerform,
-			footwork: footworkToPerform
+			footwork: footworkToPerform,
+			status: 'pending'
 		});
 	}
 
@@ -55,7 +56,8 @@ export const POST: RequestHandler = async ({ request }) => {
 				section,
 				timestamp: currentDate,
 				skill: skillToPerform,
-				footwork: footworkToPerform
+				footwork: footworkToPerform,
+				status: 'pending'
 			});
 		}
 	}
@@ -96,7 +98,7 @@ async function shuffleArray(users: UserData[]) {
 			);
 			const pendingMatchesQuery = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
 			const getPendingMatchesDocs = await getDocs(pendingMatchesQuery);
-			const latestPendingMatch = getPendingMatchesDocs.docs.shift()?.data() as PendingMatch;
+			const latestPendingMatch = getPendingMatchesDocs.docs.shift()?.data() as Match;
 			const persistedPlayers = latestPendingMatch.players;
 
 			persisted.push(persistedPlayers);
@@ -139,13 +141,14 @@ function getRandomArnisSkill() {
 	};
 }
 
-async function addPendingMatch(users: PendingMatch, section: string, id: string) {
-	const matchData: PendingMatch = {
+async function addPendingMatch(users: Match, section: string, id: string) {
+	const matchData: Match = {
 		players: [...users.players],
 		section,
 		skill: users.skill,
 		footwork: users.footwork,
-		timestamp: users.timestamp
+		timestamp: users.timestamp,
+		status: 'pending'
 	};
 
 	const playerUids = users.players.map((user) => user.auth_data.uid);

@@ -1,6 +1,6 @@
 import { powerCardsMap } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
-import type { MatchSet, PendingMatch, UserData, UserPowerCard } from '$lib/types';
+import type { MatchSet, Match, UserData, UserPowerCard } from '$lib/types';
 import {
 	collection,
 	doc,
@@ -29,10 +29,7 @@ export async function warlordsDomain(userUid: string, skill: string) {
 
 	// Will be updated if the list of pending matches is no longer needed
 	const userPendingMatchesCollection = collection(db, `users/${userUid}/pending_matches`);
-	const userPendingMatchesQuery = query(
-		userPendingMatchesCollection,
-		orderBy('timestamp', 'desc')
-	);
+	const userPendingMatchesQuery = query(userPendingMatchesCollection, orderBy('timestamp', 'desc'));
 	const getUserPendingMatchesDocs = await getDocs(userPendingMatchesQuery);
 	const latestUserPendingMatch = getUserPendingMatchesDocs.docs.shift();
 
@@ -206,16 +203,18 @@ export async function twistOfFate(
 	);
 	const currentOpponentMatchSetMatchesQuery = query(
 		latestMatchSetMatchesCollection,
-		where('uids', 'array-contains', currentOpponent.auth_data.uid)
+		where('uids', 'array-contains', currentOpponent.auth_data.uid),
+		where('status', '==', 'pending')
 	);
 	const newOpponentMatchSetMatchesQuery = query(
 		latestMatchSetMatchesCollection,
-		where('uids', 'array-contains', newOpponent.auth_data.uid)
+		where('uids', 'array-contains', newOpponent.auth_data.uid),
+		where('status', '==', 'pending')
 	);
 
 	const getCurrentOpponentMatchSetMatch = await getDocs(currentOpponentMatchSetMatchesQuery);
 	const currentOpponentMatchSetMatch = getCurrentOpponentMatchSetMatch.docs.shift();
-	const currentOpponentMatchSetMatchData = currentOpponentMatchSetMatch?.data() as PendingMatch;
+	const currentOpponentMatchSetMatchData = currentOpponentMatchSetMatch?.data() as Match;
 	const currentOpponentMatchSetMatchRef = doc(
 		db,
 		`match_sets/${latestMatchSet?.id}/matches/${currentOpponentMatchSetMatch?.id}`
@@ -228,7 +227,7 @@ export async function twistOfFate(
 
 	const getNewOpponentMatchSetMatch = await getDocs(newOpponentMatchSetMatchesQuery);
 	const newOpponentMatchSetMatch = getNewOpponentMatchSetMatch.docs.shift();
-	const newOpponentMatchSetMatchData = newOpponentMatchSetMatch?.data() as PendingMatch;
+	const newOpponentMatchSetMatchData = newOpponentMatchSetMatch?.data() as Match;
 	const newOpponentMatchSetMatchRef = doc(
 		db,
 		`match_sets/${latestMatchSet?.id}/matches/${newOpponentMatchSetMatch?.id}`

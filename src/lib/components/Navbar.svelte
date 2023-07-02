@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import type { PendingMatch, UserData } from '$lib/types';
+	import type { UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
 	// import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 	// import { db } from '$lib/firebase/firebase';
@@ -62,21 +62,26 @@
 
 {#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 	<nav
-		class="flex h-20 w-full shrink-0 items-center justify-between gap-5 bg-surface-100-800-token px-[5%] py-5 z-50"
+		class="bg-surface-100-800-token z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5"
 	>
-		<a href="/" class="font-gt-walsheim-pro-medium text-2xl md:text-4xl uppercase">Kali Kalihim</a>
+		<a href="/" class="font-gt-walsheim-pro-medium text-2xl uppercase md:text-4xl">Kali Kalihim</a>
 		<div class="flex items-center gap-5">
-			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/leaderboards"
-				>Leaderboards</a
-			>
-			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/matchmake"
-				>Matchmake</a
-			>
+			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/leaderboards">
+				Leaderboards
+			</a>
+			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/matchmake">
+				Matchmake
+			</a>
 			<a
 				class="hover:variant-soft-primary btn hidden md:block"
 				type="button"
-				href="/pending-matches">Pending Matches</a
+				href="/pending-matches"
 			>
+				Pending Matches
+			</a>
+			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/scores">
+				Manage Scores
+			</a>
 
 			<!-- <div class="flex items-center">
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
@@ -114,25 +119,26 @@
 				<button use:popup={popupProfile}>
 					<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
 				</button>
-				<div class="fixed card p-4 w-72 shadow-xl transition-none duration-0" data-popup="profile">
+				<div class="card fixed w-72 p-4 shadow-xl transition-none duration-0" data-popup="profile">
 					<ul class="space-y-4">
+						<a class="variant-soft-surface btn block md:hidden" type="button" href="/leaderboards">
+							Leaderboards
+						</a>
+						<a class="variant-soft-surface btn block md:hidden" type="button" href="/matchmake">
+							Matchmake
+						</a>
 						<a
 							class="variant-soft-surface btn block md:hidden"
 							type="button"
-							href="/leaderboards">Leaderboards</a
+							href="/pending-matches"
 						>
-						<a
-							class="variant-soft-surface btn block md:hidden"
-							type="button"
-							href="/matchmake">Matchmake</a
-						>
-						<a
-							class="variant-soft-surface btn block md:hidden"
-							type="button"
-							href="/pending-matches">Pending Matches</a
-						>
+							Pending Matches
+						</a>
+						<a class="hover:variant-soft-primary btn block md:hidden" type="button" href="/scores">
+							Manage Scores
+						</a>
 						<form class="block" method="post" action="/logout">
-							<button class="btn w-full variant-filled-primary">Log Out</button>
+							<button class="btn variant-filled-primary w-full">Log Out</button>
 						</form>
 					</ul>
 					<div class="arrow bg-surface-100-800-token" />

@@ -19,7 +19,7 @@ import {
 	createUserWithEmailAndPassword,
 	fetchSignInMethodsForEmail
 } from 'firebase/auth';
-import type { PendingMatch, UserData, UserPersonalData, UserRankingData } from '$lib/types.js';
+import type { Match, UserData, UserPersonalData, UserRankingData } from '$lib/types.js';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
@@ -45,7 +45,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 
 	const latestPendingMatch = JSON.parse(
 		JSON.stringify(getPendingMatchesDocs.docs.shift()?.data())
-	) as PendingMatch;
+	) as Match;
 	const latestOpponent = JSON.parse(
 		JSON.stringify(
 			latestPendingMatch.players.find(
