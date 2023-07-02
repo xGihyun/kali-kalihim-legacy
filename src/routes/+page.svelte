@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PowerCard } from '$lib/components';
-	import { powerCardsMap, sectionsMap } from '$lib/data';
-	import { auth, db, storage } from '$lib/firebase/firebase.js';
+	import { sectionsMap } from '$lib/data';
+	import { db, storage } from '$lib/firebase/firebase.js';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store.js';
 	import type { Match, UserData } from '$lib/types';
 	import { Avatar } from '@skeletonlabs/skeleton';
@@ -16,8 +16,7 @@
 	} from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
-	import { FileDropzone } from '@skeletonlabs/skeleton';
-	import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+	import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 	// import { arnis_bg } from '../assets/images';
 
 	export let data;
@@ -75,29 +74,6 @@
 		);
 
 		console.log('User snapshot ran.');
-	});
-
-	// Subscribe to opponent changes
-	// Helps in checking if they've used power cards
-	$: if (data.latestOpponent) {
-		const opponentRef = doc(db, 'users', data.latestOpponent?.auth_data.uid || '');
-
-		const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
-			if (!snapshot.exists()) return;
-
-			const updatedOpponentData = snapshot.data() as UserData;
-
-			latestOpponent.update((val) => (val = updatedOpponentData));
-
-			console.log('Opponent snapshot ran.');
-		});
-
-		onDestroy(() => unsubOpponent());
-	}
-
-	onDestroy(() => {
-		unsubPendingMatch();
-		unsubUser();
 	});
 
 	async function handleFileUpload() {
@@ -171,6 +147,28 @@
 			console.error('Error updating profile picture: ', error);
 		}
 	}
+	// Subscribe to opponent changes
+	// Helps in checking if they've used power cards
+	$: if (data.latestOpponent) {
+		const opponentRef = doc(db, 'users', data.latestOpponent?.auth_data.uid || '');
+
+		const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
+			if (!snapshot.exists()) return;
+
+			const updatedOpponentData = snapshot.data() as UserData;
+
+			latestOpponent.update((val) => (val = updatedOpponentData));
+
+			console.log('Opponent snapshot ran.');
+		});
+
+		onDestroy(() => unsubOpponent());
+	}
+
+	onDestroy(() => {
+		unsubPendingMatch();
+		unsubUser();
+	});
 
 	// TODO: Change selected image to .webp format and optimize resolution (if possible)
 </script>
