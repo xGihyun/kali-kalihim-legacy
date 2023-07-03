@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { PowerCard } from '$lib/components';
-	import { sectionsMap } from '$lib/data';
+	import { powerCardsMap, sectionsMap } from '$lib/data';
 	import { db } from '$lib/firebase/firebase';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store.js';
 	import type { Match, UserData } from '$lib/types';
-	import { Avatar } from '@skeletonlabs/skeleton';
+	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
@@ -18,10 +18,14 @@
 	$: opponent = getContext<Writable<UserData>>('opponent');
 
 	$: pendingMatch = data?.latestPendingMatch;
-	$: initials = $user.personal_data.name.first[0] + $user.personal_data.name.last[0];
+
+	let initials: string = '';
+	let opponentInitials: string = '';
 
 	// Subscribe to user changes
 	$: if (data.user) {
+		initials = `${data.user.personal_data.name.first[0]}${data.user.personal_data.name.last[0]}`;
+
 		const userRef = doc(db, 'users', data.user.auth_data.uid);
 
 		const unsubUser = onSnapshot(userRef, (snapshot) => {
@@ -40,6 +44,7 @@
 			console.log('User snapshot ran.');
 		});
 
+		// Upcoming match
 		const pendingMatchesCollection = collection(
 			db,
 			`users/${data.user.auth_data.uid}/pending_matches`
@@ -69,10 +74,12 @@
 	// Subscribe to opponent changes
 	// Helps in checking if they've used power cards
 	$: if (data.latestOpponent) {
+		opponentInitials = `${data.latestOpponent.personal_data.name.first[0]}${data.latestOpponent.personal_data.name.last[0]}`;
+
 		console.log('Opponent exists');
 		latestOpponent.set(data.latestOpponent);
 
-		const opponentRef = doc(db, 'users', data.latestOpponent.auth_data.uid || '');
+		const opponentRef = doc(db, 'users', data.latestOpponent.auth_data.uid);
 
 		const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
 			if (!snapshot.exists()) return;
@@ -131,53 +138,165 @@
 		handleFileUpload();
 	}
 
+	const popupChangeAvatar: PopupSettings = {
+		event: 'click',
+		target: 'avatar',
+		placement: 'bottom'
+	};
+
 	// TODO: Change selected image to .webp format and optimize resolution (if possible)
 </script>
 
 <!-- TODO: MAKE STUFF LOOK GOOD -->
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-		<div class="flex flex-col items-center justify-center gap-10">
-			<div class="flex flex-col items-center justify-center gap-4">
-				<span class="text-4xl uppercase">(rank logo)</span>
-				<span class="text-3xl uppercase">{$user.rank.title}</span>
-				<Avatar src={$user.auth_data.photo_url || ''} width="w-20" {initials} />
-				<button class="btn variant-ghost" on:click={() => uploadInputEl.click()}>
-					Change photo
-				</button>
-				<button class="btn variant-ghost" on:click={removePhoto}>Remove photo</button>
-				<input
-					type="file"
-					accept="image/*"
-					name="photo"
-					hidden
-					on:change={handleSelectedFile}
-					bind:this={uploadInputEl}
-				/>
-				<div class="flex flex-col items-center">
-					<span>
-						{$user.personal_data.name.first}
-						{$user.personal_data.name.last}
-					</span>
-					<span>
-						{sectionsMap.get($user.personal_data.section)}
-					</span>
-				</div>
-				<div class="flex gap-4">
-					<div class="flex flex-col">
-						<span>Overall Ranking:</span>
-						<span class="text-secondary-700-200-token text-2xl">#{$user.rank.number.overall}</span>
+		<!-- Banner -->
+		<!-- Temporary object position -->
+		<img
+			class="h-80 w-full object-cover object-[0_-8rem]"
+			src="https://images5.alphacoders.com/128/1284718.jpg"
+			alt="kessoku band"
+		/>
+		<div class="bg-surface-200-700-token flex h-32 w-full gap-4 px-[5%]">
+			<button
+				class="shadow-profile mb-10 flex-none self-end rounded-full"
+				title="Change your avatar!"
+				use:popup={popupChangeAvatar}
+			>
+				<Avatar src={$user.auth_data.photo_url || ''} width="w-40" {initials} />
+			</button>
+			<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="avatar">
+				<button
+					class="hover:bg-surface-400-500-token w-full px-2 py-1"
+					on:click={() => uploadInputEl.click()}>Change avatar</button
+				>
+				<button class="hover:bg-surface-400-500-token w-full px-2 py-1" on:click={removePhoto}
+					>Remove avatar</button
+				>
+				<div class="arrow bg-surface-100-800-token" />
+			</div>
+			<input
+				type="file"
+				accept="image/*"
+				name="photo"
+				hidden
+				on:change={handleSelectedFile}
+				bind:this={uploadInputEl}
+			/>
+			<div class="flex h-full flex-col justify-center">
+				<span class="text-2xl">
+					{$user.personal_data.name.first}
+					{$user.personal_data.name.last}
+				</span>
+				<span class="text-secondary-700-200-token text-lg">
+					{sectionsMap.get($user.personal_data.section)}
+				</span>
+			</div>
+		</div>
+		<div
+			class="relative z-[1] flex h-72 w-full flex-col items-center justify-center bg-gradient-to-r from-blue-950 to-rose-950 px-[5%]"
+		>
+			<!-- Temporary rank logo -->
+			<div class="absolute -top-[17%] left-1/2 -translate-x-1/2">
+				<div class="aspect-square w-24 rotate-45 border-4 border-white bg-red-600" />
+			</div>
+			<span
+				class="font-gt-walsheim-pro-medium text-outline select-none text-[12rem] uppercase tracking-wide opacity-20"
+			>
+				{$user.rank.title}
+			</span>
+		</div>
+		<div class="z-10 flex h-20 w-full px-[5%]">
+			<div class="mb-8 w-full flex-none self-end">
+				<div class="flex w-full justify-center gap-16">
+					<div
+						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+					>
+						<span class="text-xl">Overall Ranking</span>
+						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
+							>#{$user.rank.number.overall}</span
+						>
 					</div>
-					<div class="flex flex-col">
-						<span>Section Ranking:</span>
-						<span class="text-secondary-700-200-token text-2xl">#{$user.rank.number.section}</span>
+					<div
+						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+					>
+						<span class="text-xl">Score</span>
+						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
+							>{$user.score}</span
+						>
+					</div>
+					<div
+						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+					>
+						<span class="text-xl">Section Ranking</span>
+						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
+							>#{$user.rank.number.section}</span
+						>
 					</div>
 				</div>
 			</div>
-
-			<div>
+		</div>
+		<div class="bg-surface-100-800-token flex h-20 w-full items-center px-[5%]">
+			<span class="w-1/2 text-center text-2xl uppercase">upcoming match</span>
+			<span class="w-1/2 text-center text-2xl uppercase">power cards</span>
+		</div>
+		<div class="flex w-full gap-10 px-[5%] py-10">
+			<!-- Upcoming match -->
+			<div class="flex w-1/2">
 				{#if pendingMatch && $opponent}
-					<ul class="max-h-[75vh] space-y-4 overflow-auto">
+					<div class="flex flex-col items-start">
+						<div class="flex items-center gap-4">
+							<span class="font-gt-walsheim-pro-medium text-2xl uppercase">vs</span>
+							<div class="flex items-center gap-4">
+								<div class="pointer-events-none select-none">
+									<Avatar
+										src={$opponent.auth_data.photo_url || ''}
+										width="w-20"
+										initials={opponentInitials}
+									/>
+								</div>
+								<div class="flex flex-col">
+									<span class="text-xl">
+										{$opponent.personal_data.name.first}
+										{$opponent.personal_data.name.last}
+									</span>
+									<div class="flex gap-4">
+										<span class="uppercase opacity-75">
+											{$opponent.rank.title}
+										</span>
+										<span class="mx-5 opacity-75">|</span>
+										<div class="opacity-75">
+											<span>Overall:</span>
+											<span class="text-secondary-700-200-token"
+												>#{$opponent.rank.number.overall}</span
+											>
+										</div>
+										<div class="opacity-75">
+											<span>Section:</span>
+											<span class="text-secondary-700-200-token"
+												>#{$opponent.rank.number.section}</span
+											>
+										</div>
+										<div class="opacity-75">
+											<span>Score:</span>
+											<span class="text-secondary-700-200-token">{$opponent.score}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ml-5 flex w-full justify-center gap-4">
+							<div class="flex flex-col">
+								<span>Skill to perform:</span>
+								<span class="text-tertiary-400">{pendingMatch.skill}</span>
+							</div>
+							<div class="flex flex-col">
+								<span>Footwork to perform:</span>
+								<span class="text-tertiary-400">{pendingMatch.footwork}</span>
+							</div>
+						</div>
+					</div>
+					<!-- <ul class="max-h-[75vh] space-y-4 overflow-auto">
 						<li class="flex flex-col items-start">
 							<div class="flex flex-col items-center gap-4">
 								<div class="flex flex-col items-center">
@@ -211,46 +330,33 @@
 								</div>
 							</div>
 						</li>
-					</ul>
+					</ul> -->
 				{:else}
 					<span class="flex w-full justify-center opacity-50">No upcoming match</span>
 				{/if}
 			</div>
 
-			<!-- Put all power cards temporarily for dev purposes -->
-			<!-- <div class="flex gap-2">
-				{#each powerCardsMap as [key, value], idx (idx)}
-					<button
-						class="btn variant-filled-secondary"
-						on:click={() => {
-							selectedPowerCard.set(key);
-						}}
-					>
-						{value.name}
-					</button>
-				{/each}
-			</div> -->
-
-			<!-- The power cards that the user has -->
-			<div class="flex gap-2">
+			<!-- Power cards the user has -->
+			<div class="flex w-1/2 flex-wrap justify-center gap-10">
 				{#each $user.power_cards as card, idx (idx)}
 					<button
-						class={`btn variant-filled-primary ${card.used ? 'opacity-50' : 'opacity-100'} ${
+						class={`card aspect-[1/1.3] w-1/4 p-4 ${card.used ? 'opacity-50' : 'opacity-100'} ${
 							card.activated && !card.used ? 'border-2 border-green-500' : 'border-none'
 						}`}
 						on:click={() => {
 							selectedPowerCard.set(card.key);
 						}}
+						disabled={card.used}
 					>
-						{card.name}
+						<svelte:component this={powerCardsMap.get(card.key)?.components.card} />
 					</button>
 				{/each}
 			</div>
-
-			{#if $selectedPowerCard}
-				<PowerCard />
-			{/if}
 		</div>
+
+		{#if $selectedPowerCard}
+			<PowerCard />
+		{/if}
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<div class="variant-filled-surface rounded-md p-4">
 			<form method="post" action="?/register">
@@ -350,3 +456,13 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.text-outline {
+		color: white;
+		-webkit-text-fill-color: transparent;
+		-webkit-text-stroke-width: 1px;
+		/* -webkit-background-clip: text; */
+		/* background-clip: text; */
+	}
+</style>

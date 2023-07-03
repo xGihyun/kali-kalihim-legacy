@@ -32,7 +32,7 @@
 	onDestroy(() => unsubMatchSets());
 </script>
 
-<div class="flex h-full w-full flex-col items-center justify-center">
+<div class="flex h-full w-full flex-col items-center justify-center py-10">
 	{#if matchSets.length > 0}
 		<h1 class="font-gt-walsheim-pro-medium mb-5 text-center text-2xl uppercase">
 			{sectionsMap.get(data.section)}

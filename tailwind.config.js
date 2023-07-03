@@ -12,7 +12,14 @@ module.exports = {
 			fontFamily: {
 				'gt-walsheim-pro-medium': ['gt-walsheim-pro-medium', 'sans-serif'],
 				'gt-walsheim-pro-light': ['gt-walsheim-pro-light', 'sans-serif'],
-				'gt-walsheim-pro-thin': ['gt-walsheim-pro-thin', 'sans-serif']
+				'gt-walsheim-pro-thin': ['gt-walsheim-pro-thin', 'sans-serif'],
+				'inter': ['inter', 'sans-serif'],
+				'inter-bold': ['inter-bold', 'sans-serif'],
+			},
+      boxShadow: {
+        "nav": "rgba(0, 0, 0, 0.6) 0px 5px 10px",
+        "profile": "rgba(0, 0, 0, 0.25) 0px 5px 10px",
+        "lighter": "rgba(0, 0, 0, 0.1) 0px 5px 10px",
 			}
 		}
 	},

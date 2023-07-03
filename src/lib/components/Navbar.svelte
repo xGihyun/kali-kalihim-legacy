@@ -62,7 +62,7 @@
 
 {#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 	<nav
-		class="bg-surface-100-800-token z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5"
+		class="bg-surface-100-800-token z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5 shadow-nav"
 	>
 		<a href="/" class="font-gt-walsheim-pro-medium text-2xl uppercase md:text-4xl">Kali Kalihim</a>
 		<div class="flex items-center gap-5">

@@ -81,7 +81,7 @@
 		<tbody>
 			{#each matches as match, idx (idx)}
 				<tr
-					class={`${match.status === 'finished' ? 'opacity-50' : 'opacity-100'}`}
+					class={`${match.status === 'finished' ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}
 					on:click={() => toggleRow(idx)}
 				>
 					<td class="w-80">

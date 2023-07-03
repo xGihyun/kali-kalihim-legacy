@@ -52,7 +52,7 @@
 	<Navbar />
 	<div class="flex h-full w-full flex-auto overflow-hidden">
 		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-			<div class="flex flex-1 flex-col items-center justify-center px-[5%] py-10">
+			<div class="flex flex-1 flex-col items-center justify-center">
 				<slot />
 			</div>
 		</main>
