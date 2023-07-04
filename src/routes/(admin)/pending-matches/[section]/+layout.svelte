@@ -9,7 +9,7 @@
 
 	export let data;
 
-	let matchSets = data.matchSets;
+	$: matchSets = data.matchSets;
 
 	const matchesCollection = collection(db, 'match_sets');
 	const matchQuery = query(matchesCollection, where('section', '==', data.section));

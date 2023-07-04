@@ -42,11 +42,13 @@
 				>
 					<td>
 						<p class="text-xs md:text-sm">
-							<span class="font-bold text-token">#{idx + 1}</span>
-							<span>
-								{user.personal_data.name.first}
-								{user.personal_data.name.last}
-							</span>
+							<span class="text-token font-bold">#{idx + 1}</span>
+							<a class="hover:underline" href={`/users/${user.auth_data.uid}`}>
+								<span>
+									{user.personal_data.name.first}
+									{user.personal_data.name.last}
+								</span>
+							</a>
 						</p>
 					</td>
 					<td class="w-1/4">

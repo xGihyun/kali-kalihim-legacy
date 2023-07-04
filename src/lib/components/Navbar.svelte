@@ -62,26 +62,32 @@
 
 {#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 	<nav
-		class="bg-surface-100-800-token z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5 shadow-nav"
+		class="bg-surface-100-800-token shadow-nav z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5"
 	>
 		<a href="/" class="font-gt-walsheim-pro-medium text-2xl uppercase md:text-4xl">Kali Kalihim</a>
 		<div class="flex items-center gap-5">
 			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/leaderboards">
 				Leaderboards
 			</a>
-			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/matchmake">
-				Matchmake
-			</a>
-			<a
-				class="hover:variant-soft-primary btn hidden md:block"
-				type="button"
-				href="/pending-matches"
-			>
-				Pending Matches
-			</a>
-			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/scores">
-				Manage Scores
-			</a>
+			{#if $user.auth_data.role === 'admin'}
+				<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/matchmake">
+					Matchmake
+				</a>
+				<a
+					class="hover:variant-soft-primary btn hidden md:block"
+					type="button"
+					href="/pending-matches"
+				>
+					Pending Matches
+				</a>
+				<a
+					class="hover:variant-soft-primary btn hidden md:block"
+					type="button"
+					href="/manage-users"
+				>
+					Manage Users
+				</a>
+			{/if}
 
 			<!-- <div class="flex items-center">
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
@@ -124,19 +130,25 @@
 						<a class="variant-soft-surface btn block md:hidden" type="button" href="/leaderboards">
 							Leaderboards
 						</a>
-						<a class="variant-soft-surface btn block md:hidden" type="button" href="/matchmake">
-							Matchmake
-						</a>
-						<a
-							class="variant-soft-surface btn block md:hidden"
-							type="button"
-							href="/pending-matches"
-						>
-							Pending Matches
-						</a>
-						<a class="hover:variant-soft-primary btn block md:hidden" type="button" href="/scores">
-							Manage Scores
-						</a>
+						{#if $user.auth_data.role === 'admin'}
+							<a class="variant-soft-surface btn block md:hidden" type="button" href="/matchmake">
+								Matchmake
+							</a>
+							<a
+								class="variant-soft-surface btn block md:hidden"
+								type="button"
+								href="/pending-matches"
+							>
+								Pending Matches
+							</a>
+							<a
+								class="hover:variant-soft-primary btn block md:hidden"
+								type="button"
+								href="/manage-users"
+							>
+								Manage Scores
+							</a>
+						{/if}
 						<form class="block" method="post" action="/logout">
 							<button class="btn variant-filled-primary w-full">Log Out</button>
 						</form>

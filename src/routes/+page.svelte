@@ -144,14 +144,14 @@
 		placement: 'bottom'
 	};
 
-	// TODO: Change selected image to .webp format and optimize resolution (if possible)
+	// TODO: Change selected image to .webp format and optimize resolution (use WASM if possible)
 </script>
 
 <!-- TODO: MAKE STUFF LOOK GOOD -->
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 		<!-- Banner -->
-		<!-- Temporary object position -->
+		<!-- TEMPORARY -->
 		<img
 			class="h-80 w-full object-cover object-[0_-8rem]"
 			src="https://images5.alphacoders.com/128/1284718.jpg"
@@ -296,41 +296,6 @@
 							</div>
 						</div>
 					</div>
-					<!-- <ul class="max-h-[75vh] space-y-4 overflow-auto">
-						<li class="flex flex-col items-start">
-							<div class="flex flex-col items-center gap-4">
-								<div class="flex flex-col items-center">
-									<span>Upcoming match VS:</span>
-									<span class="text-sm font-bold md:text-base">
-										{$opponent.personal_data.name.first}
-										{$opponent.personal_data.name.last}
-									</span>
-									{#if $opponent.power_cards}
-										{#if $opponent.power_cards.find((card) => card.activated && !card.used)}
-											<span>Opponent has activated:</span>
-											{#each $opponent.power_cards as card, idx (idx)}
-												{#if card.activated && !card.used}
-													<span class="text-tertiary-300 font-bold">{card.name}</span>
-												{/if}
-											{/each}
-										{:else}
-											<span>No power cards used</span>
-										{/if}
-									{/if}
-								</div>
-								<div class="flex flex-col items-center">
-									<div class="flex flex-col items-center">
-										<span>Skill to perform:</span>
-										<span class="text-tertiary-400">{pendingMatch.skill}</span>
-									</div>
-									<div class="flex flex-col items-center">
-										<span>Footwork to perform:</span>
-										<span class="text-tertiary-400">{pendingMatch.footwork}</span>
-									</div>
-								</div>
-							</div>
-						</li>
-					</ul> -->
 				{:else}
 					<span class="flex w-full justify-center opacity-50">No upcoming match</span>
 				{/if}
@@ -386,11 +351,9 @@
 				<label class="label">
 					<span>Section</span>
 					<select class="input" size="1" value="section-1" name="section" required>
-						<option value="section-1">Section 1</option>
-						<option value="section-2">Section 2</option>
-						<option value="section-3">Section 3</option>
-						<option value="section-4">Section 4</option>
-						<option value="section-5">Section 5</option>
+						{#each sectionsMap as [key, value], idx (idx)}
+							<option value={key}>{value}</option>
+						{/each}
 					</select>
 				</label>
 

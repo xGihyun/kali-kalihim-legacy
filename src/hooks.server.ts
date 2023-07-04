@@ -22,9 +22,17 @@ export async function handle({ event, resolve }) {
 	const userRef = doc(db, 'users', session);
 	const docSnap = await getDoc(userRef);
 
-	if (docSnap.exists()) {
-		const data = docSnap.data() as UserData;
-		event.locals.userData = data;
+	if (!docSnap.exists()) return await resolve(event);
+
+	const data = docSnap.data() as UserData;
+	event.locals.userData = data;
+
+	const isAdminRoute = event.route.id?.startsWith('/(admin)');
+
+	// Make sure only admin users can access admin routes
+	if (data.auth_data.role !== 'admin' && isAdminRoute) {
+		console.log(`${data.auth_data.email} is not an admin. Access denied.`);
+		throw redirect(307, '/');
 	}
 
 	return await resolve(event);

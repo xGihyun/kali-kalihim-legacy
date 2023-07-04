@@ -4,7 +4,6 @@
 	export let data;
 
 	$: users = data.users;
-  $: section = data.section;
 </script>
 
 <div class="table-container max-w-5xl">
@@ -21,8 +20,8 @@
 				<tr class="text-secondary-700-200-token">
 					<td>
 						<p class="text-xs md:text-sm">
-							<span class="font-bold text-token">#{idx + 1}</span>
-							<a class="hover:underline" href={`/scores/${section}/${user.auth_data.uid}`}>
+							<span class="text-token font-bold">#{idx + 1}</span>
+							<a class="hover:underline" href={`/users/${user.auth_data.uid}`}>
 								<span>
 									{user.personal_data.name.first}
 									{user.personal_data.name.last}
