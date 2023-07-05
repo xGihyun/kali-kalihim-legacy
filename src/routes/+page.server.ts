@@ -235,5 +235,14 @@ export const actions: Actions = {
 		}
 
 		throw redirect(302, '/');
+	},
+	change_banner: async ({ request }) => {
+		const data = await request.formData();
+		const banner = data.get('banner') as File;
+
+		console.log("Banner form action")
+
+		console.log(banner)
+		console.log(banner.arrayBuffer())
 	}
 };

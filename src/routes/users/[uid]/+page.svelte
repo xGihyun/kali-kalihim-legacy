@@ -72,6 +72,9 @@
 			<span class="text-2xl">
 				{user.personal_data.name.first}
 				{user.personal_data.name.last}
+				{#if user.auth_data.role === 'admin'}
+					(admin)	
+				{/if}
 			</span>
 			<span class="text-secondary-700-200-token text-lg">
 				{sectionsMap.get(user.personal_data.section)}

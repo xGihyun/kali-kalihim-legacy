@@ -12,6 +12,7 @@ export type UserAuthData = {
 	username: string | null;
 	email: string;
 	photo_url: string | null;
+	banner_url?: string;
 	is_logged_in: boolean;
 	uid: string;
 	is_registered: boolean;

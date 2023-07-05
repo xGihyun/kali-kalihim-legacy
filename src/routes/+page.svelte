@@ -8,11 +8,14 @@
 	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
+	import { Edit } from '../assets/icons';
 
 	export let data;
 
 	let selectedFile: File | null = null;
+	let selectedBanner: File | null = null;
 	let uploadInputEl: HTMLInputElement;
+	let uploadBannerEl: HTMLInputElement;
 
 	$: user = getContext<Writable<UserData>>('user');
 	$: opponent = getContext<Writable<UserData>>('opponent');
@@ -95,6 +98,12 @@
 	}
 
 	// Profile picture
+	const popupChangeAvatar: PopupSettings = {
+		event: 'click',
+		target: 'avatar',
+		placement: 'bottom'
+	};
+
 	async function handleFileUpload() {
 		if (!selectedFile) return;
 
@@ -138,11 +147,55 @@
 		handleFileUpload();
 	}
 
-	const popupChangeAvatar: PopupSettings = {
+	// Banner
+	const popupChangeBanner: PopupSettings = {
 		event: 'click',
-		target: 'avatar',
+		target: 'banner',
 		placement: 'bottom'
 	};
+
+	async function handleBannerUpload() {
+		if (!selectedBanner) return;
+
+		const formData = new FormData();
+
+		formData.append('file', selectedBanner);
+
+		const response = await fetch('./api/banner/upload', {
+			method: 'POST',
+			body: formData
+		});
+
+		if (response.ok) {
+			console.log('Successfully changed banner.');
+		} else {
+			console.error('Error changing banner.');
+		}
+	}
+
+	function handleSelectedBanner(e: Event) {
+		const target = e.target as HTMLInputElement;
+
+		if (!target.files) return;
+
+		selectedBanner = target.files[0];
+
+		handleBannerUpload();
+	}
+
+	async function removeBanner() {
+		if (!$user.auth_data.photo_url) return;
+
+		const response = await fetch('./api/banner/remove', {
+			method: 'POST'
+		});
+
+		if (response.ok) {
+			console.log('Successfully removed banner.');
+		} else {
+			console.error('Error removing banner.');
+		}
+	}
 
 	// TODO: Change selected image to .webp format and optimize resolution (use WASM if possible)
 </script>
@@ -152,11 +205,61 @@
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 		<!-- Banner -->
 		<!-- TEMPORARY -->
-		<img
-			class="h-80 w-full object-cover object-[0_-8rem]"
-			src="https://images5.alphacoders.com/128/1284718.jpg"
-			alt="kessoku band"
-		/>
+		<div class="relative h-80 w-full">
+			<img
+				class="h-80 w-full object-cover object-center"
+				src={`${
+					$user.auth_data.banner_url
+						? $user.auth_data.banner_url
+						: 'https://images5.alphacoders.com/128/1284718.jpg'
+				}`}
+				alt="kessoku band"
+			/>
+			<button
+				class="bg-surface-300-600-token absolute bottom-2 right-5 rounded-full p-2"
+				use:popup={popupChangeBanner}
+			>
+				<Edit styles="w-5" />
+			</button>
+			<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="banner">
+				<!-- <form class="contents" method="post">
+					<input
+						type="file"
+						accept="image/*"
+						name="banner"
+						hidden
+						on:change={handleSelectedBanner}
+						bind:this={uploadBannerEl}
+						value={selectedBanner}
+					/>
+					<button
+						class="hover:bg-surface-400-500-token w-full px-2 py-1"
+						formaction="?/change_banner"
+					>
+						Change banner
+					</button>
+					<button class="hover:bg-surface-400-500-token w-full px-2 py-1">Remove banner</button>
+				</form> -->
+				<input
+					type="file"
+					accept="image/*"
+					name="banner"
+					hidden
+					on:change={handleSelectedBanner}
+					bind:this={uploadBannerEl}
+				/>
+				<button
+					class="hover:bg-surface-400-500-token w-full px-2 py-1"
+					on:click={() => uploadBannerEl.click()}
+				>
+					Change banner
+				</button>
+				<button class="hover:bg-surface-400-500-token w-full px-2 py-1" on:click={removeBanner}>
+					Remove banner
+				</button>
+				<div class="arrow bg-surface-100-800-token" />
+			</div>
+		</div>
 		<div class="bg-surface-200-700-token flex h-32 w-full gap-4 px-[5%]">
 			<button
 				class="shadow-profile mb-10 flex-none self-end rounded-full"
@@ -168,11 +271,13 @@
 			<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="avatar">
 				<button
 					class="hover:bg-surface-400-500-token w-full px-2 py-1"
-					on:click={() => uploadInputEl.click()}>Change avatar</button
+					on:click={() => uploadInputEl.click()}
 				>
-				<button class="hover:bg-surface-400-500-token w-full px-2 py-1" on:click={removePhoto}
-					>Remove avatar</button
-				>
+					Change avatar
+				</button>
+				<button class="hover:bg-surface-400-500-token w-full px-2 py-1" on:click={removePhoto}>
+					Remove avatar
+				</button>
 				<div class="arrow bg-surface-100-800-token" />
 			</div>
 			<input
