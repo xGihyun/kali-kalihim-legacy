@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 		(match) => JSON.parse(JSON.stringify(match.data())) as Match
 	);
 
-	// setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
+	setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
 
 	return {
 		matchSetId,

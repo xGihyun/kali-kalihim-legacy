@@ -174,7 +174,7 @@ export async function viralxRival(userUiD: string, opponentUID: string) {
 			await updateDoc(latestMatchRef, { ...defaultMatchData });
 		});
 
-		console.log('opponent has used twist of fate');
+		// console.log('opponent has used twist of fate');
 	}
 
 	await updateDoc(userRef, { power_cards: userPowerCards });
@@ -203,7 +203,7 @@ export async function twistOfFate(
 
 	if (isCancelled) {
 		await updateDoc(userRef, { power_cards: userPowerCards });
-		console.log('opponent has used viral rival');
+		// console.log('opponent has used viral rival');
 		return;
 	}
 
@@ -222,14 +222,6 @@ export async function twistOfFate(
 		where('uids', 'array-contains', currentOpponent.auth_data.uid),
 		where('status', '==', 'pending')
 	);
-
-	const newOpponentMatchQuery = query(
-		latestMatchCollection,
-		where('uids', 'array-contains', newOpponent.auth_data.uid),
-		where('status', '==', 'pending')
-	);
-
-	// Get the user's current opponent
 	const getCurrentOpponentMatch = await getDocs(currentOpponentMatchQuery);
 	const currentOpponentMatchDoc = getCurrentOpponentMatch.docs[0];
 	const currentOpponentMatchData = currentOpponentMatchDoc?.data() as Match;
@@ -238,13 +230,15 @@ export async function twistOfFate(
 		`match_sets/${latestMatchSet.id}/matches/${currentOpponentMatchDoc.id}`
 	);
 	const currentOpponentMatchPlayers = currentOpponentMatchData.players;
-
-	// Current user
 	const currentOpponentMatchOriginalOpponentIndex = currentOpponentMatchPlayers.findIndex(
 		(player) => player.auth_data.uid !== currentOpponent.auth_data.uid
 	);
 
-	// Get original opponent of the selected opponent
+	const newOpponentMatchQuery = query(
+		latestMatchCollection,
+		where('uids', 'array-contains', newOpponent.auth_data.uid),
+		where('status', '==', 'pending')
+	);
 	const getNewOpponentMatchSetMatch = await getDocs(newOpponentMatchQuery);
 	const newOpponentMatchDoc = getNewOpponentMatchSetMatch.docs[0];
 	const newOpponentMatchData = newOpponentMatchDoc?.data() as Match;
@@ -253,48 +247,46 @@ export async function twistOfFate(
 		`match_sets/${latestMatchSet.id}/matches/${newOpponentMatchDoc.id}`
 	);
 	const newOpponentMatchPlayers = newOpponentMatchData.players;
-
-	// Opponent of selected opponent
 	const newOpponentMatchOriginalOpponentIndex = newOpponentMatchPlayers.findIndex(
 		(player) => player.auth_data.uid !== newOpponent.auth_data.uid
 	);
 
-	console.log('before:');
-	console.log(currentOpponentMatchPlayers);
-	console.log(newOpponentMatchPlayers);
+	// console.log('before:');
+	// console.log(currentOpponentMatchPlayers);
+	// console.log(newOpponentMatchPlayers);
 
-	// Create new arrays to hold the updated player data
 	const updatedCurrentOpponentMatchPlayers = [...currentOpponentMatchPlayers];
 	const updatedNewOpponentMatchPlayers = [...newOpponentMatchPlayers];
 
-	// Update the player data in the new arrays
 	updatedCurrentOpponentMatchPlayers[currentOpponentMatchOriginalOpponentIndex] =
 		newOpponentMatchPlayers[newOpponentMatchOriginalOpponentIndex];
+
 	updatedNewOpponentMatchPlayers[newOpponentMatchOriginalOpponentIndex] =
 		currentOpponentMatchPlayers[currentOpponentMatchOriginalOpponentIndex];
 
-	console.log('after:');
-	console.log(updatedCurrentOpponentMatchPlayers);
-	console.log(updatedNewOpponentMatchPlayers);
+	// console.log('after:');
+	// console.log(updatedCurrentOpponentMatchPlayers);
+	// console.log(updatedNewOpponentMatchPlayers);
 
-	// Update the matches with the new player data
+	const updatedCurrentOpponentMatchPlayerUIDs = updatedCurrentOpponentMatchPlayers.map(
+		(player) => player.auth_data.uid
+	);
+	const updatedNewOpponentMatchPlayerUIDs = updatedNewOpponentMatchPlayers.map(
+		(player) => player.auth_data.uid
+	);
+
 	batch.update(currentOpponentMatchRef, {
 		players: updatedCurrentOpponentMatchPlayers,
-		uids: [
-			updatedCurrentOpponentMatchPlayers[0].auth_data.uid,
-			updatedCurrentOpponentMatchPlayers[1].auth_data.uid
-		]
+		uids: updatedCurrentOpponentMatchPlayerUIDs
 	});
 
 	batch.update(newOpponentMatchRef, {
 		players: updatedNewOpponentMatchPlayers,
-		uids: [
-			updatedNewOpponentMatchPlayers[0].auth_data.uid,
-			updatedNewOpponentMatchPlayers[1].auth_data.uid
-		]
+		uids: updatedNewOpponentMatchPlayerUIDs
 	});
 
-	// Commit the batch write
+	batch.update(userRef, { power_cards: userPowerCards });
+
 	await batch.commit();
 }
 

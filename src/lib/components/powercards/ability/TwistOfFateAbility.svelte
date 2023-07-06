@@ -29,7 +29,11 @@
 		const allUsersInSectionDocs = await getDocs(q);
 		const allUsers = allUsersInSectionDocs.docs
 			.map((user) => user.data() as UserData)
-			.filter((userData) => userData.auth_data.uid !== $user.auth_data.uid);
+			.filter(
+				(userData) =>
+					userData.auth_data.uid !== $user.auth_data.uid &&
+					userData.auth_data.uid !== $opponent.auth_data.uid
+			);
 
 		allUsersInSection.set(allUsers);
 	}

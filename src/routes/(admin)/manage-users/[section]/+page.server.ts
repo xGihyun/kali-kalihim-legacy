@@ -11,10 +11,10 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const getUsersInSectionDocs = await getDocs(q);
 	const usersInSection = getUsersInSectionDocs.docs.map((user) => user.data() as UserData);
 
-	// setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
+	setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
 
 	return {
-    section,
+		section,
 		users: usersInSection
 	};
 };

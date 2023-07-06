@@ -54,7 +54,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		)
 	) as UserData;
 
-	// setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
+	setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
 
 	return {
 		latestPendingMatch,

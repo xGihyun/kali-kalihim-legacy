@@ -372,19 +372,21 @@
 										<span class="mx-5 opacity-75">|</span>
 										<div class="opacity-75">
 											<span>Overall:</span>
-											<span class="text-secondary-700-200-token"
-												>#{$opponent.rank.number.overall}</span
-											>
+											<span class="text-secondary-700-200-token">
+												#{$opponent.rank.number.overall}
+											</span>
 										</div>
 										<div class="opacity-75">
 											<span>Section:</span>
-											<span class="text-secondary-700-200-token"
-												>#{$opponent.rank.number.section}</span
-											>
+											<span class="text-secondary-700-200-token">
+												#{$opponent.rank.number.section}
+											</span>
 										</div>
 										<div class="opacity-75">
 											<span>Score:</span>
-											<span class="text-secondary-700-200-token">{$opponent.score}</span>
+											<span class="text-secondary-700-200-token">
+												{$opponent.score}
+											</span>
 										</div>
 									</div>
 								</div>
@@ -425,7 +427,7 @@
 						on:click={() => {
 							selectedPowerCard.set(card.key);
 						}}
-						disabled={card.used}
+						disabled={card.used || card.activated}
 					>
 						<svelte:component this={powerCardsMap.get(card.key)?.components.card} />
 					</button>

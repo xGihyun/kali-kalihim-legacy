@@ -7,11 +7,13 @@
 	function confirmPowerCard() {
 		if (powerCard) {
 			powerCard.used = true;
-			console.log(powerCard.name)
 		}
 	}
 
 	function cancelPowerCard() {
+		if (powerCard) {
+			powerCard.used = false;
+		}
 		$selectedPowerCard = null;
 	}
 </script>
