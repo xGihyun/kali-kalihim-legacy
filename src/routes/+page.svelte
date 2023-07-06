@@ -204,22 +204,22 @@
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 		<!-- Banner -->
-		<!-- TEMPORARY -->
+		<!-- TODO: Optimize images -->
 		<div class="relative h-80 w-full">
-			<img
-				class="h-80 w-full object-cover object-center"
-				src={`${
-					$user.auth_data.banner_url
-						? $user.auth_data.banner_url
-						: 'https://images5.alphacoders.com/128/1284718.jpg'
-				}`}
-				alt="kessoku band"
-			/>
+			{#if $user.auth_data.banner_url}
+				<img
+					class="h-80 w-full object-cover object-center"
+					src={$user.auth_data.banner_url}
+					alt="banner"
+				/>
+			{:else}
+				<div class="bg-surface-300-600-token h-80" />
+			{/if}
 			<button
-				class="bg-surface-300-600-token absolute bottom-2 right-5 rounded-full p-2"
+				class="bg-surface-300-600-token hover:bg-surface-500-400-token absolute bottom-2 right-5 rounded-full p-2 transition-[background-color] duration-100"
 				use:popup={popupChangeBanner}
 			>
-				<Edit styles="w-5" />
+				<Edit styles="w-5 h-5" />
 			</button>
 			<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="banner">
 				<!-- <form class="contents" method="post">
@@ -400,6 +400,15 @@
 								<span class="text-tertiary-400">{pendingMatch.footwork}</span>
 							</div>
 						</div>
+						{#if $opponent.power_cards.find((card) => card.activated && !card.used)}
+							<div class="flex flex-col">
+								{#each $opponent.power_cards as card, idx (idx)}
+									{#if card.activated && !card.used}
+										<span>{card.name}</span>
+									{/if}
+								{/each}
+							</div>
+						{/if}
 					</div>
 				{:else}
 					<span class="flex w-full justify-center opacity-50">No upcoming match</span>

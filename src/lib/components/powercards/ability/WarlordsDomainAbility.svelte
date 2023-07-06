@@ -25,7 +25,7 @@
 		class="btn variant-filled-primary"
 		type="button"
 		on:click={() => {
-			warlordsDomain($user.auth_data.uid || '', selectedSkill);
+			warlordsDomain($user.auth_data.uid, selectedSkill);
 			used = true;
 		}}
 	>

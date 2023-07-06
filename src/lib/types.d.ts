@@ -52,6 +52,7 @@ export type Match = {
 	footwork: string;
 	status: string;
 	timestamp: Timestamp;
+	uids?: string[];
 };
 
 export type MatchSet = {

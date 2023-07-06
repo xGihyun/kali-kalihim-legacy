@@ -2,7 +2,17 @@ import { footworks, skills } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
 import type { Match, UserData } from '$lib/types';
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { Timestamp, addDoc, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import {
+	Timestamp,
+	addDoc,
+	collection,
+	doc,
+	getDocs,
+	orderBy,
+	query,
+	setDoc,
+	where
+} from 'firebase/firestore';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.formData();
@@ -150,11 +160,14 @@ async function addPendingMatch(users: Match, section: string, id: string) {
 		timestamp: users.timestamp,
 		status: 'pending'
 	};
-
 	const playerUids = users.players.map((user) => user.auth_data.uid);
-	const matchesCollection = collection(db, `match_sets/${id}/matches`);
 
-	await addDoc(matchesCollection, { ...matchData, uids: playerUids });
+	const matchesCollection = collection(db, `match_sets/${id}/matches`);
+	const docRef = await addDoc(matchesCollection, { ...matchData, uids: playerUids });
+
+	// Do it this way to make sure they all have the same ID for an easier life
+	const defaultMatchesCollection = doc(db, `match_sets/${id}/default_matches/${docRef.id}`);
+	await setDoc(defaultMatchesCollection, { ...matchData, uids: playerUids });
 
 	users.players.forEach(async (user) => {
 		const userPendingMatchCollection = collection(

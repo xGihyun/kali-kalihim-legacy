@@ -7,6 +7,7 @@
 	function confirmPowerCard() {
 		if (powerCard) {
 			powerCard.used = true;
+			console.log(powerCard.name)
 		}
 	}
 

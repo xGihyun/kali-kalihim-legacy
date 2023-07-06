@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ setHeaders }) => {
 	const usersDocs = await getDocs(q);
 	const users = usersDocs.docs.map((user) => user.data() as UserData);
 
-	setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
+	// setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
 
 	return {
 		users: users

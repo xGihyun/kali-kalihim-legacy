@@ -54,7 +54,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		)
 	) as UserData;
 
-	setHeaders({ 'cache-control': 'max-age=60, must-revalidate' });
+	// setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
 
 	return {
 		latestPendingMatch,
@@ -235,14 +235,5 @@ export const actions: Actions = {
 		}
 
 		throw redirect(302, '/');
-	},
-	change_banner: async ({ request }) => {
-		const data = await request.formData();
-		const banner = data.get('banner') as File;
-
-		console.log("Banner form action")
-
-		console.log(banner)
-		console.log(banner.arrayBuffer())
 	}
 };

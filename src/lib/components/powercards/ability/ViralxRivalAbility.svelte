@@ -23,7 +23,7 @@
 		class="btn variant-filled-primary"
 		type="button"
 		on:click={() => {
-			viralxRival($user.auth_data.uid);
+			viralxRival($user.auth_data.uid, $opponent.auth_data.uid);
 			used = true;
 		}}
 	>
