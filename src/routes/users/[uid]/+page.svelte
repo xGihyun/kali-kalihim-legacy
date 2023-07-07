@@ -45,12 +45,15 @@
 
 <div class="flex h-full w-full flex-col items-center">
 	<!-- Banner -->
-	<!-- TEMPORARY -->
-	<img
-		class="h-80 w-full object-cover object-[0_-8rem]"
-		src="https://images5.alphacoders.com/128/1284718.jpg"
-		alt="kessoku band"
-	/>
+	{#if user.auth_data.banner_url}
+		<img
+			class="h-80 w-full object-cover object-center"
+			src={user.auth_data.banner_url}
+			alt="banner"
+		/>
+	{:else}
+		<div class="bg-surface-300-600-token h-80" />
+	{/if}
 	<div class="bg-surface-200-700-token flex h-32 w-full gap-4 px-[5%]">
 		<div
 			class="shadow-profile pointer-events-none mb-10 flex-none select-none self-end rounded-full"
@@ -273,7 +276,8 @@
 			<p>
 				Delete
 				<span class="font-bold">
-					{user.personal_data.name.first} {user.personal_data.name.last}
+					{user.personal_data.name.first}
+					{user.personal_data.name.last}
 				</span>
 				?
 			</p>
@@ -299,7 +303,11 @@
 				}}
 			>
 				<div class="flex justify-end">
-					<button class="btn variant-ghost-surface" type="button" on:click={() => deleteModal.close()}>
+					<button
+						class="btn variant-ghost-surface"
+						type="button"
+						on:click={() => deleteModal.close()}
+					>
 						Close
 					</button>
 					<button class="btn variant-filled-primary" type="submit">Delete</button>

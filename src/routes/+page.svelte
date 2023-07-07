@@ -35,7 +35,6 @@
 
 	$: pendingMatch = data?.latestPendingMatch;
 
-
 	// Subscribe to user changes
 	$: if (data.user) {
 		initials = `${data.user.personal_data.name.first[0]}${data.user.personal_data.name.last[0]}`;
@@ -364,10 +363,12 @@
 									/>
 								</div>
 								<div class="flex flex-col">
-									<span class="text-xl">
-										{$opponent.personal_data.name.first}
-										{$opponent.personal_data.name.last}
-									</span>
+									<a class="hover:underline" href={`/users/${$opponent.auth_data.uid}`}>
+										<span class="text-xl">
+											{$opponent.personal_data.name.first}
+											{$opponent.personal_data.name.last}
+										</span>
+									</a>
 									<div class="flex gap-4">
 										<span class="uppercase opacity-75">
 											{$opponent.rank.title}
