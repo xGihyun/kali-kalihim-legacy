@@ -7,21 +7,16 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const userUID = locals.userData.auth_data.uid;
 
 	const data = await request.formData();
-	const photo = data.get('file') as File;
-	const photoArrayBuffer = await photo.arrayBuffer();
-	const photoBytes = new Uint8Array(photoArrayBuffer);
+	const photoName = data.get('file_name') as string;
+	const blob = data.get('blob') as File;
+	const photoArrayBuffer = await blob.arrayBuffer();
 
-	if (!photo) {
-		console.log('No photo.');
-		return new Response();
-	}
-
-	const fileName = `${userUID}_${photo.name}`;
+	const fileName = `${userUID}_${photoName}`;
 
 	const storageRef = ref(storage, `profilePictures/${fileName}`);
 
 	try {
-		const snapshot = await uploadBytes(storageRef, photoBytes);
+		const snapshot = await uploadBytes(storageRef, photoArrayBuffer);
 
 		const downloadURL = await getDownloadURL(snapshot.ref);
 

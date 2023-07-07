@@ -16,7 +16,7 @@
 	const unsubRank = onSnapshot(q, async (snapshot) => {
 		users = snapshot.docs.map((user) => user.data() as UserData).sort((a, b) => b.score - a.score);
 
-		console.log('Section leaderboards snapshot ran. (client)');
+		// console.log('Section leaderboards snapshot ran. (client)');
 	});
 
 	onDestroy(() => unsubRank());

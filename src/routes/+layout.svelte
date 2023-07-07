@@ -3,10 +3,11 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
 	import { allUsersInSection, currentUser, latestOpponent } from '$lib/store';
-	import { setContext } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { Navbar } from '$lib/components';
+	import init from '$lib/pkg/my_package';
 
 	export let data;
 
@@ -46,6 +47,10 @@
 	setContext('user', currentUser);
 	setContext('opponent', latestOpponent);
 	setContext('usersInSection', allUsersInSection);
+
+	onMount(async () => {
+		await init();
+	});
 </script>
 
 <div class="flex h-screen w-full flex-col overflow-hidden">

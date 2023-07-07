@@ -46,6 +46,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	const latestPendingMatch = JSON.parse(
 		JSON.stringify(getPendingMatchesDocs.docs.shift()?.data())
 	) as Match;
+
 	const latestOpponent = JSON.parse(
 		JSON.stringify(
 			latestPendingMatch.players.find(
@@ -62,6 +63,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	};
 };
 
+// TODO: Use Zod
 export const actions: Actions = {
 	register: async ({ request, locals }) => {
 		const userUid = locals.userData.auth_data.uid;
@@ -72,11 +74,10 @@ export const actions: Actions = {
 
 		const userRef = doc(db, 'users', userUid);
 
-		// TODO: Use Zod
 		const data = await request.formData();
 		const firstName = data.get('first-name')?.toString().trim();
 		const lastName = data.get('last-name')?.toString().trim();
-		const age = Number(data.get('age')?.toString());
+		const age = Number(data.get('age'));
 		const sex = data.get('sex')?.toString();
 		const section = data.get('section')?.toString();
 		const contactNumber = Number(data.get('contact-number')?.toString().trim());
@@ -102,8 +103,8 @@ export const actions: Actions = {
 		const usersSnapshotCount = usersSnapshot.data().count;
 		const usersInSectionSnapshotCount = usersInSectionSnapshot.data().count;
 
-		console.log(usersSnapshotCount);
-		console.log(usersInSectionSnapshotCount);
+		// console.log(usersSnapshotCount);
+		// console.log(usersInSectionSnapshotCount);
 
 		// Add + 1 to usersInSectionSnapshotCount since the user's section is still not set in the db, therefore not counting the user
 		const newRankingData: UserRankingData = {

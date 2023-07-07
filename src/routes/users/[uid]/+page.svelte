@@ -7,6 +7,7 @@
 	import type { UserData } from '$lib/types';
 	import { doc, onSnapshot } from 'firebase/firestore';
 	import { db } from '$lib/firebase/firebase';
+	import { enhance } from '$app/forms';
 
 	export let data;
 
@@ -16,31 +17,12 @@
 	let loading = false;
 	let success = false;
 	let initials: string = '';
-	let modal: HTMLDialogElement;
+
+	let editModal: HTMLDialogElement;
+	let deleteModal: HTMLDialogElement;
 
 	if (data.user) {
 		initials = `${data.user.personal_data.name.first[0]}${data.user.personal_data.name.last[0]}`;
-	}
-
-	async function handleSubmit(event: Event) {
-		loading = true;
-
-		const form = event.target as HTMLFormElement;
-		const formData = new FormData(form);
-		formData.append('uid', data.user.auth_data.uid);
-
-		const response = await fetch('../../api/edit', { method: 'POST', body: formData });
-
-		if (!response.ok) {
-			console.error('Error in changing data: ' + response.statusText);
-			loading = false;
-			form.reset();
-			return;
-		}
-
-		success = true;
-		loading = false;
-		form.reset();
 	}
 
 	if (data.user) {
@@ -51,6 +33,13 @@
 		});
 
 		onDestroy(() => unsubUser());
+	}
+
+	function cancelEdit() {
+		loading = false;
+		success = false;
+
+		editModal.close();
 	}
 </script>
 
@@ -73,7 +62,7 @@
 				{user.personal_data.name.first}
 				{user.personal_data.name.last}
 				{#if user.auth_data.role === 'admin'}
-					(admin)	
+					(admin)
 				{/if}
 			</span>
 			<span class="text-secondary-700-200-token text-lg">
@@ -126,21 +115,44 @@
 	</div>
 
 	{#if $currentUser.auth_data.role === 'admin'}
-		<button
-			class="btn variant-filled fixed bottom-10 right-10 z-40 flex gap-4"
-			on:click={() => modal.showModal()}
-		>
-			<span>Edit</span>
-			<Edit styles="w-5" />
-		</button>
+		<div class="fixed bottom-10 right-10 z-40 flex gap-4">
+			<button class="btn variant-filled flex gap-4" on:click={() => editModal.showModal()}>
+				<span>Edit</span>
+				<Edit styles="w-5" />
+			</button>
+			<button class="btn variant-filled flex gap-4" on:click={() => deleteModal.showModal()}>
+				<span>Delete</span>
+				<Edit styles="w-5" />
+			</button>
+		</div>
 
-		<!-- Modal -->
+		<!-- Edit user information -->
 		<dialog
 			class="bg-surface-100-800-token rounded-container-token text-token w-modal-slim p-4 shadow-xl"
-			bind:this={modal}
+			bind:this={editModal}
 		>
 			{#if !loading && !success}
-				<form class="space-y-4" on:submit|preventDefault={(e) => handleSubmit(e)}>
+				<form
+					class="space-y-4"
+					method="post"
+					action={`/users/${user.auth_data.uid}?/edit`}
+					use:enhance={() => {
+						console.log('Submitting');
+						loading = true;
+
+						return async ({ result }) => {
+							if (result.type === 'success') {
+								console.log('Submitted');
+								success = true;
+								loading = false;
+							} else {
+								console.error('Something went wrong.');
+								success = false;
+								loading = false;
+							}
+						};
+					}}
+				>
 					<label class="label">
 						<span>First Name</span>
 						<input
@@ -230,7 +242,7 @@
 					</label>
 
 					<div class="flex justify-end gap-4">
-						<button class="btn variant-ghost-surface" type="button" on:click={() => modal.close()}>
+						<button class="btn variant-ghost-surface" type="button" on:click={cancelEdit}>
 							Cancel
 						</button>
 						<button class="btn variant-filled-primary" type="submit">Submit</button>
@@ -239,34 +251,60 @@
 			{:else if loading && !success}
 				<div>Submitting...</div>
 				<div class="flex justify-end">
-					<button
-						class="btn variant-ghost-surface"
-						type="button"
-						on:click={() => {
-							loading = false;
-							success = false;
-							modal.close();
-						}}
-					>
+					<button class="btn variant-ghost-surface" type="button" on:click={cancelEdit}>
 						Cancel
 					</button>
 				</div>
-			{:else if success && !loading}
+			{:else if !loading && success}
 				<div>Data successfuly changed!</div>
 				<div class="flex justify-end">
-					<button
-						class="btn variant-ghost-surface"
-						type="button"
-						on:click={() => {
-							success = false;
-							loading = false;
-							modal.close();
-						}}
-					>
+					<button class="btn variant-ghost-surface" type="button" on:click={cancelEdit}>
 						Close
 					</button>
 				</div>
 			{/if}
+		</dialog>
+
+		<!-- Delete user -->
+		<dialog
+			class="bg-surface-100-800-token rounded-container-token text-token w-modal p-4 shadow-xl"
+			bind:this={deleteModal}
+		>
+			<p>
+				Delete
+				<span class="font-bold">
+					{user.personal_data.name.first} {user.personal_data.name.last}
+				</span>
+				?
+			</p>
+			<form
+				class="space-y-4"
+				method="post"
+				action={`/users/${user.auth_data.uid}?/delete`}
+				use:enhance={() => {
+					console.log('Submitting');
+					loading = true;
+
+					return async ({ result }) => {
+						if (result.type === 'success') {
+							console.log('Deleted');
+							success = true;
+							loading = false;
+						} else {
+							console.error('Something went wrong.');
+							success = false;
+							loading = false;
+						}
+					};
+				}}
+			>
+				<div class="flex justify-end">
+					<button class="btn variant-ghost-surface" type="button" on:click={() => deleteModal.close()}>
+						Close
+					</button>
+					<button class="btn variant-filled-primary" type="submit">Delete</button>
+				</div>
+			</form>
 		</dialog>
 	{/if}
 </div>

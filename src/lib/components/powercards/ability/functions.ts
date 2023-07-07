@@ -102,8 +102,8 @@ export async function doubleEdgedSword(userUID: string) {
 	await updateDoc(userRef, { power_cards: userPowerCards });
 }
 
-export async function extraWind(userUid: string, card: string) {
-	const userRef = doc(db, 'users', userUid);
+export async function extraWind(userUID: string, card: string) {
+	const userRef = doc(db, 'users', userUID);
 	const userDoc = await getDoc(userRef);
 	const userData = userDoc.data() as UserData;
 	const userPowerCards = userData.power_cards;
@@ -123,8 +123,8 @@ export async function extraWind(userUid: string, card: string) {
 	await updateDoc(userRef, { power_cards: userPowerCards });
 }
 
-export async function ancientsProtection(userUid: string) {
-	const userRef = doc(db, 'users', userUid);
+export async function ancientsProtection(userUID: string) {
+	const userRef = doc(db, 'users', userUID);
 	const userDoc = await getDoc(userRef);
 	const userData = userDoc.data() as UserData;
 	const userPowerCards = userData.power_cards;
@@ -137,8 +137,8 @@ export async function ancientsProtection(userUid: string) {
 	await updateDoc(userRef, { power_cards: userPowerCards });
 }
 
-export async function viralxRival(userUiD: string, opponentUID: string) {
-	const userRef = doc(db, 'users', userUiD);
+export async function viralxRival(userUID: string, opponentUID: string) {
+	const userRef = doc(db, 'users', userUID);
 	const userDoc = await getDoc(userRef);
 	const userData = userDoc.data() as UserData;
 	const userPowerCards = userData.power_cards;

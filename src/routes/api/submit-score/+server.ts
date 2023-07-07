@@ -130,11 +130,11 @@ export const POST: RequestHandler = async ({ request }) => {
 	return new Response();
 };
 
-async function updateMatchStatus(id: string, userUid: string) {
+async function updateMatchStatus(id: string, userUID: string) {
 	const matchSetMatchesCollection = collection(db, `match_sets/${id}/matches`);
 	const matchSetMatchQuery = query(
 		matchSetMatchesCollection,
-		where('uids', 'array-contains', userUid),
+		where('uids', 'array-contains', userUID),
 		where('status', '==', 'pending')
 	);
 	const getMatchSetMatch = await getDocs(matchSetMatchQuery);

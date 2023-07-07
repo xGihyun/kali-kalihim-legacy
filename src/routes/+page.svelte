@@ -2,28 +2,39 @@
 	import { PowerCard } from '$lib/components';
 	import { powerCardsMap, sectionsMap } from '$lib/data';
 	import { db } from '$lib/firebase/firebase';
-	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store.js';
+	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
 	import type { Match, UserData } from '$lib/types';
 	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import { Edit } from '../assets/icons';
+	import { crop } from '$lib/pkg/my_package';
 
 	export let data;
 
-	let selectedFile: File | null = null;
+	let selectedAvatar: File | null = null;
 	let selectedBanner: File | null = null;
-	let uploadInputEl: HTMLInputElement;
+	let uploadAvatarEl: HTMLInputElement;
 	let uploadBannerEl: HTMLInputElement;
+	let initials: string = '';
+	let opponentInitials: string = '';
+
+	const BANNER = {
+		width: 1920,
+		height: 320
+	};
+
+	const AVATAR = {
+		width: 160,
+		height: 160
+	};
 
 	$: user = getContext<Writable<UserData>>('user');
 	$: opponent = getContext<Writable<UserData>>('opponent');
 
 	$: pendingMatch = data?.latestPendingMatch;
 
-	let initials: string = '';
-	let opponentInitials: string = '';
 
 	// Subscribe to user changes
 	$: if (data.user) {
@@ -44,7 +55,7 @@
 					})
 			);
 
-			console.log('User snapshot ran.');
+			// console.log('User snapshot ran.');
 		});
 
 		// Upcoming match
@@ -65,7 +76,7 @@
 			pendingMatch = newMatch;
 			latestOpponent.set(newOpponent);
 
-			console.log('Pending matches snapshot ran.');
+			// console.log('Pending matches snapshot ran.');
 		});
 
 		onDestroy(() => {
@@ -79,8 +90,8 @@
 	$: if (data.latestOpponent) {
 		opponentInitials = `${data.latestOpponent.personal_data.name.first[0]}${data.latestOpponent.personal_data.name.last[0]}`;
 
-		console.log('Opponent exists');
-		latestOpponent.set(data.latestOpponent);
+		// console.log('Opponent exists');
+		// latestOpponent.set(data.latestOpponent);
 
 		const opponentRef = doc(db, 'users', data.latestOpponent.auth_data.uid);
 
@@ -91,7 +102,7 @@
 
 			latestOpponent.update((val) => (val = updatedOpponentData));
 
-			console.log('Opponent snapshot ran.');
+			// console.log('Opponent snapshot ran.');
 		});
 
 		onDestroy(() => unsubOpponent());
@@ -105,11 +116,16 @@
 	};
 
 	async function handleFileUpload() {
-		if (!selectedFile) return;
+		if (!selectedAvatar) return;
 
 		const formData = new FormData();
 
-		formData.append('file', selectedFile);
+		const bannerArrayBuffer = await selectedAvatar.arrayBuffer();
+		const bannerBytes = new Uint8Array(bannerArrayBuffer);
+		const croppedBannerBytes = crop(bannerBytes, AVATAR.width, AVATAR.height);
+
+		formData.append('blob', new Blob([croppedBannerBytes]));
+		formData.append('file_name', selectedAvatar.name);
 
 		const response = await fetch('./api/photo/upload', {
 			method: 'POST',
@@ -123,7 +139,7 @@
 		}
 	}
 
-	async function removePhoto() {
+	async function removeAvatar() {
 		if (!$user.auth_data.photo_url) return;
 
 		const response = await fetch('./api/photo/remove', {
@@ -137,12 +153,12 @@
 		}
 	}
 
-	function handleSelectedFile(e: Event) {
+	function handleSelectedAvatar(e: Event) {
 		const target = e.target as HTMLInputElement;
 
 		if (!target.files) return;
 
-		selectedFile = target.files[0];
+		selectedAvatar = target.files[0];
 
 		handleFileUpload();
 	}
@@ -159,7 +175,12 @@
 
 		const formData = new FormData();
 
-		formData.append('file', selectedBanner);
+		const bannerArrayBuffer = await selectedBanner.arrayBuffer();
+		const bannerBytes = new Uint8Array(bannerArrayBuffer);
+		const croppedBannerBytes = crop(bannerBytes, BANNER.width, BANNER.height);
+
+		formData.append('blob', new Blob([croppedBannerBytes]));
+		formData.append('file_name', selectedBanner.name);
 
 		const response = await fetch('./api/banner/upload', {
 			method: 'POST',
@@ -197,7 +218,7 @@
 		}
 	}
 
-	// TODO: Change selected image to .webp format and optimize resolution (use WASM if possible)
+	// TODO: Add cropping with preview?
 </script>
 
 <!-- TODO: MAKE STUFF LOOK GOOD -->
@@ -222,24 +243,6 @@
 				<Edit styles="w-5 h-5" />
 			</button>
 			<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="banner">
-				<!-- <form class="contents" method="post">
-					<input
-						type="file"
-						accept="image/*"
-						name="banner"
-						hidden
-						on:change={handleSelectedBanner}
-						bind:this={uploadBannerEl}
-						value={selectedBanner}
-					/>
-					<button
-						class="hover:bg-surface-400-500-token w-full px-2 py-1"
-						formaction="?/change_banner"
-					>
-						Change banner
-					</button>
-					<button class="hover:bg-surface-400-500-token w-full px-2 py-1">Remove banner</button>
-				</form> -->
 				<input
 					type="file"
 					accept="image/*"
@@ -271,11 +274,11 @@
 			<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="avatar">
 				<button
 					class="hover:bg-surface-400-500-token w-full px-2 py-1"
-					on:click={() => uploadInputEl.click()}
+					on:click={() => uploadAvatarEl.click()}
 				>
 					Change avatar
 				</button>
-				<button class="hover:bg-surface-400-500-token w-full px-2 py-1" on:click={removePhoto}>
+				<button class="hover:bg-surface-400-500-token w-full px-2 py-1" on:click={removeAvatar}>
 					Remove avatar
 				</button>
 				<div class="arrow bg-surface-100-800-token" />
@@ -285,8 +288,8 @@
 				accept="image/*"
 				name="photo"
 				hidden
-				on:change={handleSelectedFile}
-				bind:this={uploadInputEl}
+				on:change={handleSelectedAvatar}
+				bind:this={uploadAvatarEl}
 			/>
 			<div class="flex h-full flex-col justify-center">
 				<span class="text-2xl">
@@ -318,25 +321,25 @@
 						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
 					>
 						<span class="text-xl">Overall Ranking</span>
-						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
-							>#{$user.rank.number.overall}</span
-						>
+						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl">
+							#{$user.rank.number.overall}
+						</span>
 					</div>
 					<div
 						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
 					>
 						<span class="text-xl">Score</span>
-						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
-							>{$user.score}</span
-						>
+						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl">
+							{$user.score}
+						</span>
 					</div>
 					<div
 						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
 					>
 						<span class="text-xl">Section Ranking</span>
-						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
-							>#{$user.rank.number.section}</span
-						>
+						<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl">
+							#{$user.rank.number.section}
+						</span>
 					</div>
 				</div>
 			</div>

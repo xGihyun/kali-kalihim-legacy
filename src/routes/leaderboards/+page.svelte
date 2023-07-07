@@ -18,7 +18,7 @@
 		const unsubRank = onSnapshot(q, async (snapshot) => {
 			users = snapshot.docs.map((user) => user.data() as UserData);
 
-			console.log('Global leaderboards snapshot ran. (client)');
+			// console.log('Global leaderboards snapshot ran. (client)');
 		});
 
 		onDestroy(() => unsubRank());

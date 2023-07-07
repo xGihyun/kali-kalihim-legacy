@@ -33,7 +33,7 @@
 		</ul>
 		<div class="arrow bg-surface-100-800-token" />
 	</div>
-	<div class="flex h-full w-full flex-col items-center justify-center">
+	<div class="flex h-full w-full flex-col items-center justify-center gap-4">
 		<slot />
 	</div>
 </div>

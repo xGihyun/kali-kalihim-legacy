@@ -99,6 +99,7 @@
 		{/if}
 	</div>
 	<!-- I don't know if this is the best way for form actions + SvelteKit endpoint -->
+	<!-- UPDATE: Yes, it can be improved with use:enhance, but not gonna do it for now -->
 	<div class="flex flex-col items-center gap-4">
 		<form class="contents" on:submit|preventDefault={(e) => matchmake(e, sectionValue)}>
 			<label class="label">

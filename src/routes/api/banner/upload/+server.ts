@@ -1,48 +1,46 @@
-import { db, storage } from '$lib/firebase/firebase';
 import type { RequestHandler } from '@sveltejs/kit';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { storage, db } from '$lib/firebase/firebase';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
 	const userUID = locals.userData.auth_data.uid;
 
 	const data = await request.formData();
-	const photo = data.get('file') as File;
-	const photoArrayBuffer = await photo.arrayBuffer();
-	const photoBytes = new Uint8Array(photoArrayBuffer);
+	const photoName = data.get('file_name') as string;
+	const blob = data.get('blob') as File;
+	const photoArrayBuffer = await blob.arrayBuffer();
 
-	if (!photo) {
-		console.log('No photo.');
-		return new Response();
-	}
-
-	const fileName = `${userUID}_${photo.name}`;
+	const fileName = `${userUID}_${photoName}`;
 
 	const storageRef = ref(storage, `banners/${fileName}`);
 
 	try {
-		const snapshot = await uploadBytes(storageRef, photoBytes);
+		await uploadBytes(storageRef, photoArrayBuffer);
 
-		const downloadURL = await getDownloadURL(snapshot.ref);
+		const downloadURL = await getDownloadURL(storageRef);
 
 		await updateBanner(downloadURL, userUID);
 
-		console.log('Profile picture uploaded successfully!');
+		console.log('Banner uploaded successfully!');
 	} catch (error) {
-		console.error('Error uploading profile picture: ', error);
+		console.error('Error uploading banner: ', error);
 	}
+
 	return new Response();
 };
 
 async function updateBanner(downloadURL: string, userUID: string) {
-	try {
-		const userRef = doc(db, 'users', userUID);
-		const userDoc = await getDoc(userRef);
+	const userRef = doc(db, 'users', userUID);
 
-		if (userDoc.exists()) {
-			await setDoc(userRef, { auth_data: { banner_url: downloadURL } }, { merge: true });
-		}
+	try {
+		// await updateDoc(userRef, {
+		// 	'auth_data.banner_url': downloadURL
+		// });
+		await setDoc(userRef, { auth_data: { banner_url: downloadURL } }, { merge: true });
+
+		console.log('Banner URL updated successfully!');
 	} catch (error) {
-		console.error('Error updating banner: ', error);
+		console.error('Error updating banner URL: ', error);
 	}
 }

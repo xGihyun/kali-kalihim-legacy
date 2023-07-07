@@ -39,12 +39,10 @@ export const sectionsMap: Map<string, string> = new Map([
 	['section-2', 'Section 2'],
 	['section-3', 'Section 3'],
 	['section-4', 'Section 4'],
-	['section-5', 'Section 5'],
-	['section-6', 'Section 6'],
+	['section-5', 'Section 5'], ['section-6', 'Section 6'],
 	['section-7', 'Section 7'],
 	['section-8', 'Section 8'],
-	['section-9', 'Section 9'],
-	['section-10', 'Section 10'],
+	['section-9', 'Section 9'], ['section-10', 'Section 10'],
 	['section-11', 'Section 11']
 ]);
 
