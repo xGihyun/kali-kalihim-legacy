@@ -21,6 +21,7 @@ import {
 } from 'firebase/auth';
 import type { Match, UserData, UserPersonalData, UserRankingData } from '$lib/types.js';
 import type { PageServerLoad } from './$types';
+import { CACHE_DURATION } from '$lib/constants';
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	if (!locals.userData) {
@@ -55,7 +56,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		)
 	) as UserData;
 
-	setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		latestPendingMatch,

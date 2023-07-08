@@ -8,6 +8,10 @@
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { Navbar } from '$lib/components';
 	import init from '$lib/pkg/my_package';
+	import { AppRail, AppRailAnchor } from '@skeletonlabs/skeleton';
+	import { ADMIN_ROUTES } from '$lib/constants';
+	import { page } from '$app/stores';
+	import { Github } from '$lib/assets/icons';
 
 	export let data;
 
@@ -56,6 +60,28 @@
 <div class="flex h-screen w-full flex-col overflow-hidden">
 	<Navbar />
 	<div class="flex h-full w-full flex-auto overflow-hidden">
+		<AppRail border="border-r border-surface-500/75" background="bg-surface-50-900-token">
+			{#each ADMIN_ROUTES as route, idx (idx)}
+				<AppRailAnchor href={route.path} selected={$page.url.pathname === route.path}>
+					<svelte:fragment slot="lead">
+						<svelte:component this={route.icon} styles="w-6 h-6" />
+					</svelte:fragment>
+					<span>{route.name}</span>
+				</AppRailAnchor>
+			{/each}
+			<svelte:fragment slot="trail">
+				<AppRailAnchor
+					href="https://github.com/xGihyun/kali-kalihim"
+					target="_blank"
+					title="Source"
+				>
+					<svelte:fragment slot="lead">
+						<Github styles="w-6 h-6" />
+					</svelte:fragment>
+				</AppRailAnchor>
+			</svelte:fragment>
+		</AppRail>
+
 		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
 			<div class="flex flex-1 flex-col items-center justify-center">
 				<slot />

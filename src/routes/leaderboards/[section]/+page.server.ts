@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
+import { CACHE_DURATION } from '$lib/constants';
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const section = params.section;
@@ -12,7 +13,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 		.map((user) => user.data() as UserData)
 		.sort((a, b) => b.score - a.score);
 
-	setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 	
 	return {
 		users: users,

@@ -8,7 +8,7 @@
 	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
-	import { Edit } from '../assets/icons';
+	import { Edit } from '$lib/assets/icons';
 	import { crop } from '$lib/pkg/my_package';
 
 	export let data;
@@ -230,7 +230,9 @@
 				<img
 					class="h-80 w-full object-cover object-center"
 					src={$user.auth_data.banner_url}
+					role="banner"
 					alt="banner"
+					loading="lazy"
 				/>
 			{:else}
 				<div class="bg-surface-300-600-token h-80" />

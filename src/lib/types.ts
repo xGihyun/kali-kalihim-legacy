@@ -67,6 +67,12 @@ export type PowerCard = {
 		ability: ConstructorOfATypedSvelteComponent;
 	};
 	name: string;
-	function: (...T) => Promise<T>;
+	function: (...T: any) => Promise<typeof T>;
 	used: boolean;
 };
+
+export type Navigation = {
+	name: string;
+	path: string;
+	icon?: ConstructorOfATypedSvelteComponent;
+}[];

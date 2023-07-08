@@ -4,13 +4,16 @@ import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
 import type { Actions } from '@sveltejs/kit';
 import { updateOverallRankings, updateRankTitle, updateSectionRankings } from '$lib/utils/update';
+import { CACHE_DURATION } from '$lib/constants';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const uid = params.uid;
 
 	const userRef = doc(db, 'users', uid);
 	const userDoc = await getDoc(userRef);
 	const user = userDoc.data() as UserData;
+
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		user
@@ -29,12 +32,13 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const firstName = data.get('first-name')?.toString().trim() || '';
 		const lastName = data.get('last-name')?.toString().trim() || '';
-		const age = Number(data.get('age')?.toString());
+		const age = Number(data.get('age')?.toString().trim());
 		const email = data.get('email')?.toString().trim() || '';
 		const sex = data.get('sex')?.toString() || '';
 		const section = data.get('section')?.toString() || '';
 		const contactNumber = Number(data.get('contact-number')?.toString().trim());
-		const score = Number(data.get('score'));
+		const score = Number(data.get('score')?.toString().trim());
+		const role = data.get('role') as string;
 
 		if (isNaN(score) || isNaN(contactNumber)) {
 			console.error('Input is not a number.');
@@ -48,7 +52,8 @@ export const actions: Actions = {
 			...userData,
 			auth_data: {
 				...userData.auth_data,
-				email
+				email,
+				role
 			},
 			personal_data: {
 				...userData.personal_data,
@@ -75,9 +80,8 @@ export const actions: Actions = {
 		console.log('Data has been updated.');
 	},
 	delete: async ({ params }) => {
-
 		const userUID = params.uid;
-		
-		console.log("Deleting user")
+
+		console.log('Deleting user');
 	}
 };

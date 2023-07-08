@@ -2,6 +2,7 @@ import { db } from '$lib/firebase/firebase';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
 import type { MatchSet, Match } from '$lib/types';
+import { CACHE_DURATION } from '$lib/constants';
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const matchSetId = params.match_id;
@@ -16,7 +17,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 		(match) => JSON.parse(JSON.stringify(match.data())) as Match
 	);
 
-	setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		matchSetId,

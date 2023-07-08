@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { sectionsMap } from '$lib/data';
 	import { Avatar } from '@skeletonlabs/skeleton';
-	import { Edit } from '../../../assets/icons';
+	import { Edit } from '$lib/assets/icons';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import type { UserData } from '$lib/types';
@@ -242,6 +242,14 @@
 					<label class="label">
 						<span>Score</span>
 						<input class="input" type="text" value={user.score} name="score" required />
+					</label>
+
+					<label class="label">
+						<span>Role</span>
+						<select class="input" size="1" value={user.auth_data.role} name="role" required>
+							<option value="admin">Admin</option>
+							<option value="user">User</option>
+						</select>
 					</label>
 
 					<div class="flex justify-end gap-4">

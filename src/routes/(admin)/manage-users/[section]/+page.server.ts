@@ -2,6 +2,7 @@ import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
+import { CACHE_DURATION } from '$lib/constants';
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const section = params.section;
@@ -29,7 +30,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 			return nameA.localeCompare(nameB);
 		});
 
-	setHeaders({ 'cache-control': 'max-age=120, must-revalidate' });
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		section,

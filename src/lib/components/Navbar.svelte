@@ -3,6 +3,7 @@
 	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import type { UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
+	import { ADMIN_ROUTES, USER_ROUTES } from '$lib/constants';
 	// import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 	// import { db } from '$lib/firebase/firebase';
 	// import { onDestroy } from 'svelte';
@@ -66,28 +67,18 @@
 	>
 		<a href="/" class="font-gt-walsheim-pro-medium text-2xl uppercase md:text-4xl">Kali Kalihim</a>
 		<div class="flex items-center gap-5">
-			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/leaderboards">
-				Leaderboards
-			</a>
-			{#if $user.auth_data.role === 'admin'}
-				<a class="hover:variant-soft-primary btn hidden md:block" type="button" href="/matchmake">
-					Matchmake
+			{#each USER_ROUTES as route, idx (idx)}
+				<a class="hover:variant-soft-primary btn hidden md:block" type="button" href={route.path}>
+					{route.name}
 				</a>
-				<a
-					class="hover:variant-soft-primary btn hidden md:block"
-					type="button"
-					href="/pending-matches"
-				>
-					Pending Matches
-				</a>
-				<a
-					class="hover:variant-soft-primary btn hidden md:block"
-					type="button"
-					href="/manage-users"
-				>
-					Manage Users
-				</a>
-			{/if}
+			{/each}
+			<!-- {#if $user.auth_data.role === 'admin'}
+				{#each ADMIN_ROUTES as route, idx (idx)}
+					<a class="hover:variant-soft-primary btn hidden md:block" type="button" href={route.path}>
+						{route.name}
+					</a>
+				{/each}
+			{/if} -->
 
 			<!-- <div class="flex items-center">
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
@@ -127,28 +118,26 @@
 				</button>
 				<div class="card fixed w-72 p-4 shadow-xl transition-none duration-0" data-popup="profile">
 					<ul class="space-y-4">
-						<a class="variant-soft-surface btn block md:hidden" type="button" href="/leaderboards">
-							Leaderboards
-						</a>
-						{#if $user.auth_data.role === 'admin'}
-							<a class="variant-soft-surface btn block md:hidden" type="button" href="/matchmake">
-								Matchmake
-							</a>
-							<a
-								class="variant-soft-surface btn block md:hidden"
-								type="button"
-								href="/pending-matches"
-							>
-								Pending Matches
-							</a>
+						{#each USER_ROUTES as route, idx (idx)}
 							<a
 								class="hover:variant-soft-primary btn block md:hidden"
 								type="button"
-								href="/manage-users"
+								href={route.path}
 							>
-								Manage Scores
+								{route.name}
 							</a>
-						{/if}
+						{/each}
+						<!-- {#if $user.auth_data.role === 'admin'}
+							{#each ADMIN_ROUTES as route, idx (idx)}
+								<a
+									class="hover:variant-soft-primary btn block md:hidden"
+									type="button"
+									href={route.path}
+								>
+									{route.name}
+								</a>
+							{/each}
+						{/if} -->
 						<form class="block" method="post" action="/logout">
 							<button class="btn variant-filled-primary w-full">Log Out</button>
 						</form>
