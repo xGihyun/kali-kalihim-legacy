@@ -3,7 +3,7 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
 	import { allUsersInSection, currentUser, latestOpponent } from '$lib/store';
-	import { onMount, setContext } from 'svelte';
+	import { getContext, onMount, setContext } from 'svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { Navbar } from '$lib/components';
@@ -12,6 +12,8 @@
 	import { ADMIN_ROUTES } from '$lib/constants';
 	import { page } from '$app/stores';
 	import { Github } from '$lib/assets/icons';
+	import type { UserData } from '$lib/types';
+	import type { Writable } from 'svelte/store';
 
 	export let data;
 
@@ -52,35 +54,41 @@
 	setContext('opponent', latestOpponent);
 	setContext('usersInSection', allUsersInSection);
 
+	const user = getContext<Writable<UserData>>('user');
+
 	onMount(async () => {
 		await init();
 	});
 </script>
 
 <div class="flex h-screen w-full flex-col overflow-hidden">
-	<Navbar />
+	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
+		<Navbar />
+	{/if}
 	<div class="flex h-full w-full flex-auto overflow-hidden">
-		<AppRail border="border-r border-surface-500/75" background="bg-surface-50-900-token">
-			{#each ADMIN_ROUTES as route, idx (idx)}
-				<AppRailAnchor href={route.path} selected={$page.url.pathname === route.path}>
-					<svelte:fragment slot="lead">
-						<svelte:component this={route.icon} styles="w-6 h-6" />
-					</svelte:fragment>
-					<span>{route.name}</span>
-				</AppRailAnchor>
-			{/each}
-			<svelte:fragment slot="trail">
-				<AppRailAnchor
-					href="https://github.com/xGihyun/kali-kalihim"
-					target="_blank"
-					title="Source"
-				>
-					<svelte:fragment slot="lead">
-						<Github styles="w-6 h-6" />
-					</svelte:fragment>
-				</AppRailAnchor>
-			</svelte:fragment>
-		</AppRail>
+		{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
+			<AppRail border="border-r border-surface-500/75" background="bg-surface-50-900-token">
+				{#each ADMIN_ROUTES as route, idx (idx)}
+					<AppRailAnchor href={route.path} selected={$page.url.pathname === route.path}>
+						<svelte:fragment slot="lead">
+							<svelte:component this={route.icon} styles="w-6 h-6" />
+						</svelte:fragment>
+						<span>{route.name}</span>
+					</AppRailAnchor>
+				{/each}
+				<svelte:fragment slot="trail">
+					<AppRailAnchor
+						href="https://github.com/xGihyun/kali-kalihim"
+						target="_blank"
+						title="Source"
+					>
+						<svelte:fragment slot="lead">
+							<Github styles="w-6 h-6" />
+						</svelte:fragment>
+					</AppRailAnchor>
+				</svelte:fragment>
+			</AppRail>
+		{/if}
 
 		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
 			<div class="flex flex-1 flex-col items-center justify-center">

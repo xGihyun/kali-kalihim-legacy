@@ -61,18 +61,17 @@
 	// }
 </script>
 
-{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-	<nav
-		class="bg-surface-100-800-token shadow-nav z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5"
-	>
-		<a href="/" class="font-gt-walsheim-pro-medium text-2xl uppercase md:text-4xl">Kali Kalihim</a>
-		<div class="flex items-center gap-5">
-			{#each USER_ROUTES as route, idx (idx)}
-				<a class="hover:variant-soft-primary btn hidden md:block" type="button" href={route.path}>
-					{route.name}
-				</a>
-			{/each}
-			<!-- {#if $user.auth_data.role === 'admin'}
+<nav
+	class="bg-surface-100-800-token shadow-nav z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5"
+>
+	<a href="/" class="font-gt-walsheim-pro-medium text-2xl uppercase md:text-4xl">Kali Kalihim</a>
+	<div class="flex items-center gap-5">
+		{#each USER_ROUTES as route, idx (idx)}
+			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href={route.path}>
+				{route.name}
+			</a>
+		{/each}
+		<!-- {#if $user.auth_data.role === 'admin'}
 				{#each ADMIN_ROUTES as route, idx (idx)}
 					<a class="hover:variant-soft-primary btn hidden md:block" type="button" href={route.path}>
 						{route.name}
@@ -80,7 +79,7 @@
 				{/each}
 			{/if} -->
 
-			<!-- <div class="flex items-center">
+		<!-- <div class="flex items-center">
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
 					<Bell styles="w-5 h-5" />
 				</button>
@@ -112,22 +111,22 @@
 				</div>
 			</div> -->
 
-			<div class="flex items-center">
-				<button use:popup={popupProfile}>
-					<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
-				</button>
-				<div class="card fixed w-72 p-4 shadow-xl transition-none duration-0" data-popup="profile">
-					<ul class="space-y-4">
-						{#each USER_ROUTES as route, idx (idx)}
-							<a
-								class="hover:variant-soft-primary btn block md:hidden"
-								type="button"
-								href={route.path}
-							>
-								{route.name}
-							</a>
-						{/each}
-						<!-- {#if $user.auth_data.role === 'admin'}
+		<div class="flex items-center">
+			<button use:popup={popupProfile}>
+				<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
+			</button>
+			<div class="card fixed w-72 p-4 shadow-xl transition-none duration-0" data-popup="profile">
+				<ul class="space-y-4">
+					{#each USER_ROUTES as route, idx (idx)}
+						<a
+							class="hover:variant-soft-primary btn block md:hidden"
+							type="button"
+							href={route.path}
+						>
+							{route.name}
+						</a>
+					{/each}
+					<!-- {#if $user.auth_data.role === 'admin'}
 							{#each ADMIN_ROUTES as route, idx (idx)}
 								<a
 									class="hover:variant-soft-primary btn block md:hidden"
@@ -138,13 +137,12 @@
 								</a>
 							{/each}
 						{/if} -->
-						<form class="block" method="post" action="/logout">
-							<button class="btn variant-filled-primary w-full">Log Out</button>
-						</form>
-					</ul>
-					<div class="arrow bg-surface-100-800-token" />
-				</div>
+					<form class="block" method="post" action="/logout">
+						<button class="btn variant-filled-primary w-full">Log Out</button>
+					</form>
+				</ul>
+				<div class="arrow bg-surface-100-800-token" />
 			</div>
 		</div>
-	</nav>
-{/if}
+	</div>
+</nav>
