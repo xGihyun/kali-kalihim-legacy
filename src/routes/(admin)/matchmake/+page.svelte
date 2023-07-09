@@ -104,13 +104,13 @@
 		<form class="contents" on:submit|preventDefault={(e) => matchmake(e, sectionValue)}>
 			<label class="label">
 				<span>Section</span>
-				<select class="input" size="1" name="section" required bind:value={sectionValue}>
+				<select class="select" name="section" required bind:value={sectionValue}>
 					{#each sectionsMap as [key, value], idx (idx)}
 						<option value={key}>{value}</option>
 					{/each}
 				</select>
 			</label>
-			<button class="variant-filled-primary rounded-md p-2">Matchmake</button>
+			<button class="btn variant-filled-primary">Matchmake</button>
 		</form>
 	</div>
 </div>

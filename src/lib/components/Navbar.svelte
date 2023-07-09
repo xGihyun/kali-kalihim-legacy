@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import {
+		Avatar,
+		drawerStore,
+		popup,
+		type DrawerSettings,
+		type PopupSettings
+	} from '@skeletonlabs/skeleton';
 	import type { UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
-	import { ADMIN_ROUTES, USER_ROUTES } from '$lib/constants';
+	import { HamburgerMenu } from '$lib/assets/icons';
 	// import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 	// import { db } from '$lib/firebase/firebase';
 	// import { onDestroy } from 'svelte';
@@ -59,26 +65,21 @@
 
 	// 	onDestroy(() => unsubNotifications());
 	// }
+	const settings: DrawerSettings = {
+		width: 'w-fit'
+	};
 </script>
 
 <nav
 	class="bg-surface-100-800-token shadow-nav z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5"
 >
-	<a href="/" class="font-gt-walsheim-pro-medium text-2xl uppercase md:text-4xl">Kali Kalihim</a>
+	<div class="flex items-center gap-2">
+		<button class="block lg:hidden" on:click={() => drawerStore.open(settings)}>
+			<HamburgerMenu styles="w-6 h-6" />
+		</button>
+		<a href="/" class="font-gt-walsheim-pro-medium text-2xl uppercase md:text-4xl">Kali Kalihim</a>
+	</div>
 	<div class="flex items-center gap-5">
-		{#each USER_ROUTES as route, idx (idx)}
-			<a class="hover:variant-soft-primary btn hidden md:block" type="button" href={route.path}>
-				{route.name}
-			</a>
-		{/each}
-		<!-- {#if $user.auth_data.role === 'admin'}
-				{#each ADMIN_ROUTES as route, idx (idx)}
-					<a class="hover:variant-soft-primary btn hidden md:block" type="button" href={route.path}>
-						{route.name}
-					</a>
-				{/each}
-			{/if} -->
-
 		<!-- <div class="flex items-center">
 				<button class="btn-icon w-10 aspect-square variant-filled" use:popup={popupNotification}>
 					<Bell styles="w-5 h-5" />
@@ -116,31 +117,9 @@
 				<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
 			</button>
 			<div class="card fixed w-72 p-4 shadow-xl transition-none duration-0" data-popup="profile">
-				<ul class="space-y-4">
-					{#each USER_ROUTES as route, idx (idx)}
-						<a
-							class="hover:variant-soft-primary btn block md:hidden"
-							type="button"
-							href={route.path}
-						>
-							{route.name}
-						</a>
-					{/each}
-					<!-- {#if $user.auth_data.role === 'admin'}
-							{#each ADMIN_ROUTES as route, idx (idx)}
-								<a
-									class="hover:variant-soft-primary btn block md:hidden"
-									type="button"
-									href={route.path}
-								>
-									{route.name}
-								</a>
-							{/each}
-						{/if} -->
-					<form class="block" method="post" action="/logout">
-						<button class="btn variant-filled-primary w-full">Log Out</button>
-					</form>
-				</ul>
+				<form class="block" method="post" action="/logout">
+					<button class="btn variant-filled-primary w-full">Log Out</button>
+				</form>
 				<div class="arrow bg-surface-100-800-token" />
 			</div>
 		</div>

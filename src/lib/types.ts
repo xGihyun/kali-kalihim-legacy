@@ -76,3 +76,10 @@ export type Navigation = {
 	path: string;
 	icon?: ConstructorOfATypedSvelteComponent;
 }[];
+
+type Video = {
+	title: string;
+	url: string;
+}
+
+export type Videos = Video[];

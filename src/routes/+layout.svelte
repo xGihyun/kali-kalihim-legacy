@@ -9,11 +9,13 @@
 	import { Navbar } from '$lib/components';
 	import init from '$lib/pkg/my_package';
 	import { AppRail, AppRailAnchor } from '@skeletonlabs/skeleton';
-	import { ADMIN_ROUTES } from '$lib/constants';
+	import { ADMIN_ROUTES, USER_ROUTES } from '$lib/constants';
 	import { page } from '$app/stores';
 	import { Github } from '$lib/assets/icons';
 	import type { UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
+	import { Drawer, drawerStore } from '@skeletonlabs/skeleton';
+	import type { DrawerSettings } from '@skeletonlabs/skeleton';
 
 	export let data;
 
@@ -65,29 +67,92 @@
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 		<Navbar />
 	{/if}
-	<div class="flex h-full w-full flex-auto overflow-hidden">
-		{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-			<AppRail border="border-r border-surface-500/75" background="bg-surface-50-900-token">
+
+	<Drawer zIndex="z-[51]">
+		<AppRail border="border-r border-surface-500/75" background="bg-surface-50-900-token">
+			{#each USER_ROUTES as route, idx (idx)}
+				<AppRailAnchor
+					href={route.path}
+					selected={$page.url.pathname === route.path}
+					on:click={() => drawerStore.close()}
+				>
+					<svelte:fragment slot="lead">
+						<svelte:component this={route.icon} styles="w-6 h-6" />
+					</svelte:fragment>
+					<span>{route.name}</span>
+				</AppRailAnchor>
+			{/each}
+
+			{#if $user.auth_data.role === 'admin'}
 				{#each ADMIN_ROUTES as route, idx (idx)}
-					<AppRailAnchor href={route.path} selected={$page.url.pathname === route.path}>
+					<AppRailAnchor
+						href={route.path}
+						selected={$page.url.pathname.startsWith(route.path)}
+						on:click={() => drawerStore.close()}
+					>
 						<svelte:fragment slot="lead">
 							<svelte:component this={route.icon} styles="w-6 h-6" />
 						</svelte:fragment>
 						<span>{route.name}</span>
 					</AppRailAnchor>
 				{/each}
-				<svelte:fragment slot="trail">
-					<AppRailAnchor
-						href="https://github.com/xGihyun/kali-kalihim"
-						target="_blank"
-						title="Source"
-					>
-						<svelte:fragment slot="lead">
-							<Github styles="w-6 h-6" />
-						</svelte:fragment>
-					</AppRailAnchor>
-				</svelte:fragment>
-			</AppRail>
+			{/if}
+
+			<svelte:fragment slot="trail">
+				<AppRailAnchor
+					href="https://github.com/xGihyun/kali-kalihim"
+					target="_blank"
+					title="Source"
+				>
+					<svelte:fragment slot="lead">
+						<Github styles="w-6 h-6" />
+					</svelte:fragment>
+				</AppRailAnchor>
+			</svelte:fragment>
+		</AppRail>
+	</Drawer>
+
+	<div class="flex h-full w-full flex-auto overflow-hidden">
+		{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
+			<aside class="hidden lg:block">
+				<AppRail border="border-r border-surface-500/75" background="bg-surface-50-900-token">
+					{#each USER_ROUTES as route, idx (idx)}
+						<AppRailAnchor
+							href={route.path}
+							selected={$page.url.pathname.startsWith(route.path)}
+							on:click={() => drawerStore.close()}
+						>
+							<svelte:fragment slot="lead">
+								<svelte:component this={route.icon} styles="w-6 h-6" />
+							</svelte:fragment>
+							<span>{route.name}</span>
+						</AppRailAnchor>
+					{/each}
+
+					{#if $user.auth_data.role === 'admin'}
+						{#each ADMIN_ROUTES as route, idx (idx)}
+							<AppRailAnchor href={route.path} selected={$page.url.pathname.startsWith(route.path)}>
+								<svelte:fragment slot="lead">
+									<svelte:component this={route.icon} styles="w-6 h-6" />
+								</svelte:fragment>
+								<span>{route.name}</span>
+							</AppRailAnchor>
+						{/each}
+					{/if}
+
+					<svelte:fragment slot="trail">
+						<AppRailAnchor
+							href="https://github.com/xGihyun/kali-kalihim"
+							target="_blank"
+							title="Source"
+						>
+							<svelte:fragment slot="lead">
+								<Github styles="w-6 h-6" />
+							</svelte:fragment>
+						</AppRailAnchor>
+					</svelte:fragment>
+				</AppRail>
+			</aside>
 		{/if}
 
 		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">

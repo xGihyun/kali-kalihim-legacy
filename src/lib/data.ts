@@ -22,7 +22,7 @@ import {
 	viralxRival,
 	warlordsDomain
 } from './components/powercards/ability/functions';
-import type { PowerCard } from './types';
+import type { PowerCard, Videos } from './types';
 
 export const skills = [
 	'Strikes',
@@ -102,3 +102,29 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 		}
 	]
 ]);
+
+export const arnisSkills: Videos = [
+	{
+		title: "Sinawali",
+		url: "https://youtu.be/0VTyA7fAoNg"
+	},
+	{
+		title: "Reverse Sinawali",
+		url: "https://youtu.be/GbHiKTmVgJw"
+	}
+]
+
+export const arnisFootworks: Videos = [
+	{
+		title: "Caballero",
+		url: "https://youtu.be/jrXYbouUFR8?t=312"
+	},
+	{
+		title: "Triangle",
+		url: "https://youtu.be/jrXYbouUFR8?t=457"
+	},
+	{
+		title: "Star Reach",
+		url: "https://youtu.be/jrXYbouUFR8?t=694"
+	}
+]

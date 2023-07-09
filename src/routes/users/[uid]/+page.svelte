@@ -45,73 +45,78 @@
 
 <div class="flex h-full w-full flex-col items-center">
 	<!-- Banner -->
-	{#if user.auth_data.banner_url}
-		<img
-			class="h-80 w-full object-cover object-center"
-			src={user.auth_data.banner_url}
-			alt="banner"
-		/>
-	{:else}
-		<div class="bg-surface-300-600-token h-80" />
-	{/if}
-	<div class="bg-surface-200-700-token flex h-32 w-full gap-4 px-[5%]">
-		<div
-			class="shadow-profile pointer-events-none mb-10 flex-none select-none self-end rounded-full"
-		>
-			<Avatar src={user.auth_data.photo_url || ''} width="w-40" {initials} />
+	<div class="relative h-40 w-full lg:h-80">
+		{#if user.auth_data.banner_url}
+			<img
+				class="h-full w-full object-cover object-center"
+				src={user.auth_data.banner_url}
+				role="banner"
+				alt="banner"
+				loading="lazy"
+			/>
+		{:else}
+			<div class="bg-surface-300-600-token h-40 lg:h-80" />
+		{/if}
+	</div>
+	<div class="bg-surface-200-700-token flex h-32 w-full items-center gap-4 px-[5%]">
+		<div class="shadow-profile flex h-20 w-20 rounded-full lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end">
+			<Avatar src={user.auth_data.photo_url || ''} width="w-20 lg:w-40" {initials} />
 		</div>
 		<div class="flex h-full flex-col justify-center">
-			<span class="text-2xl">
+			<span class="text-xl lg:text-2xl">
 				{user.personal_data.name.first}
 				{user.personal_data.name.last}
-				{#if user.auth_data.role === 'admin'}
-					(admin)
-				{/if}
 			</span>
-			<span class="text-secondary-700-200-token text-lg">
+			<span class="text-secondary-700-200-token text-base lg:text-lg">
 				{sectionsMap.get(user.personal_data.section)}
 			</span>
 		</div>
 	</div>
 	<div
-		class="relative z-[1] flex h-72 w-full flex-col items-center justify-center bg-gradient-to-r from-blue-950 to-rose-950 px-[5%]"
+		class="relative z-[1] flex h-36 w-full flex-col items-center justify-center bg-gradient-to-r from-blue-950 to-rose-950 px-[5%] py-2 lg:h-72"
 	>
 		<!-- Temporary rank logo -->
-		<div class="absolute -top-[17%] left-1/2 -translate-x-1/2">
-			<div class="aspect-square w-24 rotate-45 border-4 border-white bg-red-600" />
+		<div class="absolute -top-[17%] left-1/2 hidden -translate-x-1/2 lg:block">
+			<div class="aspect-square rotate-45 border-4 border-white bg-red-600 lg:w-24" />
 		</div>
 		<span
-			class="font-gt-walsheim-pro-medium text-outline select-none text-[12rem] uppercase tracking-wide opacity-20"
+			class="font-gt-walsheim-pro-medium text-outline w-full select-none text-start text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
 		>
 			{user.rank.title}
 		</span>
 	</div>
 	<div class="z-10 flex h-20 w-full px-[5%]">
 		<div class="mb-8 w-full flex-none self-end">
-			<div class="flex w-full justify-center gap-16">
+			<div class="flex w-full justify-center gap-4 lg:gap-16">
 				<div
 					class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
 				>
-					<span class="text-xl">Overall Ranking</span>
-					<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
-						>#{user.rank.number.overall}</span
+					<span class="text-base lg:text-xl">Overall Ranking</span>
+					<span
+						class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
 					>
+						#{user.rank.number.overall}
+					</span>
 				</div>
 				<div
 					class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
 				>
-					<span class="text-xl">Score</span>
-					<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
-						>{user.score}</span
+					<span class="text-base lg:text-xl">Score</span>
+					<span
+						class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
 					>
+						{user.score}
+					</span>
 				</div>
 				<div
 					class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
 				>
-					<span class="text-xl">Section Ranking</span>
-					<span class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-3xl"
-						>#{user.rank.number.section}</span
+					<span class="text-base lg:text-xl">Section Ranking</span>
+					<span
+						class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
 					>
+						#{user.rank.number.section}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -159,7 +164,7 @@
 					<label class="label">
 						<span>First Name</span>
 						<input
-							class="input"
+							class="input variant-form-material"
 							type="text"
 							value={user.personal_data.name.first}
 							placeholder="eg. Ayaka"
@@ -171,7 +176,7 @@
 					<label class="label">
 						<span>Last Name</span>
 						<input
-							class="input"
+							class="input variant-form-material"
 							type="text"
 							value={user.personal_data.name.last}
 							placeholder="eg. Kamisato"
@@ -183,7 +188,7 @@
 					<label class="label">
 						<span>Age</span>
 						<input
-							class="input"
+							class="input variant-form-material"
 							type="text"
 							value={user.personal_data.age}
 							placeholder="eg. 18"
@@ -194,7 +199,12 @@
 
 					<label class="label">
 						<span>Sex</span>
-						<select class="input" size="1" value={user.personal_data.sex} name="sex" required>
+						<select
+							class="select variant-form-material"
+							value={user.personal_data.sex}
+							name="sex"
+							required
+						>
 							<option value="male">Male</option>
 							<option value="female">Female</option>
 						</select>
@@ -203,8 +213,7 @@
 					<label class="label">
 						<span>Section</span>
 						<select
-							class="input"
-							size="1"
+							class="select variant-form-material"
 							value={user.personal_data.section}
 							name="section"
 							required
@@ -218,7 +227,7 @@
 					<label class="label">
 						<span>Email</span>
 						<input
-							class="input"
+							class="input variant-form-material"
 							type="email"
 							value={user.auth_data.email}
 							placeholder="Aa"
@@ -230,7 +239,7 @@
 					<label class="label">
 						<span>Contact No.</span>
 						<input
-							class="input"
+							class="input variant-form-material"
 							type="tel"
 							value={user.personal_data.contact_number}
 							placeholder="eg. 09123456789"
@@ -241,12 +250,23 @@
 
 					<label class="label">
 						<span>Score</span>
-						<input class="input" type="text" value={user.score} name="score" required />
+						<input
+							class="input variant-form-material"
+							type="text"
+							value={user.score}
+							name="score"
+							required
+						/>
 					</label>
 
 					<label class="label">
 						<span>Role</span>
-						<select class="input" size="1" value={user.auth_data.role} name="role" required>
+						<select
+							class="select variant-form-material"
+							value={user.auth_data.role}
+							name="role"
+							required
+						>
 							<option value="admin">Admin</option>
 							<option value="user">User</option>
 						</select>
