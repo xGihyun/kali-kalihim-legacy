@@ -6,6 +6,7 @@ import {
 	getCountFromServer,
 	getDoc,
 	getDocs,
+	limit,
 	orderBy,
 	query,
 	setDoc,
@@ -56,11 +57,19 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		)
 	) as UserData;
 
+	const usersCollection = collection(db, 'users');
+	const usersQuery = query(usersCollection, orderBy('score', 'desc'), limit(3));
+	const getTopUsers = await getDocs(usersQuery);
+	const topUsers = getTopUsers.docs.map(
+		(user) => JSON.parse(JSON.stringify(user.data())) as UserData
+	);
+
 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		latestPendingMatch,
-		latestOpponent
+		latestOpponent,
+		topUsers
 	};
 };
 

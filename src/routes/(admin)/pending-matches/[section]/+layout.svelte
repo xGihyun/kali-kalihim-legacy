@@ -3,7 +3,7 @@
 	import { sectionsMap } from '$lib/data.js';
 	import { db } from '$lib/firebase/firebase.js';
 	import type { MatchSet } from '$lib/types.js';
-	import { TabGroup, TabAnchor } from '@skeletonlabs/skeleton';
+	import { TabGroup, TabAnchor, type PopupSettings, popup } from '@skeletonlabs/skeleton';
 	import { collection, onSnapshot, query, where } from 'firebase/firestore';
 	import { onDestroy } from 'svelte';
 
@@ -29,24 +29,60 @@
 		console.log('Updated match sets.');
 	});
 
+	$: match = 'Match';
+
+	const matchPopup: PopupSettings = {
+		event: 'click',
+		target: 'matches',
+		placement: 'bottom'
+	};
+
 	onDestroy(() => unsubMatchSets());
 </script>
 
 <div class="flex h-full w-full flex-col items-center justify-center py-10">
 	{#if matchSets.length > 0}
-		<h1 class="font-gt-walsheim-pro-medium mb-5 text-center text-2xl uppercase">
+		<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
 			{sectionsMap.get(data.section)}
 		</h1>
-		<TabGroup justify="justify-center">
-			{#each matchSets as matchSet, idx (idx)}
-				<TabAnchor
-					href={`/pending-matches/${data.section}/${matchSet.id}`}
-					selected={$page.url.pathname === `/pending-matches/${data.section}/${matchSet.id}`}
-				>
-					Match {matchSet.data.set}
-				</TabAnchor>
-			{/each}
-		</TabGroup>
+		<div class="hidden lg:block">
+			<TabGroup justify="justify-center">
+				{#each matchSets as matchSet, idx (idx)}
+					<TabAnchor
+						href={`/pending-matches/${data.section}/${matchSet.id}`}
+						selected={$page.url.pathname === `/pending-matches/${data.section}/${matchSet.id}`}
+					>
+						Match {matchSet.data.set}
+					</TabAnchor>
+				{/each}
+			</TabGroup>
+		</div>
+
+		<button class="btn flex variant-filled w-48 justify-between lg:hidden" use:popup={matchPopup}>
+			<span class="capitalize">{match}</span>
+			<span>↓</span>
+		</button>
+		<div class="card w-48 py-2 shadow-xl" data-popup="matches">
+			<ul>
+				{#each matchSets as matchSet, idx (idx)}
+					<li class="flex">
+						<a
+							class={`flex-1 px-4 py-2 ${
+								match === `Match ${matchSet.data.set}`
+									? 'variant-filled'
+									: 'bg-surface-100-800-token hover:variant-soft'
+							}`}
+							href={`/pending-matches/${data.section}/${matchSet.id}`}
+							on:click={() => (match = `Match ${matchSet.data.set}`)}
+						>
+							Match {matchSet.data.set}
+						</a>
+					</li>
+				{/each}
+			</ul>
+			<div class="arrow bg-surface-100-800-token" />
+		</div>
+
 		<div class="flex h-full w-full flex-col items-center justify-center">
 			<slot />
 		</div>

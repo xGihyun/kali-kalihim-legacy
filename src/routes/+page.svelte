@@ -34,6 +34,7 @@
 	$: opponent = getContext<Writable<UserData>>('opponent');
 
 	$: pendingMatch = data?.latestPendingMatch;
+	$: topUsers = data?.topUsers;
 
 	// Subscribe to user changes
 	$: if (data.user) {
@@ -234,10 +235,10 @@
 					loading="lazy"
 				/>
 			{:else}
-				<div class="bg-surface-300-600-token h-40 lg:h-80" />
+				<div class="h-40 bg-surface-300-600-token lg:h-80" />
 			{/if}
 			<button
-				class="bg-surface-300-600-token hover:bg-surface-500-400-token absolute bottom-2 right-5 rounded-full p-2 transition-[background-color] duration-100"
+				class="absolute bottom-2 right-5 rounded-full p-2 transition-[background-color] duration-100 bg-surface-300-600-token hover:bg-surface-500-400-token"
 				use:popup={popupChangeBanner}
 			>
 				<Edit styles="w-5 h-5" />
@@ -252,20 +253,20 @@
 					bind:this={uploadBannerEl}
 				/>
 				<button
-					class="hover:bg-surface-400-500-token w-full px-2 py-1"
+					class="w-full px-2 py-1 hover:bg-surface-400-500-token"
 					on:click={() => uploadBannerEl.click()}
 				>
 					<span class="text-base">Change banner</span>
 				</button>
-				<button class="hover:bg-surface-400-500-token w-full px-2 py-1" on:click={removeBanner}>
+				<button class="w-full px-2 py-1 hover:bg-surface-400-500-token" on:click={removeBanner}>
 					<span class="text-base">Remove banner</span>
 				</button>
 				<div class="arrow bg-surface-100-800-token" />
 			</div>
 		</div>
-		<div class="bg-surface-200-700-token flex h-32 w-full items-center gap-4 px-[5%]">
+		<div class="flex h-32 w-full items-center gap-4 px-[5%] bg-surface-200-700-token">
 			<button
-				class="shadow-profile flex h-20 w-20 rounded-full lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
+				class="flex h-20 w-20 rounded-full shadow-profile lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
 				title="Change your avatar!"
 				use:popup={popupChangeAvatar}
 			>
@@ -273,12 +274,12 @@
 			</button>
 			<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="avatar">
 				<button
-					class="hover:bg-surface-400-500-token w-full px-2 py-1"
+					class="w-full px-2 py-1 hover:bg-surface-400-500-token"
 					on:click={() => uploadAvatarEl.click()}
 				>
 					<span class="text-base">Change avatar</span>
 				</button>
-				<button class="hover:bg-surface-400-500-token w-full px-2 py-1" on:click={removeAvatar}>
+				<button class="w-full px-2 py-1 hover:bg-surface-400-500-token" on:click={removeAvatar}>
 					<span class="text-base">Remove avatar</span>
 				</button>
 				<div class="arrow bg-surface-100-800-token" />
@@ -296,7 +297,7 @@
 					{$user.personal_data.name.first}
 					{$user.personal_data.name.last}
 				</span>
-				<span class="text-secondary-700-200-token text-base lg:text-lg">
+				<span class="text-base text-secondary-700-200-token lg:text-lg">
 					{sectionsMap.get($user.personal_data.section)}
 				</span>
 			</div>
@@ -309,40 +310,40 @@
 				<div class="aspect-square rotate-45 border-4 border-white bg-red-600 lg:w-24" />
 			</div>
 			<span
-				class="font-gt-walsheim-pro-medium text-outline w-full select-none text-start text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
+				class="text-outline w-full select-none text-start font-gt-walsheim-pro-medium text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
 			>
 				{$user.rank.title}
 			</span>
 		</div>
-		<div class="z-10 flex h-20 w-full px-[5%]">
+		<div class="z-10 flex h-16 w-full px-[5%] lg:h-20">
 			<div class="mb-8 w-full flex-none self-end">
 				<div class="flex w-full justify-center gap-4 lg:gap-16">
 					<div
-						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+						class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
 					>
-						<span class="text-base lg:text-xl">Overall Ranking</span>
+						<span class="text-base lg:text-xl">Overall</span>
 						<span
-							class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
+							class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
 						>
 							#{$user.rank.number.overall}
 						</span>
 					</div>
 					<div
-						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+						class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
 					>
 						<span class="text-base lg:text-xl">Score</span>
 						<span
-							class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
+							class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
 						>
 							{$user.score}
 						</span>
 					</div>
 					<div
-						class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+						class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
 					>
-						<span class="text-base lg:text-xl">Section Ranking</span>
+						<span class="text-base lg:text-xl">Section</span>
 						<span
-							class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
+							class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
 						>
 							#{$user.rank.number.section}
 						</span>
@@ -351,93 +352,130 @@
 			</div>
 		</div>
 
-		<div class="flex w-full flex-col gap-2 lg:flex-row">
+		<div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
 			<div class="flex w-full flex-col">
-				<div class="bg-surface-100-800-token flex h-20 w-full items-center px-[5%]">
+				<div class="flex h-20 w-full items-center px-[5%] bg-surface-100-800-token">
 					<span class="w-full text-center text-2xl uppercase">upcoming match</span>
 				</div>
-				<div class="flex px-[5%] py-10 lg:px-[10%]">
+				<div class="flex">
 					{#if pendingMatch && $opponent}
-						<div class="flex w-full flex-col items-start gap-4">
-							<div class="flex items-center gap-4">
-								<span class="font-gt-walsheim-pro-medium text-2xl uppercase">vs</span>
-								<div class="flex items-center gap-4">
-									<div class="pointer-events-none select-none">
-										<Avatar
-											src={$opponent.auth_data.photo_url || ''}
-											width="w-16 lg:w-20"
-											initials={opponentInitials}
-										/>
-									</div>
-									<div class="flex flex-col">
-										<a class="w-fit hover:underline" href={`/users/${$opponent.auth_data.uid}`}>
-											<span class="text-xl">
-												{$opponent.personal_data.name.first}
-												{$opponent.personal_data.name.last}
-											</span>
-										</a>
-										<div class="flex gap-4">
+						<div class="flex w-full flex-col gap-4">
+							<div class="flex w-full flex-col">
+								<div class="relative flex w-full items-center gap-4 p-4">
+									<img
+										class="absolute left-0 top-0 z-10 h-full w-full object-cover object-center brightness-50"
+										src={$opponent.auth_data.banner_url}
+										role="banner"
+										alt="banner"
+										loading="lazy"
+									/>
+									<div
+										class="absolute left-0 top-0 z-[11] h-full w-full bg-gradient-to-t from-black opacity-75"
+									/>
+									<!-- <span class="font-gt-walsheim-pro-medium text-2xl uppercase">vs</span> -->
+									<div class="z-20 flex items-center gap-4">
+										<div
+											class="pointer-events-none relative select-none rounded-full shadow-profile"
+										>
+											<Avatar
+												src={$opponent.auth_data.photo_url || ''}
+												width="w-16 lg:w-20"
+												initials={opponentInitials}
+											/>
+										</div>
+										<div class="flex flex-col">
+											<a class="w-fit hover:underline" href={`/users/${$opponent.auth_data.uid}`}>
+												<span class="text-xl">
+													{$opponent.personal_data.name.first}
+													{$opponent.personal_data.name.last}
+												</span>
+											</a>
 											<span class="uppercase opacity-75">
 												{$opponent.rank.title}
 											</span>
-											<span class="mx-5 hidden opacity-75 lg:block">|</span>
-											<div class="hidden opacity-75 lg:block">
-												<span>Overall:</span>
-												<span class="text-secondary-700-200-token">
-													#{$opponent.rank.number.overall}
-												</span>
-											</div>
-											<div class="hidden opacity-75 lg:block">
-												<span>Section:</span>
-												<span class="text-secondary-700-200-token">
-													#{$opponent.rank.number.section}
-												</span>
-											</div>
-											<div class="hidden opacity-75 lg:block">
-												<span>Score:</span>
-												<span class="text-secondary-700-200-token">
-													{$opponent.score}
-												</span>
-											</div>
 										</div>
+									</div>
+								</div>
+
+								<div class="flex h-full w-full justify-center gap-4 p-4 bg-surface-100-800-token">
+									<div
+										class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
+									>
+										<span class="text-base">Overall</span>
+										<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
+											#{$opponent.rank.number.overall}
+										</span>
+									</div>
+									<div
+										class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
+									>
+										<span class="text-base">Score</span>
+										<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
+											{$opponent.score}
+										</span>
+									</div>
+									<div
+										class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
+									>
+										<span class="text-base">Section</span>
+										<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
+											#{$opponent.rank.number.section}
+										</span>
 									</div>
 								</div>
 							</div>
 
-							<div class="flex w-full justify-center gap-4">
-								<div
-									class="bg-surface-300-600-token flex w-full flex-col justify-center rounded-md p-4 shadow-lg"
-								>
-									<span class="text-base uppercase">Skill</span>
-									<span class="text-tertiary-600-300-token font-gt-walsheim-pro-medium">
-										{pendingMatch.skill}
-									</span>
-								</div>
-								<div
-									class="bg-surface-300-600-token flex w-full flex-col justify-center rounded-md p-4 shadow-lg"
-								>
-									<span class="text-base uppercase">Footwork</span>
-									<span class="text-tertiary-600-300-token font-gt-walsheim-pro-medium">
-										{pendingMatch.footwork}
-									</span>
-								</div>
-							</div>
-							{#if $opponent.power_cards.find((card) => card.activated && !card.used)}
-								<div
-									class="bg-surface-300-600-token flex w-full flex-col justify-center rounded-md p-4 shadow-lg"
-								>
-									<span class="text-base uppercase">Power cards used</span>
-									<div class="flex flex-col">
-										{#each $opponent.power_cards as card, idx (idx)}
-											{#if card.activated && !card.used}
-												<span class="text-primary-600-300-token font-gt-walsheim-pro-medium">
-													{card.name}
-												</span>
-											{/if}
-										{/each}
+							<div class="flex gap-4">
+								<div class="flex w-full flex-col">
+									<div class="flex h-10 w-full items-center px-[5%] bg-surface-100-800-token">
+										<span class="w-full text-center text-base uppercase lg:text-xl"
+											>skill & footwork</span
+										>
+									</div>
+									<div class="flex w-full flex-col justify-center gap-2 p-4">
+										<div class="flex w-full flex-col justify-center rounded-md">
+											<span class="text-xs uppercase lg:text-base">Skill</span>
+											<span
+												class="font-gt-walsheim-pro-medium text-sm text-tertiary-600-300-token lg:text-base"
+											>
+												{pendingMatch.skill}
+											</span>
+										</div>
+										<div class="flex w-full flex-col justify-center rounded-md">
+											<span class="text-xs uppercase lg:text-base">Footwork</span>
+											<span
+												class="font-gt-walsheim-pro-medium text-sm text-tertiary-600-300-token lg:text-base"
+											>
+												{pendingMatch.footwork}
+											</span>
+										</div>
 									</div>
 								</div>
-							{/if}
+								<div class="flex w-full flex-col">
+									<div class="flex h-10 w-full items-center px-[5%] bg-surface-100-800-token">
+										<span class="w-full text-center text-base uppercase lg:text-xl"
+											>power cards used</span
+										>
+									</div>
+									<div class="flex w-full flex-col justify-center rounded-md">
+										{#if $opponent.power_cards.find((card) => card.activated && !card.used)}
+											<div class="flex flex-col p-4">
+												{#each $opponent.power_cards as card, idx (idx)}
+													{#if card.activated && !card.used}
+														<span
+															class="font-gt-walsheim-pro-medium text-sm text-primary-600-300-token lg:text-base"
+														>
+															{card.name}
+														</span>
+													{/if}
+												{/each}
+											</div>
+										{:else}
+											<span>No power cards used</span>
+										{/if}
+									</div>
+								</div>
+							</div>
 						</div>
 					{:else}
 						<span class="flex w-full justify-center opacity-50">No upcoming match</span>
@@ -446,7 +484,7 @@
 			</div>
 
 			<div class="flex w-full flex-col">
-				<div class="bg-surface-100-800-token flex h-20 w-full items-center px-[5%]">
+				<div class="flex h-20 w-full items-center px-[5%] bg-surface-100-800-token">
 					<span class="w-full text-center text-2xl uppercase">power cards</span>
 				</div>
 				<!-- Power cards the user has -->
@@ -465,6 +503,35 @@
 						</button>
 					{/each}
 				</div>
+			</div>
+		</div>
+
+		<div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
+			<div class="flex w-full flex-col">
+				<div class="flex h-20 w-full items-center px-[5%] bg-surface-100-800-token">
+					<span class="w-full text-center text-2xl uppercase">top performers</span>
+				</div>
+				{#if topUsers}
+					<div class="flex flex-col items-center justify-center p-4">
+						{#each topUsers as topPlayer (topPlayer.auth_data.uid)}
+							{@const initials =
+								topPlayer.personal_data.name.first[0] + topPlayer.personal_data.name.last[0]}
+							<div
+								class="pointer-events-none relative w-16 select-none rounded-full shadow-profile lg:w-20"
+							>
+								<Avatar src={topPlayer.auth_data.photo_url || ''} width="w-full" {initials} />
+							</div>
+							<div class="flex flex-col">
+								<a class="w-fit hover:underline" href={`/users/${topPlayer.auth_data.uid}`}>
+									<span class="text-base">
+										{topPlayer.personal_data.name.first}
+										{topPlayer.personal_data.name.last}
+									</span>
+								</a>
+							</div>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		</div>
 
@@ -560,7 +627,7 @@
 			/> -->
 			<div class="flex h-full w-full flex-col items-center justify-center">
 				<h1
-					class="font-gt-walsheim-pro-medium mb-10 select-none text-center text-5xl uppercase md:text-7xl 2xl:text-9xl"
+					class="mb-10 select-none text-center font-gt-walsheim-pro-medium text-5xl uppercase md:text-7xl 2xl:text-9xl"
 				>
 					Kali Kalihim
 				</h1>

@@ -55,11 +55,13 @@
 				loading="lazy"
 			/>
 		{:else}
-			<div class="bg-surface-300-600-token h-40 lg:h-80" />
+			<div class="h-40 bg-surface-300-600-token lg:h-80" />
 		{/if}
 	</div>
-	<div class="bg-surface-200-700-token flex h-32 w-full items-center gap-4 px-[5%]">
-		<div class="shadow-profile flex h-20 w-20 rounded-full lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end">
+	<div class="flex h-32 w-full items-center gap-4 px-[5%] bg-surface-200-700-token">
+		<div
+			class="flex h-20 w-20 rounded-full shadow-profile lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
+		>
 			<Avatar src={user.auth_data.photo_url || ''} width="w-20 lg:w-40" {initials} />
 		</div>
 		<div class="flex h-full flex-col justify-center">
@@ -67,7 +69,7 @@
 				{user.personal_data.name.first}
 				{user.personal_data.name.last}
 			</span>
-			<span class="text-secondary-700-200-token text-base lg:text-lg">
+			<span class="text-base text-secondary-700-200-token lg:text-lg">
 				{sectionsMap.get(user.personal_data.section)}
 			</span>
 		</div>
@@ -80,40 +82,40 @@
 			<div class="aspect-square rotate-45 border-4 border-white bg-red-600 lg:w-24" />
 		</div>
 		<span
-			class="font-gt-walsheim-pro-medium text-outline w-full select-none text-start text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
+			class="text-outline w-full select-none text-start font-gt-walsheim-pro-medium text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
 		>
 			{user.rank.title}
 		</span>
 	</div>
-	<div class="z-10 flex h-20 w-full px-[5%]">
+	<div class="z-10 flex h-16 w-full px-[5%] lg:h-20">
 		<div class="mb-8 w-full flex-none self-end">
 			<div class="flex w-full justify-center gap-4 lg:gap-16">
 				<div
-					class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
 				>
-					<span class="text-base lg:text-xl">Overall Ranking</span>
+					<span class="text-base lg:text-xl">Overall</span>
 					<span
-						class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
+						class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
 					>
 						#{user.rank.number.overall}
 					</span>
 				</div>
 				<div
-					class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
 				>
 					<span class="text-base lg:text-xl">Score</span>
 					<span
-						class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
+						class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
 					>
 						{user.score}
 					</span>
 				</div>
 				<div
-					class="bg-surface-300-600-token flex w-60 flex-col justify-center rounded-md p-4 shadow-lg"
+					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
 				>
-					<span class="text-base lg:text-xl">Section Ranking</span>
+					<span class="text-base lg:text-xl">Section</span>
 					<span
-						class="font-gt-walsheim-pro-medium text-secondary-700-200-token text-xl lg:text-3xl"
+						class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
 					>
 						#{user.rank.number.section}
 					</span>
@@ -136,7 +138,7 @@
 
 		<!-- Edit user information -->
 		<dialog
-			class="bg-surface-100-800-token rounded-container-token text-token w-modal-slim p-4 shadow-xl"
+			class="w-modal-slim p-4 shadow-xl bg-surface-100-800-token rounded-container-token text-token"
 			bind:this={editModal}
 		>
 			{#if !loading && !success}
@@ -298,7 +300,7 @@
 
 		<!-- Delete user -->
 		<dialog
-			class="bg-surface-100-800-token rounded-container-token text-token w-modal p-4 shadow-xl"
+			class="w-modal p-4 shadow-xl bg-surface-100-800-token rounded-container-token text-token"
 			bind:this={deleteModal}
 		>
 			<p>
