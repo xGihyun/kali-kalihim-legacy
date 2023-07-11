@@ -1,5 +1,5 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { redirect, type Actions } from '@sveltejs/kit';
+import { redirect, type Actions, json } from '@sveltejs/kit';
 import {
 	collection,
 	doc,
@@ -20,9 +20,17 @@ import {
 	createUserWithEmailAndPassword,
 	fetchSignInMethodsForEmail
 } from 'firebase/auth';
-import type { Match, UserData, UserPersonalData, UserRankingData } from '$lib/types.js';
+import type {
+	Match,
+	UserData,
+	UserPersonalData,
+	UserPowerCard,
+	UserRankingData
+} from '$lib/types.js';
 import type { PageServerLoad } from './$types';
 import { CACHE_DURATION } from '$lib/constants';
+import type { PowerCard } from '$lib/components';
+import { powerCardsMap } from '$lib/data';
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	if (!locals.userData) {
@@ -246,5 +254,31 @@ export const actions: Actions = {
 		}
 
 		throw redirect(302, '/');
+	},
+	powercards: async ({ request, locals }) => {
+		const userUID = locals.userData.auth_data.uid;
+		const data = await request.formData();
+		const cards = data.get('cards')?.toString();
+
+		if (!cards) return;
+
+		const cardKeys: string[] = JSON.parse(cards);
+
+		if(cardKeys.length < 3) return;
+
+		const powercards: UserPowerCard[] = cardKeys.map((card) => {
+			const newCard: UserPowerCard = {
+				activated: false,
+				key: card,
+				name: powerCardsMap.get(card)?.name || '',
+				used: false
+			};
+
+			return newCard;
+		});
+
+		const userRef = doc(db, 'users', userUID);
+
+		await updateDoc(userRef, { power_cards: powercards });
 	}
 };

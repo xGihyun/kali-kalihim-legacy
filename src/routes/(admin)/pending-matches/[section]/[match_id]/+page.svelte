@@ -1,4 +1,6 @@
 <script lang="ts">
+	import CircleCheckFilled from '$lib/assets/icons/CircleCheckFilled.svelte';
+	import ClockPause from '$lib/assets/icons/ClockPause.svelte';
 	import { db } from '$lib/firebase/firebase';
 	import type { Match, UserData } from '$lib/types';
 	import { Timestamp, addDoc, collection, onSnapshot } from 'firebase/firestore';
@@ -68,7 +70,7 @@
 </script>
 
 <div class="table-container max-w-5xl">
-	<table class="table-interactive table-compact table-hover table">
+	<table class="table-hover table-interactive table-compact table">
 		<thead>
 			<tr class="text-sm md:text-base">
 				<th>Player 1</th>
@@ -81,44 +83,83 @@
 		</thead>
 		<tbody>
 			{#each matches as match, idx (idx)}
+				{@const player1 = match.players[0]}
+				{@const player2 = match.players[1]}
+
 				<tr
 					class={`${
 						match.status === 'finished' ? 'pointer-events-none opacity-50' : 'opacity-100'
 					}`}
 					on:click={() => toggleRow(idx)}
 				>
-					<td class="w-80">
+					<td class="flex gap-2">
 						<p class="text-xs md:text-sm">
-							{match.players[0].personal_data.name.first}
-							{match.players[0].personal_data.name.last}
+							{player1.personal_data.name.first}
+							{player1.personal_data.name.last}
 						</p>
+						{#if player1.power_cards.find((card) => card.activated && !card.used)}
+							<div>
+								{#each player1.power_cards as card, idx (idx)}
+									{#if card.activated && !card.used}
+										{@const words = card.name.split(' ')}
+										<span class="uppercase">
+											{#each words as word, idx (idx)}
+												{word[0]}
+											{/each}
+										</span>
+									{/if}
+								{/each}
+							</div>
+						{/if}
 					</td>
 					<td>
-						<span class="text-primary-500-400-token uppercase">vs</span>
+						<span class="uppercase text-primary-500-400-token">vs</span>
 					</td>
-					<td class="w-80">
+					<td class="flex gap-2">
 						<p class="text-xs md:text-sm">
-							{match.players[1].personal_data.name.first}
-							{match.players[1].personal_data.name.last}
+							{player2.personal_data.name.first}
+							{player2.personal_data.name.last}
 						</p>
+						{#if player2.power_cards.find((card) => card.activated && !card.used)}
+							<div>
+								{#each player2.power_cards as card, idx (idx)}
+									{#if card.activated && !card.used}
+										{@const words = card.name.split(' ')}
+										<span class="uppercase">
+											{#each words as word, idx (idx)}
+												{word[0]}
+											{/each}
+										</span>
+									{/if}
+								{/each}
+							</div>
+						{/if}
 					</td>
-					<td class="w-40">
+					<td class="w-44">
 						<p class="text-xs md:text-sm">{match.skill}</p>
 					</td>
-					<td class="w-40">
+					<td class="w-44">
 						<p class="text-xs md:text-sm">{match.footwork}</p>
 					</td>
-					<td class="w-40">
-						<p class="text-xs md:text-sm">{match.status}</p>
+					<td class="w-20">
+						{#if match.status === 'pending'}
+							<div title="Pending">
+								<ClockPause styles="w-5 h-5 text-yellow-500" />
+							</div>
+						{:else}
+							<div title="Finished">
+								<CircleCheckFilled styles="w-5 h-5 text-green-500" />
+							</div>
+						{/if}
 					</td>
 				</tr>
 
 				<!-- Modal -->
 				{#if clickedRow === idx}
-					<div class="bg-surface-backdrop-token fixed left-0 top-0 z-[999] h-full w-full">
+					<div class="fixed left-0 top-0 z-[999] h-full w-full bg-surface-backdrop-token">
 						<div class="flex h-full w-full items-center justify-center">
 							<div
-								class="bg-surface-100-800-token rounded-container-token w-modal space-y-4 p-4 shadow-xl"
+								class="w-modal space-y-4 p-4 shadow-xl bg-surface-100-800-token rounded-container-token"
 							>
 								<form
 									class="space-y-4"
@@ -159,7 +200,7 @@
 											type="button"
 											on:click={() => (clickedRow = null)}>Cancel</button
 										>
-										<button class="variant-filled-primary btn" type="submit">Submit</button>
+										<button class="btn variant-filled-primary" type="submit">Submit</button>
 									</div>
 								</form>
 							</div>

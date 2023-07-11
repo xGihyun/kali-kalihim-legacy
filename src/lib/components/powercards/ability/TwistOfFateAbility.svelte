@@ -6,6 +6,8 @@
 	import { db } from '$lib/firebase/firebase';
 	import type { Writable } from 'svelte/store';
 	import { allUsersInSection } from '$lib/store';
+	import { powerCardsMap } from '$lib/data';
+	import { selectedPowerCard } from '$lib/store';
 
 	const usersInSection = getContext<Writable<UserData[]>>('usersInSection');
 	const user = getContext<Writable<UserData>>('user');
@@ -42,6 +44,15 @@
 		twistOfFate($user, $opponent, selectedOpponent);
 		used = true;
 	}
+
+	$: powerCard = powerCardsMap.get($selectedPowerCard || '');
+
+	function cancelPowerCard() {
+		if (powerCard) {
+			powerCard.used = false;
+		}
+		$selectedPowerCard = null;
+	}
 </script>
 
 {#if !used}
@@ -63,7 +74,12 @@
 			</select>
 		</label>
 	{/if}
-	<button class="btn variant-filled-primary" type="button" on:click={handleClick}>Submit</button>
+	<div class="flex justify-end gap-4">
+		<button class="btn variant-ghost-surface" type="button" on:click={cancelPowerCard}>
+			Cancel
+		</button>
+		<button class="btn variant-filled-primary" type="button" on:click={handleClick}>Submit</button>
+	</div>
 {:else}
 	<p>Successfully used Twist of Fate</p>
 {/if}

@@ -1,6 +1,6 @@
-import { footworks, skills } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
 import type { Match, UserData } from '$lib/types';
+import { getRandomArnisSkill } from '$lib/utils/functions';
 import { error, type RequestHandler } from '@sveltejs/kit';
 import {
 	Timestamp,
@@ -135,19 +135,6 @@ async function shuffleArray(users: UserData[]) {
 	return {
 		shuffled,
 		persisted
-	};
-}
-
-function getRandomArnisSkill() {
-	const randomSkillIndex = Math.floor(Math.random() * skills.length);
-	const randomFootworkIndex = Math.floor(Math.random() * footworks.length);
-
-	const randomSkill = skills[randomSkillIndex];
-	const randomFootwork = footworks[randomFootworkIndex];
-
-	return {
-		skill: randomSkill,
-		footwork: randomFootwork
 	};
 }
 

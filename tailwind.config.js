@@ -20,6 +20,7 @@ module.exports = {
         "nav": "rgba(0, 0, 0, 0.6) 0px 5px 10px",
         "profile": "rgba(0, 0, 0, 0.25) 0px 5px 10px",
         "lighter": "rgba(0, 0, 0, 0.1) 0px 5px 10px",
+        "green": "rgba(0, 255, 0, 0.75) 0px 20px 35px 5px",
 			}
 		}
 	},

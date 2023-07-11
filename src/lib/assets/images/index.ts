@@ -1,5 +1,7 @@
 import arnis_bg from './arnis-bg.jpg'
+import hamster from './hamster.webp'
 
 export {
-  arnis_bg
+  arnis_bg,
+  hamster
 }

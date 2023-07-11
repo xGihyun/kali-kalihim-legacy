@@ -1,6 +1,7 @@
 import { powerCardsMap } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
 import type { MatchSet, Match, UserData, UserPowerCard } from '$lib/types';
+import { getRandomArnisSkill } from '$lib/utils/functions';
 import {
 	collection,
 	doc,
@@ -8,7 +9,6 @@ import {
 	getDocs,
 	orderBy,
 	query,
-	setDoc,
 	updateDoc,
 	where,
 	writeBatch
@@ -277,11 +277,15 @@ export async function twistOfFate(
 
 	batch.update(currentOpponentMatchRef, {
 		players: updatedCurrentOpponentMatchPlayers,
+		skill: getRandomArnisSkill().skill,
+		footwork: getRandomArnisSkill().footwork,
 		uids: updatedCurrentOpponentMatchPlayerUIDs
 	});
 
 	batch.update(newOpponentMatchRef, {
 		players: updatedNewOpponentMatchPlayers,
+		skill: getRandomArnisSkill().skill,
+		footwork: getRandomArnisSkill().footwork,
 		uids: updatedNewOpponentMatchPlayerUIDs
 	});
 
@@ -309,61 +313,3 @@ async function getLatestMatchSet(section: string) {
 
 	return latestMatchSet;
 }
-
-// THIS IS PREVIOUS CODE FOR TWIST OF FATE, PUT HERE FOR NOW
-// // THEIR CORRESPONDING PENDING MATCHES
-// Actually this might not be needed since we don't want the opponent see the ability of the power card
-// // Original opponent
-// const currentOpponentPendingMatchesCollection = collection(
-// 	db,
-// 	`users/${currentOpponent.auth_data.uid}/pending_matches`
-// );
-// const currentOpponentPendingMatchesQuery = query(
-// 	currentOpponentPendingMatchesCollection,
-// 	orderBy('timestamp.seconds', 'desc')
-// );
-// const getCurrentOpponentPendingMatches = await getDocs(currentOpponentPendingMatchesQuery);
-// const currentOpponentLatestPendingMatch = getCurrentOpponentPendingMatches.docs.shift();
-// const currentOpponentLatestPendingMatchData =
-// 	currentOpponentLatestPendingMatch?.data() as PendingMatch;
-// // const currentOpponentLatestPendingMatchRef = doc(
-// // 	db,
-// // 	`users/${currentOpponent.auth_data.uid}/pending_matches/${currentOpponentLatestPendingMatch?.id}`
-// // );
-// const currentOpponentLatestPendingMatchPlayers = currentOpponentLatestPendingMatchData.players;
-// const currentOpponentOriginalOpponentIndex = currentOpponentLatestPendingMatchPlayers.findIndex(
-// 	(user) => user.auth_data.uid !== currentOpponent.auth_data.uid
-// );
-
-// // Selected opponent
-// const newOpponentPendingMatchesCollection = collection(
-// 	db,
-// 	`users/${newOpponent.auth_data.uid}/pending_matches`
-// );
-// const newOpponentPendingMatchesQuery = query(
-// 	newOpponentPendingMatchesCollection,
-// 	orderBy('timestamp.seconds', 'desc')
-// );
-// const getNewOpponentPendingMatches = await getDocs(newOpponentPendingMatchesQuery);
-// const newOpponentLatestPendingMatch = getNewOpponentPendingMatches.docs.shift();
-// const newOpponentLatestPendingMatchData = newOpponentLatestPendingMatch?.data() as PendingMatch;
-// // const newOpponentLatestPendingMatchRef = doc(
-// // 	db,
-// // 	`users/${newOpponent.auth_data.uid}/pending_matches/${newOpponentLatestPendingMatch?.id}`
-// // );
-// const newOpponentLatestPendingMatchPlayers = newOpponentLatestPendingMatchData.players;
-// const newOpponentOriginalOpponentIndex = newOpponentLatestPendingMatchPlayers.findIndex(
-// 	(user) => user.auth_data.uid !== newOpponent.auth_data.uid
-// );
-
-// // The user's original opponent will be the selected opponent's original opponent
-// currentOpponentLatestPendingMatchPlayers[currentOpponentOriginalOpponentIndex] =
-// 	newOpponentLatestPendingMatchPlayers[newOpponentOriginalOpponentIndex];
-
-// // The selected opponent's original opponent will be the user
-// newOpponentLatestPendingMatchPlayers[newOpponentOriginalOpponentIndex] = userData;
-
-// batch.update(currentOpponentLatestPendingMatchRef, {
-// 	players: currentOpponentLatestPendingMatchPlayers
-// });
-// batch.update(newOpponentLatestPendingMatchRef, { players: newOpponentLatestPendingMatchPlayers });

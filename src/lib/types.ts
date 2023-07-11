@@ -69,6 +69,7 @@ export type PowerCard = {
 	name: string;
 	function: (...T: any) => Promise<typeof T>;
 	used: boolean;
+	description?: string;
 };
 
 export type Navigation = {

@@ -53,7 +53,8 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			name: "Warlord's Domain",
 			components: { card: WarlordsDomain, ability: WarlordsDomainAbility },
 			function: warlordsDomain,
-			used: false
+			used: false,
+			description: "Choose a specific skill to perform"
 		}
 	],
 	[
@@ -62,7 +63,8 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			name: 'Double-edged Sword',
 			components: { card: DoubleEdgedSword, ability: DoubleEdgedSwordAbility },
 			function: doubleEdgedSword,
-			used: false
+			used: false,
+			description: "Double points for a victory, double deduction for a loss"
 		}
 	],
 	[
@@ -71,7 +73,8 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			name: 'Extra Wind',
 			components: { card: ExtraWind, ability: ExtraWindAbility },
 			function: extraWind,
-			used: false
+			used: false,
+			description: "Get a new power card"
 		}
 	],
 	[
@@ -80,7 +83,8 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			name: "Ancient's Protection",
 			components: { card: AncientsProtection, ability: AncientsProtectionAbility },
 			function: ancientsProtection,
-			used: false
+			used: false,
+			description: "Deduction immunity"
 		}
 	],
 	[
@@ -89,7 +93,8 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			name: 'Viral x Rival',
 			components: { card: ViralxRival, ability: ViralxRivalAbility },
 			function: viralxRival,
-			used: false
+			used: false,
+			description: "Repeat current opponent for the next match"
 		}
 	],
 	[
@@ -98,20 +103,33 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			name: 'Twist of Fate',
 			components: { card: TwistOfFate, ability: TwistOfFateAbility },
 			function: twistOfFate,
-			used: false
+			used: false,
+			description: "Switch opponent for the current match"
 		}
 	]
 ]);
 
 export const arnisSkills: Videos = [
 	{
-		title: "Sinawali",
+		title: "Strikes",
+		url : "https://youtu.be/9ImJFGii6lg"
+	},
+	{
+		title: "Blocks",
+		url : "https://youtu.be/vsTbagtEiyA"
+	},
+	{
+		title: "Forward Sinawali",
 		url: "https://youtu.be/0VTyA7fAoNg"
 	},
 	{
+		title: "Sideward Sinawali",
+		url: "https://youtu.be/GbHiKTmVgJw?t=85"
+	},
+	{
 		title: "Reverse Sinawali",
-		url: "https://youtu.be/GbHiKTmVgJw"
-	}
+		url: "https://youtu.be/GbHiKTmVgJw?t=343"
+	},
 ]
 
 export const arnisFootworks: Videos = [
