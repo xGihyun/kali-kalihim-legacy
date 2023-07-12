@@ -1,16 +1,56 @@
 <script lang="ts">
 	import { sectionsMap } from '$lib/data.js';
+	import { db } from '$lib/firebase/firebase.js';
+	import type { UserData } from '$lib/types.js';
+	import { collection, onSnapshot, query, where } from 'firebase/firestore';
+	import { onDestroy } from 'svelte';
 
 	export let data;
 
 	$: maleUsers = data.users.male;
 	$: femaleUsers = data.users.female;
+
+	const usersCollection = collection(db, 'users');
+	const q = query(usersCollection, where('personal_data.section', '==', data.section));
+
+	const unsubMale = onSnapshot(q, (snapshot) => {
+		const users = snapshot.docs
+			.map((user) => user.data() as UserData)
+			.filter((user) => user.personal_data.sex === 'male')
+			.sort((a, b) => {
+				const nameA = `${a.personal_data.name.first} ${a.personal_data.name.last}`;
+				const nameB = `${b.personal_data.name.first} ${b.personal_data.name.last}`;
+
+				return nameA.localeCompare(nameB);
+			});
+
+		maleUsers = users;
+	});
+
+	const unsubFemale = onSnapshot(q, (snapshot) => {
+		const users = snapshot.docs
+			.map((user) => user.data() as UserData)
+			.filter((user) => user.personal_data.sex === 'female')
+			.sort((a, b) => {
+				const nameA = `${a.personal_data.name.first} ${a.personal_data.name.last}`;
+				const nameB = `${b.personal_data.name.first} ${b.personal_data.name.last}`;
+
+				return nameA.localeCompare(nameB);
+			});
+
+		femaleUsers = users;
+	});
+
+	onDestroy(() => {
+		unsubMale();
+		unsubFemale();
+	});
 </script>
 
 <!-- Male -->
 <div class="table-container max-w-5xl">
-	<h2 class="w-full text-xl text-center">Male</h2>
-	<table class="table-compact table-hover table">
+	<h2 class="w-full text-center text-xl">Male</h2>
+	<table class="table-hover table-compact table">
 		<thead>
 			<tr>
 				<th class="text-sm md:text-base">Name</th>
@@ -51,8 +91,8 @@
 
 <!-- Female -->
 <div class="table-container max-w-5xl">
-	<h2 class="w-full text-xl text-center">Female</h2>
-	<table class="table-compact table-hover table">
+	<h2 class="w-full text-center text-xl">Female</h2>
+	<table class="table-hover table-compact table">
 		<thead>
 			<tr>
 				<th class="text-sm md:text-base">Name</th>

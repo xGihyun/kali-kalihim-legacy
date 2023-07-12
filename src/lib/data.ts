@@ -34,17 +34,19 @@ export const skills = [
 
 export const footworks = ['Guerrero', 'Cabellero', 'Triangle', 'Reversed Triangle'];
 
-export const sectionsMap: Map<string, string> = new Map([
-	['section-1', 'Section 1'],
-	['section-2', 'Section 2'],
-	['section-3', 'Section 3'],
-	['section-4', 'Section 4'],
-	['section-5', 'Section 5'], ['section-6', 'Section 6'],
-	['section-7', 'Section 7'],
-	['section-8', 'Section 8'],
-	['section-9', 'Section 9'], ['section-10', 'Section 10'],
-	['section-11', 'Section 11']
-]);
+// export let sectionsMap: Map<string, string> = new Map([
+// 	['section-1', 'Section 1'],
+// 	['section-2', 'Section 2'],
+// 	['section-3', 'Section 3'],
+// 	['section-4', 'Section 4'],
+// 	['section-5', 'Section 5'],
+// 	['section-6', 'Section 6'],
+// 	['section-7', 'Section 7'],
+// 	['section-8', 'Section 8'],
+// 	['section-9', 'Section 9'],
+// 	['section-10', 'Section 10'],
+// 	['section-11', 'Section 11']
+// ]);
 
 export const powerCardsMap: Map<string, PowerCard> = new Map([
 	[
@@ -54,7 +56,7 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { card: WarlordsDomain, ability: WarlordsDomainAbility },
 			function: warlordsDomain,
 			used: false,
-			description: "Choose a specific skill to perform"
+			description: 'Choose a specific skill to perform'
 		}
 	],
 	[
@@ -64,7 +66,7 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { card: DoubleEdgedSword, ability: DoubleEdgedSwordAbility },
 			function: doubleEdgedSword,
 			used: false,
-			description: "Double points for a victory, double deduction for a loss"
+			description: 'Double points for a victory, double deduction for a loss'
 		}
 	],
 	[
@@ -74,7 +76,7 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { card: ExtraWind, ability: ExtraWindAbility },
 			function: extraWind,
 			used: false,
-			description: "Get a new power card"
+			description: 'Get a new power card'
 		}
 	],
 	[
@@ -84,7 +86,7 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { card: AncientsProtection, ability: AncientsProtectionAbility },
 			function: ancientsProtection,
 			used: false,
-			description: "Deduction immunity"
+			description: 'Deduction immunity'
 		}
 	],
 	[
@@ -94,7 +96,7 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { card: ViralxRival, ability: ViralxRivalAbility },
 			function: viralxRival,
 			used: false,
-			description: "Repeat current opponent for the next match"
+			description: 'Repeat current opponent for the next match'
 		}
 	],
 	[
@@ -104,45 +106,45 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { card: TwistOfFate, ability: TwistOfFateAbility },
 			function: twistOfFate,
 			used: false,
-			description: "Switch opponent for the current match"
+			description: 'Switch opponent for the current match'
 		}
 	]
 ]);
 
 export const arnisSkills: Videos = [
 	{
-		title: "Strikes",
-		url : "https://youtu.be/9ImJFGii6lg"
+		title: 'Strikes',
+		url: 'https://youtu.be/9ImJFGii6lg'
 	},
 	{
-		title: "Blocks",
-		url : "https://youtu.be/vsTbagtEiyA"
+		title: 'Blocks',
+		url: 'https://youtu.be/vsTbagtEiyA'
 	},
 	{
-		title: "Forward Sinawali",
-		url: "https://youtu.be/0VTyA7fAoNg"
+		title: 'Forward Sinawali',
+		url: 'https://youtu.be/0VTyA7fAoNg'
 	},
 	{
-		title: "Sideward Sinawali",
-		url: "https://youtu.be/GbHiKTmVgJw?t=85"
+		title: 'Sideward Sinawali',
+		url: 'https://youtu.be/GbHiKTmVgJw?t=85'
 	},
 	{
-		title: "Reverse Sinawali",
-		url: "https://youtu.be/GbHiKTmVgJw?t=343"
-	},
-]
+		title: 'Reverse Sinawali',
+		url: 'https://youtu.be/GbHiKTmVgJw?t=343'
+	}
+];
 
 export const arnisFootworks: Videos = [
 	{
-		title: "Caballero",
-		url: "https://youtu.be/jrXYbouUFR8?t=312"
+		title: 'Caballero',
+		url: 'https://youtu.be/jrXYbouUFR8?t=312'
 	},
 	{
-		title: "Triangle",
-		url: "https://youtu.be/jrXYbouUFR8?t=457"
+		title: 'Triangle',
+		url: 'https://youtu.be/jrXYbouUFR8?t=457'
 	},
 	{
-		title: "Star Reach",
-		url: "https://youtu.be/jrXYbouUFR8?t=694"
+		title: 'Star Reach',
+		url: 'https://youtu.be/jrXYbouUFR8?t=694'
 	}
-]
+];

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { sectionsMap } from '$lib/data';
 	import { Avatar } from '@skeletonlabs/skeleton';
 	import { Edit } from '$lib/assets/icons';
 	import { getContext, onDestroy } from 'svelte';
@@ -12,6 +11,7 @@
 	export let data;
 
 	$: currentUser = getContext<Writable<UserData>>('user');
+	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 	$: user = data.user;
 
 	let loading = false;
@@ -70,7 +70,7 @@
 				{user.personal_data.name.last}
 			</span>
 			<span class="text-base text-secondary-700-200-token lg:text-lg">
-				{sectionsMap.get(user.personal_data.section)}
+				{$sectionsMap.get(user.personal_data.section)}
 			</span>
 		</div>
 	</div>
@@ -220,7 +220,7 @@
 							name="section"
 							required
 						>
-							{#each sectionsMap as [key, value], idx (idx)}
+							{#each $sectionsMap as [key, value], idx (idx)}
 								<option value={key}>{value}</option>
 							{/each}
 						</select>

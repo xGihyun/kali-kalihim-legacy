@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { sectionsMap } from '$lib/data';
 	import { db } from '$lib/firebase/firebase';
 	import type { UserData } from '$lib/types';
 	import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
@@ -9,6 +8,7 @@
 	export let data;
 
 	$: currentUser = getContext<Writable<UserData>>('user');
+	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
 	let users = data.users;
 
@@ -56,7 +56,7 @@
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							{sectionsMap.get(user.personal_data.section)}
+							{$sectionsMap.get(user.personal_data.section)}
 						</p>
 					</td>
 					<td class="w-1/4">

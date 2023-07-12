@@ -84,3 +84,7 @@ type Video = {
 }
 
 export type Videos = Video[];
+
+export type Section = {
+	name: string;
+}

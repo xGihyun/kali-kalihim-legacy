@@ -82,4 +82,13 @@
 	</div>
 {:else}
 	<p>Successfully used Twist of Fate</p>
+	<div class="flex justify-end gap-4">
+		<button
+			class="btn variant-ghost-surface"
+			type="button"
+			on:click={() => ($selectedPowerCard = null)}
+		>
+			Cancel
+		</button>
+	</div>
 {/if}

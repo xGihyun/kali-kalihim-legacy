@@ -2,7 +2,7 @@
 	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
-	import { allUsersInSection, currentUser, latestOpponent } from '$lib/store';
+	import { allUsersInSection, currentUser, latestOpponent, sections } from '$lib/store';
 	import { getContext, onMount, setContext } from 'svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -51,9 +51,14 @@
 		power_cards: data.user?.power_cards || []
 	});
 
+	let sectionsData = data?.sectionMap as Map<string, string>;
+
+	$: sections.set(sectionsData);
+
 	setContext('user', currentUser);
 	setContext('opponent', latestOpponent);
 	setContext('usersInSection', allUsersInSection);
+	setContext('sections', sections);
 
 	const user = getContext<Writable<UserData>>('user');
 

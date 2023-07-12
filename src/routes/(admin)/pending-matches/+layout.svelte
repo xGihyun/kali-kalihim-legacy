@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { sectionsMap } from '$lib/data';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
+	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 	$: section = 'Select a section';
 
 	const sectionPopup: PopupSettings = {
@@ -19,7 +21,7 @@
 
 	<div class="card w-48 py-2 shadow-xl" data-popup="sections">
 		<ul>
-			{#each sectionsMap as [key, value], idx (idx)}
+			{#each $sectionsMap as [key, value], idx (idx)}
 				<li class="flex">
 					<a
 						class={`flex-1 px-4 py-2 ${

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PowerCard } from '$lib/components';
-	import { powerCardsMap, sectionsMap } from '$lib/data';
+	import { powerCardsMap } from '$lib/data';
 	import { db } from '$lib/firebase/firebase';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
 	import type { Match, UserData } from '$lib/types';
@@ -13,6 +13,8 @@
 	import { enhance } from '$app/forms';
 
 	export let data;
+
+	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
 	let selectedAvatar: File | null = null;
 	let selectedBanner: File | null = null;
@@ -35,7 +37,7 @@
 	$: opponent = getContext<Writable<UserData>>('opponent');
 
 	$: pendingMatch = data?.latestPendingMatch;
-	$: topUsers = data?.topUsers;
+	// $: topUsers = data?.topUsers;
 
 	// Subscribe to user changes
 	$: if (data.user) {
@@ -221,10 +223,6 @@
 
 	let checkedPowerCards: string[] = [];
 
-	function testSubmit() {
-		console.log(checkedPowerCards);
-	}
-
 	// TODO: Add cropping with preview?
 </script>
 
@@ -353,7 +351,7 @@
 						{$user.personal_data.name.last}
 					</span>
 					<span class="text-base text-secondary-700-200-token lg:text-lg">
-						{sectionsMap.get($user.personal_data.section)}
+						{$sectionsMap.get($user.personal_data.section)}
 					</span>
 				</div>
 			</div>
@@ -552,9 +550,9 @@
 					<div class="grid grid-cols-3 gap-2 px-[5%] py-10 lg:gap-10 lg:px-[10%]">
 						{#each $user.power_cards as card, idx (idx)}
 							<button
-								class={`w-full max-w-[15rem] rounded-container-token ${card.used ? 'opacity-50' : 'opacity-100'} ${
-									card.activated && !card.used ? 'border-4 border-green-500' : 'border-none'
-								}`}
+								class={`w-full max-w-[15rem] rounded-container-token ${
+									card.used ? 'opacity-50' : 'opacity-100'
+								} ${card.activated && !card.used ? 'border-4 border-green-500' : 'border-none'}`}
 								on:click={() => {
 									selectedPowerCard.set(card.key);
 								}}
@@ -647,7 +645,7 @@
 				<label class="label">
 					<span>Section</span>
 					<select class="select variant-form-material" value="section-1" name="section" required>
-						{#each sectionsMap as [key, value], idx (idx)}
+						{#each $sectionsMap as [key, value], idx (idx)}
 							<option value={key}>{value}</option>
 						{/each}
 					</select>

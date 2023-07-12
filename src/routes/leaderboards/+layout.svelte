@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { sectionsMap } from '$lib/data';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
+	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 	$: section = 'All';
 
 	const sectionPopup: PopupSettings = {
@@ -28,7 +30,7 @@
 					on:click={() => (section = 'All')}>All</a
 				>
 			</li>
-			{#each sectionsMap as [key, value], idx (idx)}
+			{#each $sectionsMap as [key, value], idx (idx)}
 				<li class="flex">
 					<a
 						class={`flex-1 px-4 py-2 ${

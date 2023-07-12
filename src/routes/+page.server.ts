@@ -1,5 +1,5 @@
 import { auth, db } from '$lib/firebase/firebase';
-import { redirect, type Actions, json } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import {
 	collection,
 	doc,
@@ -29,7 +29,6 @@ import type {
 } from '$lib/types.js';
 import type { PageServerLoad } from './$types';
 import { CACHE_DURATION } from '$lib/constants';
-import type { PowerCard } from '$lib/components';
 import { powerCardsMap } from '$lib/data';
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
@@ -264,7 +263,7 @@ export const actions: Actions = {
 
 		const cardKeys: string[] = JSON.parse(cards);
 
-		if(cardKeys.length < 3) return;
+		if (cardKeys.length < 3) return;
 
 		const powercards: UserPowerCard[] = cardKeys.map((card) => {
 			const newCard: UserPowerCard = {

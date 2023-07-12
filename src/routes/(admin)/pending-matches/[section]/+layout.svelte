@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { sectionsMap } from '$lib/data.js';
 	import { db } from '$lib/firebase/firebase.js';
 	import type { MatchSet } from '$lib/types.js';
 	import { TabGroup, TabAnchor, type PopupSettings, popup } from '@skeletonlabs/skeleton';
 	import { collection, onSnapshot, query, where } from 'firebase/firestore';
-	import { onDestroy } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	export let data;
 
 	$: matchSets = data.matchSets;
+	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
 	const matchesCollection = collection(db, 'match_sets');
 	const matchQuery = query(matchesCollection, where('section', '==', data.section));
@@ -43,7 +44,7 @@
 <div class="flex h-full w-full flex-col items-center justify-center py-10">
 	{#if matchSets.length > 0}
 		<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
-			{sectionsMap.get(data.section)}
+			{$sectionsMap.get(data.section)}
 		</h1>
 		<div class="hidden lg:block">
 			<TabGroup justify="justify-center">
