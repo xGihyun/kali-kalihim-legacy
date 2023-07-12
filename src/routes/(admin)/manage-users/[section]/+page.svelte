@@ -1,14 +1,16 @@
 <script lang="ts">
-	import { sectionsMap } from '$lib/data.js';
 	import { db } from '$lib/firebase/firebase.js';
 	import type { UserData } from '$lib/types.js';
 	import { collection, onSnapshot, query, where } from 'firebase/firestore';
-	import { onDestroy } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	export let data;
 
 	$: maleUsers = data.users.male;
 	$: femaleUsers = data.users.female;
+
+	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
 	const usersCollection = collection(db, 'users');
 	const q = query(usersCollection, where('personal_data.section', '==', data.section));
@@ -59,7 +61,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each maleUsers as user, idx (user.auth_data.uid)}
+			{#each maleUsers as user (user.auth_data.uid)}
 				<tr class="text-secondary-700-200-token">
 					<td>
 						<p class="text-xs md:text-sm">
@@ -74,7 +76,7 @@
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							{sectionsMap.get(user.personal_data.section)}
+							{$sectionsMap.get(user.personal_data.section)}
 						</p>
 					</td>
 					<td class="w-1/4">
@@ -101,7 +103,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each femaleUsers as user, idx (user.auth_data.uid)}
+			{#each femaleUsers as user (user.auth_data.uid)}
 				<tr class="text-secondary-700-200-token">
 					<td>
 						<p class="text-xs md:text-sm">
@@ -116,7 +118,7 @@
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							{sectionsMap.get(user.personal_data.section)}
+							{$sectionsMap.get(user.personal_data.section)}
 						</p>
 					</td>
 					<td class="w-1/4">
