@@ -120,9 +120,6 @@ export const actions: Actions = {
 		const usersSnapshotCount = usersSnapshot.data().count;
 		const usersInSectionSnapshotCount = usersInSectionSnapshot.data().count;
 
-		// console.log(usersSnapshotCount);
-		// console.log(usersInSectionSnapshotCount);
-
 		// Add + 1 to usersInSectionSnapshotCount since the user's section is still not set in the db, therefore not counting the user
 		const newRankingData: UserRankingData = {
 			number: {

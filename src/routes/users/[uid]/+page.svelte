@@ -7,6 +7,7 @@
 	import { doc, onSnapshot } from 'firebase/firestore';
 	import { db } from '$lib/firebase/firebase';
 	import { enhance } from '$app/forms';
+	import { PowerCards, Rank } from '$lib/components/user';
 
 	export let data;
 
@@ -74,55 +75,7 @@
 			</span>
 		</div>
 	</div>
-	<div
-		class="relative z-[1] flex h-36 w-full flex-col items-center justify-center bg-gradient-to-r from-blue-950 to-rose-950 px-[5%] py-2 lg:h-72"
-	>
-		<!-- Temporary rank logo -->
-		<div class="absolute -top-[17%] left-1/2 hidden -translate-x-1/2 lg:block">
-			<div class="aspect-square rotate-45 border-4 border-white bg-red-600 lg:w-24" />
-		</div>
-		<span
-			class="text-outline w-full select-none text-start font-gt-walsheim-pro-medium text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
-		>
-			{user.rank.title}
-		</span>
-	</div>
-	<div class="z-10 flex h-16 w-full px-[5%] lg:h-20">
-		<div class="mb-8 w-full flex-none self-end">
-			<div class="flex w-full justify-center gap-4 lg:gap-16">
-				<div
-					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
-				>
-					<span class="text-base lg:text-xl">Overall</span>
-					<span
-						class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
-					>
-						#{user.rank.number.overall}
-					</span>
-				</div>
-				<div
-					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
-				>
-					<span class="text-base lg:text-xl">Score</span>
-					<span
-						class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
-					>
-						{user.score}
-					</span>
-				</div>
-				<div
-					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
-				>
-					<span class="text-base lg:text-xl">Section</span>
-					<span
-						class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
-					>
-						#{user.rank.number.section}
-					</span>
-				</div>
-			</div>
-		</div>
-	</div>
+	<Rank {user} />
 
 	{#if $currentUser.auth_data.role === 'admin'}
 		<div class="fixed bottom-10 right-10 z-40 flex gap-4">
@@ -136,6 +89,9 @@
 			</button>
 		</div>
 
+		<div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
+			<PowerCards {user} />
+		</div>
 		<!-- Edit user information -->
 		<dialog
 			class="w-modal-slim p-4 shadow-xl bg-surface-100-800-token rounded-container-token text-token"
@@ -346,13 +302,3 @@
 		</dialog>
 	{/if}
 </div>
-
-<style>
-	.text-outline {
-		color: white;
-		-webkit-text-fill-color: transparent;
-		-webkit-text-stroke-width: 1px;
-		/* -webkit-background-clip: text; */
-		/* background-clip: text; */
-	}
-</style>

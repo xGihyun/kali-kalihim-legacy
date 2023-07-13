@@ -42,5 +42,6 @@ export const defaultUserData: UserData = {
 	personal_data: defaultPersonalData,
 	score: 0,
 	rank: defaultRankingData,
-	power_cards: defaultPowerCards
+	power_cards: defaultPowerCards,
+	is_private: false
 };

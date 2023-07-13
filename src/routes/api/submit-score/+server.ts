@@ -73,6 +73,8 @@ export const POST: RequestHandler = async ({ request }) => {
 				const isProtected = userPowerCards.find(
 					(card) => card.key === "ancient's-protection" && card.activated && !card.used
 				);
+
+				// Handle x4 multiplier case
 				const isDoubledDown = userPowerCards.find(
 					(card) => card.key === 'double-edged-sword' && card.activated && !card.used
 				);

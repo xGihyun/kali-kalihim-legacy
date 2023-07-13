@@ -48,7 +48,8 @@
 			},
 			title: data.user?.rank.title || ''
 		},
-		power_cards: data.user?.power_cards || []
+		power_cards: data.user?.power_cards || [],
+		is_private: false
 	});
 
 	let sectionsData = data?.sectionMap as Map<string, string>;

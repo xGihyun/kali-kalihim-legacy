@@ -10,7 +10,7 @@
 			return;
 		}
 
-		const key = section.toLowerCase();
+		const key = section.toLowerCase().trim();
 		const value = key.charAt(0).toUpperCase() + key.slice(1);
 		const sectionRef = doc(db, 'sections', key);
 

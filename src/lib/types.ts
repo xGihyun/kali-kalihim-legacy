@@ -6,6 +6,7 @@ export type UserData = {
 	score: number;
 	rank: UserRankingData;
 	power_cards: UserPowerCard[];
+	is_private: boolean;
 };
 
 export type UserAuthData = {

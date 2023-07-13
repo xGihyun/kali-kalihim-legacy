@@ -80,6 +80,7 @@ export const actions: Actions = {
 		console.log('Data has been updated.');
 	},
 	delete: async ({ params }) => {
+		// WIP
 		const userUID = params.uid;
 
 		console.log('Deleting user');
