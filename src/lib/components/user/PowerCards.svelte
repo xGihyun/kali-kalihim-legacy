@@ -1,18 +1,28 @@
 <script lang="ts">
+	import { Cards } from '$lib/assets/icons';
 	import { powerCardsMap } from '$lib/data';
 	import { selectedPowerCard } from '$lib/store';
 	import type { UserData } from '$lib/types';
+	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	export let user: UserData;
+
+	$: currentUser = getContext<Writable<UserData>>('user');
 </script>
 
-{#if !user.is_private}
-	<div class="flex w-full flex-col">
-		<div class="flex h-20 w-full items-center px-[5%] bg-surface-100-800-token">
-			<span class="w-full text-center text-2xl uppercase">power cards</span>
+{#if !user.is_private || user.auth_data.uid === $currentUser.auth_data.uid}
+	<div
+		class="flex w-1/2 flex-col lg:rounded-md bg-surface-100-800-token border-surface-300-600-token border-token"
+	>
+		<div class="flex h-20 w-full items-center gap-4 px-[5%]">
+			<Cards styles="w-8 h-8" />
+			<span class="w-full text-2xl uppercase">power cards</span>
 		</div>
 		<!-- Power cards the user has -->
-		<div class="grid grid-cols-3 place-items-center gap-2 px-[5%] py-10 lg:gap-10 lg:px-[10%]">
+		<div
+			class="grid h-full grid-cols-3 place-items-center gap-2 px-[5%] py-4 lg:gap-10 lg:px-[10%]"
+		>
 			{#each user.power_cards as card, idx (idx)}
 				<button
 					class={`w-full max-w-[15rem] rounded-container-token ${
@@ -28,4 +38,6 @@
 			{/each}
 		</div>
 	</div>
+{:else}
+	<div class="block w-full text-center opacity-50">This account is private</div>
 {/if}

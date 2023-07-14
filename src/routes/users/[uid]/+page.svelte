@@ -77,6 +77,10 @@
 	</div>
 	<Rank {user} />
 
+	<div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%] justify-center">
+		<PowerCards {user} />
+	</div>
+
 	{#if $currentUser.auth_data.role === 'admin'}
 		<div class="fixed bottom-10 right-10 z-40 flex gap-4">
 			<button class="btn variant-filled flex gap-4" on:click={() => editModal.showModal()}>
@@ -89,9 +93,6 @@
 			</button>
 		</div>
 
-		<div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
-			<PowerCards {user} />
-		</div>
 		<!-- Edit user information -->
 		<dialog
 			class="w-modal-slim p-4 shadow-xl bg-surface-100-800-token rounded-container-token text-token"
