@@ -148,3 +148,10 @@ export const arnisFootworks: Videos = [
 		url: 'https://youtu.be/jrXYbouUFR8?t=694'
 	}
 ];
+
+export const rankLogoColors: Map<string, string> = new Map([
+	['likas', 'border-white bg-red-600'],
+	['likha', 'border-white bg-orange-800'],
+	['lakan', 'border-black bg-amber-500'],
+	['grandmaster', 'border-red-800 bg-red-600']
+]);

@@ -51,13 +51,13 @@
 
 <!-- Male -->
 <div class="table-container max-w-5xl">
-	<h2 class="w-full text-center text-xl">Male</h2>
+	<h2 class="w-full text-center text-base uppercase text-secondary-700-200-token opacity-75">Male</h2>
 	<table class="table-hover table-compact table">
 		<thead>
 			<tr>
 				<th class="text-sm md:text-base">Name</th>
 				<th class="text-sm md:text-base">Section</th>
-				<th class="text-sm md:text-base">Rating</th>
+				<th class="text-sm md:text-base text-center">Rating</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -76,13 +76,12 @@
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							{$sectionsMap.get(user.personal_data.section)}
+							St. {$sectionsMap.get(user.personal_data.section)}
 						</p>
 					</td>
 					<td class="w-1/4">
-						<p class="text-xs md:text-sm">
+						<p class="text-xs md:text-sm text-center">
 							{user.score}
-							{user.rank.title}
 						</p>
 					</td>
 				</tr>
@@ -93,13 +92,13 @@
 
 <!-- Female -->
 <div class="table-container max-w-5xl">
-	<h2 class="w-full text-center text-xl">Female</h2>
+	<h2 class="w-full text-center text-base uppercase text-secondary-700-200-token opacity-75">Female</h2>
 	<table class="table-hover table-compact table">
 		<thead>
 			<tr>
 				<th class="text-sm md:text-base">Name</th>
 				<th class="text-sm md:text-base">Section</th>
-				<th class="text-sm md:text-base">Rating</th>
+				<th class="text-sm md:text-base text-center">Rating</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -118,13 +117,12 @@
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							{$sectionsMap.get(user.personal_data.section)}
+							St. {$sectionsMap.get(user.personal_data.section)}
 						</p>
 					</td>
 					<td class="w-1/4">
-						<p class="text-xs md:text-sm">
+						<p class="text-xs md:text-sm text-center">
 							{user.score}
-							{user.rank.title}
 						</p>
 					</td>
 				</tr>

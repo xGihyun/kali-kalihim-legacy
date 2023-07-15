@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { UserData } from '$lib/types';
-	import { getContext } from 'svelte';
-	import type { Writable } from 'svelte/store';
+	import { RankLogo } from '.';
 
 	export let user: UserData;
 </script>
@@ -9,10 +8,7 @@
 <div
 	class="relative z-[1] flex h-36 w-full flex-col items-center justify-center bg-gradient-to-r from-blue-950 to-rose-950 px-[5%] py-2 lg:h-72"
 >
-	<!-- Temporary rank logo -->
-	<div class="absolute -top-[17%] left-1/2 hidden -translate-x-1/2 lg:block">
-		<div class="aspect-square rotate-45 border-4 border-white bg-red-600 lg:w-24" />
-	</div>
+	<RankLogo title={user.rank.title} width="lg:w-24" absolute={true} />
 	<span
 		class="text-outline w-full select-none text-start font-gt-walsheim-pro-medium text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
 	>

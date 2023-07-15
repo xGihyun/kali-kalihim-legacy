@@ -25,7 +25,7 @@
 		<span>Add a section</span>
 		<span class="text-sm opacity-75">Only input the section name. (eg. agatha)</span>
 	</div>
-	<form class="flex w-full" on:submit|preventDefault={addSection}>
+	<form class="w-full" on:submit|preventDefault={addSection}>
 		<input class="input variant-form-material w-2/3" type="text" bind:value={section} />
 		<button class="btn-icon variant-ghost-primary">+</button>
 	</form>

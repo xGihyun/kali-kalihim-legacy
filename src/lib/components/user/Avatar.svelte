@@ -82,8 +82,6 @@
 		const userRef = doc(db, 'users', $user.auth_data.uid);
 
 		await updateDoc(userRef, { is_private: $user.is_private });
-
-		console.log('TOggled');
 	}
 </script>
 
@@ -117,12 +115,12 @@
 			bind:this={uploadAvatarEl}
 		/>
 		<div class="flex h-full flex-col justify-center">
-			<span class="text-xl lg:text-2xl">
+			<span class="text-base lg:text-2xl">
 				{$user.personal_data.name.first}
 				{$user.personal_data.name.last}
 			</span>
-			<span class="text-base text-secondary-700-200-token lg:text-lg">
-				{$sectionsMap.get($user.personal_data.section)}
+			<span class="text-sm text-secondary-700-200-token lg:text-lg">
+				St. {$sectionsMap.get($user.personal_data.section)}
 			</span>
 		</div>
 	</div>

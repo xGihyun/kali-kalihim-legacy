@@ -5,6 +5,7 @@
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import { Sword } from '$lib/assets/icons';
+	import RankLogo from './RankLogo.svelte';
 
 	export let pendingMatch: Match | undefined;
 	export let opponent: UserData;
@@ -14,7 +15,7 @@
 </script>
 
 <div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
-	<div class="w-1/2">
+	<div class="w-full lg:w-1/2">
 		<div class="bg-surface-100-800-token border-token border-surface-300-600-token lg:rounded-md">
 			<div class="flex h-20 w-full items-center gap-4 px-[5%]">
 				<Sword styles="w-8 h-8" />
@@ -50,14 +51,17 @@
 									</div>
 									<div class="flex flex-col">
 										<a class="w-fit hover:underline" href={`/users/${opponent.auth_data.uid}`}>
-											<span class="text-xl">
+											<span class="text-base lg:text-xl">
 												{opponent.personal_data.name.first}
 												{opponent.personal_data.name.last}
 											</span>
 										</a>
-										<span class="uppercase opacity-75">
-											{opponent.rank.title}
-										</span>
+										<div class="flex gap-2 items-center">
+											<RankLogo title={opponent.rank.title} width="w-3 h-3" borderWidth="border-2" />
+											<span class="text-sm uppercase opacity-75 lg:text-base">
+												{opponent.rank.title}
+											</span>
+										</div>
 									</div>
 								</div>
 							</div>
