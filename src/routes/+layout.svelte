@@ -129,7 +129,7 @@
 		<div class="flex h-full w-full flex-auto overflow-hidden">
 			{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 				<aside class="hidden lg:block">
-					<AppRail border="border-r border-surface-500/75" background="bg-surface-50-900-token">
+					<AppRail border="border-r border-surface-500/75" background="bg-surface-100-800-token">
 						{#each USER_ROUTES as route, idx (idx)}
 							<AppRailAnchor
 								href={route.path}

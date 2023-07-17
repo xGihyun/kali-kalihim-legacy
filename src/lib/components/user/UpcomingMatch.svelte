@@ -16,7 +16,7 @@
 
 <div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
 	<div class="w-full lg:w-1/2">
-		<div class="bg-surface-100-800-token border-token border-surface-300-600-token lg:rounded-md">
+		<div class="bg-surface-200-700-token border-token border-surface-400-500-token lg:rounded-md">
 			<div class="flex h-20 w-full items-center gap-4 px-[5%]">
 				<Sword styles="w-8 h-8" />
 				<span class="w-full text-2xl uppercase">upcoming match</span>
@@ -68,7 +68,7 @@
 
 							<div class="flex h-full w-full justify-center gap-4 p-4">
 								<div
-									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
+									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
 								>
 									<span class="text-base">Score</span>
 									<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
@@ -76,7 +76,7 @@
 									</span>
 								</div>
 								<div
-									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
+									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
 								>
 									<span class="text-base">Overall</span>
 									<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
@@ -84,7 +84,7 @@
 									</span>
 								</div>
 								<div
-									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
+									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
 								>
 									<span class="text-base">Section</span>
 									<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
