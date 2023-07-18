@@ -88,7 +88,7 @@
 			{/if}
 
 			<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-				<div class="flex flex-1 flex-col items-center justify-center">
+				<div class="flex flex-1 flex-col items-center justify-center pb-20">
 					<slot />
 				</div>
 			</main>

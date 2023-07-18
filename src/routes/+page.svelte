@@ -14,7 +14,6 @@
 	let opponentInitials: string = '';
 
 	$: user = getContext<Writable<UserData>>('user');
-	$: opponent = getContext<Writable<UserData>>('opponent');
 	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
 	$: pendingMatch = data?.latestPendingMatch;
@@ -86,8 +85,8 @@
 		{:else}
 			<Banner />
 			<UserAvatar {initials} />
-			<Rank user={$user} />
-			<UpcomingMatch {pendingMatch} opponent={$opponent} initials={opponentInitials} />
+			<Rank />
+			<UpcomingMatch {pendingMatch} initials={opponentInitials} />
 
 			{#if $selectedPowerCard}
 				<PowerCard />

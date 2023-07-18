@@ -1,33 +1,39 @@
 <script lang="ts">
 	import type { UserData } from '$lib/types';
+	import { getContext } from 'svelte';
 	import { RankLogo } from '.';
+	import type { Writable } from 'svelte/store';
 
-	export let user: UserData;
+	$: user = getContext<Writable<UserData>>('user');
 
-	const stats = [
-		{
-			name: 'Score',
-			value: user?.score.toString()
-		},
-		{
-			name: 'Overall',
-			value: `#${user?.rank.number.overall}`
-		},
-		{
-			name: 'Section',
-			value: `#${user?.rank.number.section}`
-		}
-	];
+	let stats: { name: string; value: string }[];
+
+	$: if ($user) {
+		stats = [
+			{
+				name: 'Score',
+				value: $user?.score.toString()
+			},
+			{
+				name: 'Overall',
+				value: `#${$user?.rank.number.overall}`
+			},
+			{
+				name: 'Section',
+				value: `#${$user?.rank.number.section}`
+			}
+		];
+	}
 </script>
 
 <div
 	class="relative z-[1] flex h-36 w-full flex-col items-center justify-center bg-gradient-to-r from-blue-950 to-rose-950 px-[5%] py-2 lg:h-72"
 >
-	<RankLogo title={user.rank.title} width="lg:w-24" absolute={true} />
+	<RankLogo title={$user.rank.title} width="lg:w-24" absolute={true} />
 	<span
 		class="text-outline w-full select-none text-start font-gt-walsheim-pro-medium text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
 	>
-		{user.rank.title}
+		{$user.rank.title}
 	</span>
 </div>
 <div class="z-10 flex h-16 w-full px-[5%] lg:h-20">
