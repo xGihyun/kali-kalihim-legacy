@@ -13,20 +13,24 @@
 
 	$: user = getContext<Writable<UserData>>('user');
 
-	const stats = [
-		{
-			name: 'Score',
-			value: opponent.score
-		},
-		{
-			name: 'Overall',
-			value: `#${opponent.rank.number.overall}`
-		},
-		{
-			name: 'Section',
-			value: `#${opponent.rank.number.section}`
-		}
-	];
+	let stats: { name: string; value: string }[];
+
+	$: if (opponent) {
+		stats = [
+			{
+				name: 'Score',
+				value: opponent.score.toString()
+			},
+			{
+				name: 'Overall',
+				value: `#${opponent.rank.number.overall}`
+			},
+			{
+				name: 'Section',
+				value: `#${opponent.rank.number.section}`
+			}
+		];
+	}
 </script>
 
 <div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
@@ -88,6 +92,7 @@
 							<div class="px-[5%]">
 								<div class="flex h-full w-full justify-center gap-2 py-4 lg:gap-4">
 									{#each stats as stat, idx (idx)}
+				{@const { name, value } = stat}
 										<div
 											class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
 										>

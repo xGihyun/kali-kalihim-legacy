@@ -8,13 +8,9 @@
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { Navbar, Sidebar } from '$lib/components';
 	import init from '$lib/pkg/my_package';
-	import { AppRail, AppRailAnchor } from '@skeletonlabs/skeleton';
-	import { ADMIN_ROUTES, USER_ROUTES } from '$lib/constants';
-	import { page } from '$app/stores';
-	import { Github } from '$lib/assets/icons';
 	import type { UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
-	import { Drawer, drawerStore } from '@skeletonlabs/skeleton';
+	import { Drawer } from '@skeletonlabs/skeleton';
 
 	export let data;
 
