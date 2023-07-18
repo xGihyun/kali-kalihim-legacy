@@ -4,24 +4,20 @@
 
 	export let user: UserData;
 
-	let stats: { name: string; value: string }[];
-
-	$: if (user) {
-		stats = [
-			{
-				name: 'Score',
-				value: user.score.toString()
-			},
-			{
-				name: 'Overall',
-				value: `#${user.rank.number.overall}`
-			},
-			{
-				name: 'Section',
-				value: `#${user.rank.number.section}`
-			}
-		];
-	}
+	const stats = [
+		{
+			name: 'Score',
+			value: user?.score.toString()
+		},
+		{
+			name: 'Overall',
+			value: `#${user?.rank.number.overall}`
+		},
+		{
+			name: 'Section',
+			value: `#${user?.rank.number.section}`
+		}
+	];
 </script>
 
 <div
@@ -38,15 +34,14 @@
 	<div class="mb-8 w-full flex-none self-end">
 		<div class="flex w-full justify-center gap-2 lg:gap-4">
 			{#each stats as stat, idx (idx)}
-				{@const { name, value } = stat}
 				<div
-					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token lg:p-4"
+					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token lg:p-4"
 				>
-					<span class="text-base lg:text-xl">{name}</span>
+					<span class="text-sm lg:text-xl">{stat.name}</span>
 					<span
-						class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token lg:text-3xl"
+						class="font-gt-walsheim-pro-medium text-lg text-secondary-700-200-token lg:text-3xl"
 					>
-						{value}
+						{stat.value}
 					</span>
 				</div>
 			{/each}

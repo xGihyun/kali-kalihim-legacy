@@ -13,24 +13,20 @@
 
 	$: user = getContext<Writable<UserData>>('user');
 
-	let stats: { name: string; value: string }[];
-
-	$: if (opponent) {
-		stats = [
-			{
-				name: 'Score',
-				value: opponent.score.toString()
-			},
-			{
-				name: 'Overall',
-				value: `#${opponent.rank.number.overall}`
-			},
-			{
-				name: 'Section',
-				value: `#${opponent.rank.number.section}`
-			}
-		];
-	}
+	const stats = [
+		{
+			name: 'Score',
+			value: opponent?.score
+		},
+		{
+			name: 'Overall',
+			value: `#${opponent?.rank.number.overall}`
+		},
+		{
+			name: 'Section',
+			value: `#${opponent?.rank.number.section}`
+		}
+	];
 </script>
 
 <div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
@@ -89,22 +85,22 @@
 								</div>
 							</div>
 
-							<div class="px-[5%]">
+							<div class="px-[5%] h-full flex flex-col">
 								<div class="flex h-full w-full justify-center gap-2 py-4 lg:gap-4">
 									{#each stats as stat, idx (idx)}
-				{@const { name, value } = stat}
 										<div
 											class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
 										>
-											<span class="text-base">{stat.name}</span>
+											<span class="text-sm lg:text-base">{stat.name}</span>
 											<span
-												class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token"
+												class="font-gt-walsheim-pro-medium text-lg lg:text-xl text-secondary-700-200-token"
 											>
 												{stat.value}
 											</span>
 										</div>
 									{/each}
 								</div>
+
 								<div class="flex w-full justify-center gap-2 py-4">
 									<div
 										class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"

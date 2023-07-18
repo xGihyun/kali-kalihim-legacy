@@ -10,74 +10,71 @@
 
 	export let data;
 
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
-
 	let initials: string = '';
 	let opponentInitials: string = '';
 
 	$: user = getContext<Writable<UserData>>('user');
 	$: opponent = getContext<Writable<UserData>>('opponent');
+	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
 	$: pendingMatch = data?.latestPendingMatch;
-	// $: topUsers = data?.topUsers;
 
-	$: if (data.user) {
-		initials = `${data.user.personal_data.name.first[0]}${data.user.personal_data.name.last[0]}`;
+	$: {
+		if (data && data.user) {
+			const { user: userData } = data;
 
-		const userRef = doc(db, 'users', data.user.auth_data.uid);
+			initials = `${userData.personal_data.name.first[0]}${userData.personal_data.name.last[0]}`;
 
-		const unsubUser = onSnapshot(userRef, (snapshot) => {
-			if (!snapshot.exists()) return;
-
-			const updatedUserData = snapshot.data() as UserData;
-
-			currentUser.update(
-				(val) =>
-					(val = {
-						...val,
-						...updatedUserData
-					})
+			const userRef = doc(db, 'users', userData.auth_data.uid);
+			const pendingMatchesCollection = collection(
+				db,
+				`users/${userData.auth_data.uid}/pending_matches`
 			);
-		});
+			const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
 
-		const pendingMatchesCollection = collection(
-			db,
-			`users/${data.user.auth_data.uid}/pending_matches`
-		);
-		const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
+			const unsubUser = onSnapshot(userRef, (snapshot) => {
+				if (snapshot.exists()) {
+					const updatedUserData = snapshot.data() as UserData;
 
-		const unsubPendingMatch = onSnapshot(q, (snapshot) => {
-			if (snapshot.empty) return;
+					currentUser.update((val) => ({ ...val, ...updatedUserData }));
+				}
+			});
 
-			const newMatch = snapshot.docs.shift()?.data() as Match;
-			const newOpponent = newMatch.players.find(
-				(player) => player.auth_data.uid !== data.user?.auth_data.uid
-			) as UserData;
+			const unsubPendingMatch = onSnapshot(q, (snapshot) => {
+				if (!snapshot.empty) {
+					const newMatch = snapshot.docs[0]?.data() as Match;
+					const newOpponent = newMatch.players.find(
+						(player) => player.auth_data.uid !== userData.auth_data.uid
+					) as UserData;
 
-			pendingMatch = newMatch;
-			latestOpponent.set(newOpponent);
-		});
+					pendingMatch = newMatch;
+					latestOpponent.set(newOpponent);
+				}
+			});
 
-		onDestroy(() => {
-			unsubUser();
-			unsubPendingMatch();
-		});
-	}
+			onDestroy(() => {
+				unsubUser();
+				unsubPendingMatch();
+			});
+		}
 
-	$: if (data.latestOpponent) {
-		opponentInitials = `${data.latestOpponent.personal_data.name.first[0]}${data.latestOpponent.personal_data.name.last[0]}`;
+		if (data && data.latestOpponent) {
+			const { latestOpponent: latestOpponentData } = data;
 
-		const opponentRef = doc(db, 'users', data.latestOpponent.auth_data.uid);
+			opponentInitials = `${latestOpponentData.personal_data.name.first[0]}${latestOpponentData.personal_data.name.last[0]}`;
 
-		const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
-			if (!snapshot.exists()) return;
+			const opponentRef = doc(db, 'users', latestOpponentData.auth_data.uid);
 
-			const updatedOpponentData = snapshot.data() as UserData;
+			const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
+				if (snapshot.exists()) {
+					const updatedOpponentData = snapshot.data() as UserData;
 
-			latestOpponent.update((val) => (val = updatedOpponentData));
-		});
+					latestOpponent.update((val) => (val = updatedOpponentData));
+				}
+			});
 
-		onDestroy(() => unsubOpponent());
+			onDestroy(() => unsubOpponent());
+		}
 	}
 </script>
 
