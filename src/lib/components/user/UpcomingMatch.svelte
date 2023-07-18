@@ -12,6 +12,21 @@
 	export let initials: string;
 
 	$: user = getContext<Writable<UserData>>('user');
+
+	const stats = [
+		{
+			name: 'Score',
+			value: opponent.score
+		},
+		{
+			name: 'Overall',
+			value: `#${opponent.rank.number.overall}`
+		},
+		{
+			name: 'Section',
+			value: `#${opponent.rank.number.section}`
+		}
+	];
 </script>
 
 <div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
@@ -56,8 +71,12 @@
 												{opponent.personal_data.name.last}
 											</span>
 										</a>
-										<div class="flex gap-2 items-center">
-											<RankLogo title={opponent.rank.title} width="w-3 h-3" borderWidth="border-2" />
+										<div class="flex items-center gap-2">
+											<RankLogo
+												title={opponent.rank.title}
+												width="w-3 h-3"
+												borderWidth="border-2"
+											/>
 											<span class="text-sm uppercase opacity-75 lg:text-base">
 												{opponent.rank.title}
 											</span>
@@ -66,52 +85,42 @@
 								</div>
 							</div>
 
-							<div class="flex h-full w-full justify-center gap-4 p-4">
-								<div
-									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
-								>
-									<span class="text-base">Score</span>
-									<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
-										{opponent.score}
-									</span>
+							<div class="px-[5%]">
+								<div class="flex h-full w-full justify-center gap-2 py-4 lg:gap-4">
+									{#each stats as stat, idx (idx)}
+										<div
+											class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
+										>
+											<span class="text-base">{stat.name}</span>
+											<span
+												class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token"
+											>
+												{stat.value}
+											</span>
+										</div>
+									{/each}
 								</div>
-								<div
-									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
-								>
-									<span class="text-base">Overall</span>
-									<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
-										#{opponent.rank.number.overall}
-									</span>
-								</div>
-								<div
-									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token"
-								>
-									<span class="text-base">Section</span>
-									<span class="font-gt-walsheim-pro-medium text-xl text-secondary-700-200-token">
-										#{opponent.rank.number.section}
-									</span>
-								</div>
-							</div>
-							<div class="flex w-full justify-center gap-2 p-4">
-								<div
-									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
-								>
-									<span class="text-xs uppercase lg:text-base">Skill</span>
-									<span
-										class="font-gt-walsheim-pro-medium text-sm text-tertiary-600-300-token lg:text-base"
+								<div class="flex w-full justify-center gap-2 py-4">
+									<div
+										class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
 									>
-										{pendingMatch.skill}
-									</span>
-								</div>
-								<div
-									class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
-								>
-									<span class="text-xs uppercase lg:text-base">Footwork</span>
-									<span
-										class="font-gt-walsheim-pro-medium text-sm text-tertiary-600-300-token lg:text-base"
+										<span class="text-xs uppercase lg:text-base">Skill</span>
+										<span
+											class="font-gt-walsheim-pro-medium text-sm text-tertiary-600-300-token lg:text-base"
+										>
+											{pendingMatch.skill}
+										</span>
+									</div>
+									<div
+										class="flex w-40 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-300-600-token"
 									>
-										{pendingMatch.footwork}
-									</span>
+										<span class="text-xs uppercase lg:text-base">Footwork</span>
+										<span
+											class="font-gt-walsheim-pro-medium text-sm text-tertiary-600-300-token lg:text-base"
+										>
+											{pendingMatch.footwork}
+										</span>
+									</div>
 								</div>
 							</div>
 						</div>

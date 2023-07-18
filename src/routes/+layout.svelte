@@ -6,7 +6,7 @@
 	import { getContext, onMount, setContext } from 'svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
-	import { Navbar } from '$lib/components';
+	import { Navbar, Sidebar } from '$lib/components';
 	import init from '$lib/pkg/my_package';
 	import { AppRail, AppRailAnchor } from '@skeletonlabs/skeleton';
 	import { ADMIN_ROUTES, USER_ROUTES } from '$lib/constants';
@@ -61,7 +61,7 @@
 	setContext('usersInSection', allUsersInSection);
 	setContext('sections', sections);
 
-	const user = getContext<Writable<UserData>>('user');
+	$: user = getContext<Writable<UserData>>('user');
 
 	onMount(async () => {
 		await init();
@@ -81,96 +81,13 @@
 		{/if}
 
 		<Drawer zIndex="z-[51]">
-			<AppRail border="border-r border-surface-500/75" background="bg-surface-50-900-token">
-				{#each USER_ROUTES as route, idx (idx)}
-					<AppRailAnchor
-						href={route.path}
-						selected={$page.url.pathname === route.path}
-						on:click={() => drawerStore.close()}
-					>
-						<svelte:fragment slot="lead">
-							<svelte:component this={route.icon} styles="w-6 h-6" />
-						</svelte:fragment>
-						<span>{route.name}</span>
-					</AppRailAnchor>
-				{/each}
-
-				{#if $user.auth_data.role === 'admin'}
-					{#each ADMIN_ROUTES as route, idx (idx)}
-						<AppRailAnchor
-							href={route.path}
-							selected={$page.url.pathname.startsWith(route.path)}
-							on:click={() => drawerStore.close()}
-						>
-							<svelte:fragment slot="lead">
-								<svelte:component this={route.icon} styles="w-6 h-6" />
-							</svelte:fragment>
-							<span>{route.name}</span>
-						</AppRailAnchor>
-					{/each}
-				{/if}
-
-				<svelte:fragment slot="trail">
-					{#if $user.auth_data.role === 'admin'}
-						<AppRailAnchor
-							href="https://github.com/xGihyun/kali-kalihim"
-							target="_blank"
-							title="Source"
-						>
-							<svelte:fragment slot="lead">
-								<Github styles="w-6 h-6" />
-							</svelte:fragment>
-						</AppRailAnchor>
-					{/if}
-				</svelte:fragment>
-			</AppRail>
+			<Sidebar />
 		</Drawer>
 
 		<div class="flex h-full w-full flex-auto overflow-hidden">
 			{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 				<aside class="hidden lg:block">
-					<AppRail border="border-r border-surface-500/75" background="bg-surface-100-800-token">
-						{#each USER_ROUTES as route, idx (idx)}
-							<AppRailAnchor
-								href={route.path}
-								selected={$page.url.pathname.startsWith(route.path)}
-								on:click={() => drawerStore.close()}
-							>
-								<svelte:fragment slot="lead">
-									<svelte:component this={route.icon} styles="w-6 h-6" />
-								</svelte:fragment>
-								<span>{route.name}</span>
-							</AppRailAnchor>
-						{/each}
-
-						{#if $user.auth_data.role === 'admin'}
-							{#each ADMIN_ROUTES as route, idx (idx)}
-								<AppRailAnchor
-									href={route.path}
-									selected={$page.url.pathname.startsWith(route.path)}
-								>
-									<svelte:fragment slot="lead">
-										<svelte:component this={route.icon} styles="w-6 h-6" />
-									</svelte:fragment>
-									<span>{route.name}</span>
-								</AppRailAnchor>
-							{/each}
-						{/if}
-
-						<svelte:fragment slot="trail">
-							{#if $user.auth_data.role === 'admin'}
-								<AppRailAnchor
-									href="https://github.com/xGihyun/kali-kalihim"
-									target="_blank"
-									title="Source"
-								>
-									<svelte:fragment slot="lead">
-										<Github styles="w-6 h-6" />
-									</svelte:fragment>
-								</AppRailAnchor>
-							{/if}
-						</svelte:fragment>
-					</AppRail>
+					<Sidebar />
 				</aside>
 			{/if}
 

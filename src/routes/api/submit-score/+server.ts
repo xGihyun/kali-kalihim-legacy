@@ -75,18 +75,20 @@ export const POST: RequestHandler = async ({ request }) => {
 				);
 
 				// Handle x4 multiplier case
-				const isDoubledDown = userPowerCards.find(
+				const isDoubledDown = userPowerCards.filter(
 					(card) => card.key === 'double-edged-sword' && card.activated && !card.used
 				);
+				const multiplier = isDoubledDown.length * 2;
 
 				let finalScore: number;
 
 				if (score === Math.min(...scores)) {
-					const reducedScore = score - difference * 2;
+					const reducedScore = score - difference;
 
 					if (isProtected) {
 						finalScore = currentScore + score;
 					} else if (isDoubledDown) {
+						const reducedScore = score - difference * multiplier;
 						finalScore = currentScore + reducedScore;
 					} else {
 						finalScore = currentScore + reducedScore;
@@ -94,9 +96,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 					result.loser = name;
 				} else {
-					const addedScore = score + difference * 2;
+					const addedScore = score + difference;
 
 					if (isDoubledDown) {
+						const addedScore = score + difference * multiplier;
 						finalScore = currentScore + addedScore;
 					} else {
 						finalScore = currentScore + addedScore;
