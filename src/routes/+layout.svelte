@@ -3,11 +3,10 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
 	import { allUsersInSection, currentUser, latestOpponent, sections } from '$lib/store';
-	import { getContext, onMount, setContext } from 'svelte';
+	import { getContext, setContext } from 'svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { Navbar, Sidebar } from '$lib/components';
-	import init from '$lib/pkg/my_package';
 	import type { UserData } from '$lib/types';
 	import type { Writable } from 'svelte/store';
 	import { Drawer } from '@skeletonlabs/skeleton';
@@ -58,10 +57,6 @@
 	setContext('sections', sections);
 
 	$: user = getContext<Writable<UserData>>('user');
-
-	onMount(async () => {
-		await init();
-	});
 </script>
 
 <div class="flex h-screen w-full flex-col overflow-hidden">
