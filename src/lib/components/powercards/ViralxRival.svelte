@@ -2,8 +2,8 @@
 	import { hamster } from '$lib/assets/images';
 	import { powerCardsMap } from '$lib/data';
 
-	export let showName: boolean;
-	export let showDescription: boolean;
+	export let showName: boolean = true;
+	export let showDescription: boolean = false;
 
 	const card = powerCardsMap.get('viral-x-rival');
 </script>
@@ -16,16 +16,18 @@
 		loading="lazy"
 		draggable="false"
 	/>
-	<div class="z-20 bg-black">
-		<span class="block text-center text-base">
-			{card?.name}
-		</span>
-	</div>
+	{#if showName}
+		<div class="z-20 bg-black">
+			<span class="block text-center text-base">
+				{card?.name}
+			</span>
+		</div>
+	{/if}
 	{#if showDescription}
 		<div
 			class="z-20 flex h-full flex-col justify-end bg-gradient-to-t from-black via-black to-[transparent_50%] p-4"
 		>
-			<p class="text text-xs opacity-75 text-token lg:text-base">{card?.description}</p>
+			<p class="text text-token text-xs opacity-75 lg:text-base">{card?.description}</p>
 		</div>
 	{/if}
 </div>
