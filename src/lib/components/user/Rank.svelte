@@ -4,53 +4,61 @@
 	import { RankLogo } from '.';
 	import type { Writable } from 'svelte/store';
 
-	$: user = getContext<Writable<UserData>>('user');
+	export let user: UserData;
 
 	let stats: { name: string; value: string }[];
 
-	$: if ($user) {
+	$: if (user) {
 		stats = [
 			{
 				name: 'Score',
-				value: $user?.score.toString()
+				value: user?.score.toString()
 			},
 			{
 				name: 'Overall',
-				value: `#${$user?.rank.number.overall}`
+				value: `#${user?.rank.number.overall}`
 			},
 			{
 				name: 'Section',
-				value: `#${$user?.rank.number.section}`
+				value: `#${user?.rank.number.section}`
 			}
 		];
 	}
 </script>
 
-<div
-	class="relative z-[1] flex h-36 w-full flex-col items-center justify-center bg-gradient-to-r from-blue-950 to-rose-950 px-[5%] py-2 lg:h-72"
->
-	<RankLogo title={$user.rank.title} width="lg:w-24" absolute={true} />
-	<span
-		class="text-outline w-full select-none text-start font-gt-walsheim-pro-medium text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
-	>
-		{$user.rank.title}
-	</span>
-</div>
-<div class="z-10 flex h-16 w-full px-[5%] lg:h-20">
-	<div class="mb-8 w-full flex-none self-end">
-		<div class="flex w-full justify-center gap-2 lg:gap-4">
-			{#each stats as stat, idx (idx)}
-				<div
-					class="flex w-60 flex-col justify-center rounded-md p-2 shadow-lg bg-surface-400-500-token lg:p-4"
-				>
-					<span class="text-sm lg:text-xl">{stat.name}</span>
-					<span
-						class="font-gt-walsheim-pro-medium text-lg text-secondary-700-200-token lg:text-3xl"
+<div class="relative w-full lg:px-main">
+	<div class="bg-surface-200-700-token relative py-4 lg:px-4 rounded-md">
+		<div class="absolute -top-[17.5%] left-1/2 -translate-x-1/2">
+			<div class="bg-surface-200-700-token aspect-square w-28 rotate-45" />
+		</div>
+		<RankLogo title={user.rank.title} width="lg:w-24 w-16" absolute={true} />
+
+		<div
+			class="relative z-[1] flex h-36 w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-r from-blue-950 to-rose-950 lg:h-72"
+		>
+			<span
+				class="text-outline absolute left-1/2 z-10 w-full -translate-x-1/2 select-none text-start font-gt-walsheim-pro-medium text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
+			>
+				{user.rank.title}
+			</span>
+		</div>
+		<div class="absolute -bottom-[12%] left-1/2 z-30 w-full -translate-x-1/2 px-main">
+			<div
+				class="flex justify-center gap-1 lg:gap-2 [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md"
+			>
+				{#each stats as stat, idx (idx)}
+					<div
+						class="bg-surface-200-700-token flex w-40 flex-col justify-center p-2 lg:w-60 lg:p-4"
 					>
-						{stat.value}
-					</span>
-				</div>
-			{/each}
+						<span class="text-sm lg:text-xl">{stat.name}</span>
+						<span
+							class="text-secondary-700-200-token font-gt-walsheim-pro-medium text-lg lg:text-3xl"
+						>
+							{stat.value}
+						</span>
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
 </div>

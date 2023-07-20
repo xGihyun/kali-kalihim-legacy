@@ -6,7 +6,14 @@
 	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
-	import { Banner, SelectPowerCards, UpcomingMatch, UserAvatar, Rank } from '$lib/components/user';
+	import {
+		Banner,
+		SelectPowerCards,
+		UpcomingMatch,
+		UserAvatar,
+		Rank,
+		PowerCards
+	} from '$lib/components/user';
 
 	export let data;
 
@@ -85,41 +92,17 @@
 		{:else}
 			<Banner />
 			<UserAvatar {initials} />
-			<Rank />
-			<UpcomingMatch {pendingMatch} initials={opponentInitials} />
+			<div class="space-y-10 lg:space-y-20 w-full">
+				<Rank user={$user} />
+				<div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
+					<UpcomingMatch {pendingMatch} initials={opponentInitials} />
+					<PowerCards user={$user} />
+				</div>
+			</div>
 
 			{#if $selectedPowerCard}
 				<PowerCard />
 			{/if}
-
-			<!-- <div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
-			<div class="flex w-full flex-col">
-				<div class="flex h-20 w-full items-center px-[5%] bg-surface-100-800-token">
-					<span class="w-full text-center text-2xl uppercase">top performers</span>
-				</div>
-				{#if topUsers}
-					<div class="flex flex-col items-center justify-center p-4">
-						{#each topUsers as topPlayer (topPlayer.auth_data.uid)}
-							{@const initials =
-								topPlayer.personal_data.name.first[0] + topPlayer.personal_data.name.last[0]}
-							<div
-								class="pointer-events-none relative w-16 select-none rounded-full shadow-profile lg:w-20"
-							>
-								<Avatar src={topPlayer.auth_data.photo_url || ''} width="w-full" {initials} />
-							</div>
-							<div class="flex flex-col">
-								<a class="w-fit hover:underline" href={`/users/${topPlayer.auth_data.uid}`}>
-									<span class="text-base">
-										{topPlayer.personal_data.name.first}
-										{topPlayer.personal_data.name.last}
-									</span>
-								</a>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-		</div> -->
 		{/if}
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
 		<div class="variant-soft-surface rounded-md p-4">

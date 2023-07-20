@@ -56,10 +56,10 @@
 				loading="lazy"
 			/>
 		{:else}
-			<div class="h-40 bg-surface-300-600-token lg:h-80" />
+			<div class="bg-surface-300-600-token h-40 lg:h-80" />
 		{/if}
 	</div>
-	<div class="flex h-32 w-full items-center gap-4 px-[5%] bg-surface-200-700-token">
+	<div class="bg-surface-200-700-token flex h-32 w-full items-center gap-4 px-main">
 		<div
 			class="flex h-20 w-20 rounded-full shadow-profile lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
 		>
@@ -70,14 +70,15 @@
 				{user.personal_data.name.first}
 				{user.personal_data.name.last}
 			</span>
-			<span class="text-base text-secondary-700-200-token lg:text-lg">
+			<span class="text-secondary-700-200-token text-base lg:text-lg">
 				{$sectionsMap.get(user.personal_data.section)}
 			</span>
 		</div>
 	</div>
+
 	<Rank {user} />
 
-	<div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%] justify-center">
+	<div class="flex w-full flex-col justify-center gap-2 lg:flex-row lg:px-main">
 		<PowerCards {user} />
 	</div>
 
@@ -95,7 +96,7 @@
 
 		<!-- Edit user information -->
 		<dialog
-			class="w-modal-slim p-4 shadow-xl bg-surface-100-800-token rounded-container-token text-token"
+			class="bg-surface-100-800-token text-token w-modal-slim p-4 shadow-xl rounded-container-token"
 			bind:this={editModal}
 		>
 			{#if !loading && !success}
@@ -257,7 +258,7 @@
 
 		<!-- Delete user -->
 		<dialog
-			class="w-modal p-4 shadow-xl bg-surface-100-800-token rounded-container-token text-token"
+			class="bg-surface-100-800-token text-token w-modal p-4 shadow-xl rounded-container-token"
 			bind:this={deleteModal}
 		>
 			<p>

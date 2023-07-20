@@ -4,11 +4,12 @@
 	export let title: string;
 	export let width: string;
 	export let absolute: boolean = false;
-	export let borderWidth: string = 'border-4'
+	export let borderWidth: string = 'border-4';
+	export let zIndex: string = 'z-10';
 </script>
 
 {#if absolute}
-	<div class="absolute -top-[17%] left-1/2 hidden -translate-x-1/2 lg:block">
+	<div class={`absolute -top-[17.5%] left-1/2 -translate-x-1/2 lg:-top-[15%] ${zIndex}`}>
 		<div class={`aspect-square rotate-45 ${borderWidth} ${width} ${rankLogoColors.get(title)}`} />
 	</div>
 {:else}

@@ -85,7 +85,7 @@
 	}
 </script>
 
-<div class="flex h-28 lg:h-32 w-full items-center gap-4 px-[5%] bg-surface-200-700-token">
+<div class="flex h-28 lg:h-32 w-full items-center gap-4 px-main bg-surface-200-700-token mb-20 lg:mb-28">
 	<div class="flex h-full w-full items-center gap-4">
 		<button
 			class="flex h-16 w-16 rounded-full shadow-profile lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
