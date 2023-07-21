@@ -10,8 +10,9 @@
 	import { currentUser } from '$lib/store';
 
 	export let initials: string;
+	export let user: UserData;
 
-	$: user = getContext<Writable<UserData>>('user');
+	$: currentUserCx = getContext<Writable<UserData>>('user');
 	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
 	let selectedAvatar: File | null = null;
@@ -53,7 +54,7 @@
 	}
 
 	async function removeAvatar() {
-		if (!$user.auth_data.photo_url) return;
+		if (!$currentUserCx.auth_data.photo_url) return;
 
 		const response = await fetch('./api/photo/remove', {
 			method: 'POST'
@@ -79,60 +80,80 @@
 	async function togglePrivate() {
 		currentUser.update((val) => (val = { ...val, is_private: !val.is_private }));
 
-		const userRef = doc(db, 'users', $user.auth_data.uid);
+		const userRef = doc(db, 'users', $currentUserCx.auth_data.uid);
 
-		await updateDoc(userRef, { is_private: $user.is_private });
+		await updateDoc(userRef, { is_private: $currentUserCx.is_private });
+	}
+
+	function isCurrentUser() {
+		return $currentUserCx.auth_data.uid === user.auth_data.uid;
 	}
 </script>
 
-<div class="flex h-28 lg:h-32 w-full items-center gap-4 px-main bg-surface-200-700-token mb-20 lg:mb-28">
+<div
+	class="bg-surface-200-700-token mb-20 flex h-28 w-full items-center gap-4 px-main lg:mb-28 lg:h-32"
+>
 	<div class="flex h-full w-full items-center gap-4">
-		<button
-			class="flex h-16 w-16 rounded-full shadow-profile lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
-			title="Change your avatar!"
-			use:popup={popupChangeAvatar}
-		>
-			<Avatar src={$user.auth_data.photo_url || ''} width="w-20 lg:w-40" {initials} />
-		</button>
-		<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="avatar">
+		{#if isCurrentUser()}
 			<button
-				class="w-full px-2 py-1 hover:bg-surface-400-500-token"
-				on:click={() => uploadAvatarEl.click()}
+				class="flex h-16 w-16 rounded-full shadow-profile lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
+				title="Change your avatar!"
+				use:popup={popupChangeAvatar}
 			>
-				<span class="text-base">Change avatar</span>
+				<Avatar src={user.auth_data.photo_url || ''} width="w-20 lg:w-40" {initials} />
 			</button>
-			<button class="w-full px-2 py-1 hover:bg-surface-400-500-token" on:click={removeAvatar}>
-				<span class="text-base">Remove avatar</span>
-			</button>
-			<div class="arrow bg-surface-100-800-token" />
-		</div>
-		<input
-			type="file"
-			accept="image/*"
-			name="photo"
-			hidden
-			on:change={handleSelectedAvatar}
-			bind:this={uploadAvatarEl}
-		/>
+
+			<div class="card z-20 w-40 py-2 shadow-xl transition-none duration-0" data-popup="avatar">
+				<button
+					class="w-full px-2 py-1 hover:bg-surface-400-500-token"
+					on:click={() => uploadAvatarEl.click()}
+				>
+					<span class="text-base">Change avatar</span>
+				</button>
+				<button class="w-full px-2 py-1 hover:bg-surface-400-500-token" on:click={removeAvatar}>
+					<span class="text-base">Remove avatar</span>
+				</button>
+				<div class="arrow bg-surface-100-800-token" />
+			</div>
+
+			<input
+				type="file"
+				accept="image/*"
+				name="photo"
+				hidden
+				on:change={handleSelectedAvatar}
+				bind:this={uploadAvatarEl}
+			/>
+		{:else}
+			<div
+				class="flex h-20 w-20 rounded-full shadow-profile lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
+			>
+				<Avatar src={user.auth_data.photo_url || ''} width="w-20 lg:w-40" {initials} />
+			</div>
+		{/if}
+
 		<div class="flex h-full flex-col justify-center">
 			<span class="text-base lg:text-2xl">
-				{$user.personal_data.name.first}
-				{$user.personal_data.name.last}
+				{user.personal_data.name.first}
+				{user.personal_data.name.last}
 			</span>
-			<span class="text-sm text-secondary-700-200-token lg:text-lg">
-				St. {$sectionsMap.get($user.personal_data.section)}
+			<span class="text-secondary-700-200-token text-sm lg:text-lg">
+				St. {$sectionsMap.get(user.personal_data.section)}
 			</span>
 		</div>
 	</div>
-	<div class="flex flex-col items-center justify-center">
-		<SlideToggle
-			name="private"
-			bind:checked={$user.is_private}
-			active="bg-primary-500"
-			background="bg-surface-100-800-token"
-			size="sm"
-			on:click={togglePrivate}
-		/>
-		<span class="text-sm opacity-75">Private</span>
-	</div>
+
+	{#if isCurrentUser()}
+		<div class="flex flex-col items-center justify-center">
+			<SlideToggle
+				name="private"
+				bind:checked={user.is_private}
+				active="bg-primary-500"
+				background="bg-surface-100-800-token"
+				size="sm"
+				on:click={togglePrivate}
+			/>
+			<span class="text-sm opacity-75">Private</span>
+		</div>
+	{/if}
 </div>

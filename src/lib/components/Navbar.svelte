@@ -71,7 +71,7 @@
 </script>
 
 <nav
-	class="bg-surface-300-600-token shadow-nav z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-[5%] py-5"
+	class="bg-surface-300-600-token shadow-nav z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-main py-5"
 >
 	<div class="flex items-center gap-2">
 		<button class="block lg:hidden" on:click={() => drawerStore.open(settings)}>

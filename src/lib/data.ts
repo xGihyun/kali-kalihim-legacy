@@ -150,8 +150,8 @@ export const arnisFootworks: Videos = [
 ];
 
 export const rankLogoColors: Map<string, string> = new Map([
-	['likas', 'border-white bg-red-600'],
-	['likha', 'border-white bg-orange-800'],
-	['lakan', 'border-black bg-amber-500'],
-	['grandmaster', 'border-red-800 bg-red-600']
+	['likas', 'border-white bg-gradient-to-t from-red-900 to-red-600'],
+	['likha', 'border-white bg-gradient-to-t from-orange-900 to-orange-500'],
+	['lakan', 'border-black bg-gradient-to-t from-amber-900 to-amber-500'],
+	['grandmaster', 'border-red-800 bg-gradient-to-t from-red-900 to-red-600']
 ]);

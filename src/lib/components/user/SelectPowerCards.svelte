@@ -5,7 +5,7 @@
 	let checkedPowerCards: string[] = [];
 </script>
 
-<div class="px-[5%] py-10">
+<div class="px-main py-10">
 	<p class="mb-10 text-center text-base uppercase lg:text-2xl">
 		Please select three (3) power cards
 	</p>

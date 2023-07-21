@@ -13,7 +13,7 @@
 	};
 </script>
 
-<div class="flex flex-1 flex-col items-center justify-center w-full px-[5%] py-10">
+<div class="flex flex-1 flex-col items-center justify-center w-full px-main py-10">
 	<button class="btn variant-filled w-48 justify-between mb-5" use:popup={sectionPopup}>
 		<span class="capitalize">{section}</span>
 		<span>↓</span>

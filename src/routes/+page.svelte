@@ -3,7 +3,7 @@
 	import { db } from '$lib/firebase/firebase';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
 	import type { Match, UserData } from '$lib/types';
-	import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
+	import { collection, doc, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import {
@@ -18,7 +18,6 @@
 	export let data;
 
 	let initials: string = '';
-	let opponentInitials: string = '';
 
 	$: user = getContext<Writable<UserData>>('user');
 	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
@@ -26,8 +25,8 @@
 	$: pendingMatch = data?.latestPendingMatch;
 
 	$: {
-		if (data && data.user) {
-			const { user: userData } = data;
+		if (data.user) {
+			const userData = data.user;
 
 			initials = `${userData.personal_data.name.first[0]}${userData.personal_data.name.last[0]}`;
 
@@ -36,7 +35,7 @@
 				db,
 				`users/${userData.auth_data.uid}/pending_matches`
 			);
-			const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
+			const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'), limit(1));
 
 			const unsubUser = onSnapshot(userRef, (snapshot) => {
 				if (snapshot.exists()) {
@@ -64,10 +63,8 @@
 			});
 		}
 
-		if (data && data.latestOpponent) {
-			const { latestOpponent: latestOpponentData } = data;
-
-			opponentInitials = `${latestOpponentData.personal_data.name.first[0]}${latestOpponentData.personal_data.name.last[0]}`;
+		if (data.latestOpponent) {
+			const latestOpponentData = data.latestOpponent;
 
 			const opponentRef = doc(db, 'users', latestOpponentData.auth_data.uid);
 
@@ -75,7 +72,7 @@
 				if (snapshot.exists()) {
 					const updatedOpponentData = snapshot.data() as UserData;
 
-					latestOpponent.update((val) => (val = updatedOpponentData));
+					latestOpponent.update((val) => ({ ...val, ...updatedOpponentData }));
 				}
 			});
 
@@ -91,11 +88,11 @@
 			<SelectPowerCards />
 		{:else}
 			<Banner />
-			<UserAvatar {initials} />
-			<div class="space-y-10 lg:space-y-20 w-full">
+			<UserAvatar user={$user} {initials} />
+			<div class="w-full space-y-6">
 				<Rank user={$user} />
-				<div class="flex w-full flex-col gap-2 lg:flex-row lg:px-[5%]">
-					<UpcomingMatch {pendingMatch} initials={opponentInitials} />
+				<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
+					<UpcomingMatch {pendingMatch} />
 					<PowerCards user={$user} />
 				</div>
 			</div>

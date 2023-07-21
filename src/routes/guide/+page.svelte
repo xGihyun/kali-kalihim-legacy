@@ -2,7 +2,7 @@
 	import { arnisFootworks, arnisSkills, powerCardsMap } from '$lib/data';
 </script>
 
-<div class="flex h-full w-full flex-col items-center gap-10 px-[5%] py-10">
+<div class="flex h-full w-full flex-col items-center gap-10 px-main py-10">
 	<div>
 		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Skills</h2>
 		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">

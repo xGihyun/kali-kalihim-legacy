@@ -1,21 +1,21 @@
 <script lang="ts">
 	import type { Match, UserData } from '$lib/types';
 	import { Avatar } from '@skeletonlabs/skeleton';
-	import { PowerCards } from '.';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import { Sword } from '$lib/assets/icons';
 	import RankLogo from './RankLogo.svelte';
 
 	export let pendingMatch: Match | undefined;
-	export let initials: string;
 
-	$: user = getContext<Writable<UserData>>('user');
 	$: opponent = getContext<Writable<UserData>>('opponent');
 
+	let initials: string;
 	let stats: { name: string; value: string }[];
 
 	$: if ($opponent) {
+		initials = `${$opponent.personal_data.name.first[0]}${$opponent.personal_data.name.last[0]}`;
+
 		stats = [
 			{
 				name: 'Score',
@@ -35,7 +35,7 @@
 
 <div class="w-full lg:w-1/2">
 	<div class="bg-surface-200-700-token border-surface-400-500-token border-token lg:rounded-md">
-		<div class="flex h-20 w-full items-center gap-4 px-[5%]">
+		<div class="flex h-20 w-full items-center gap-4 px-main">
 			<Sword styles="w-8 h-8" />
 			<span class="w-full text-2xl uppercase">upcoming match</span>
 		</div>
@@ -43,7 +43,7 @@
 			{#if pendingMatch && $opponent}
 				<div class="flex w-full flex-col gap-4">
 					<div class="flex w-full flex-col">
-						<div class="relative flex w-full items-center gap-4 px-[5%] py-4">
+						<div class="relative flex w-full items-center gap-4 px-main py-4">
 							{#if $opponent.auth_data.banner_url}
 								<img
 									class="absolute left-0 top-0 z-10 h-full w-full object-cover object-center brightness-50"
@@ -58,7 +58,6 @@
 							<div
 								class="absolute left-0 top-0 z-[11] h-full w-full bg-gradient-to-t from-black opacity-75"
 							/>
-							<!-- <span class="font-gt-walsheim-pro-medium text-2xl uppercase">vs</span> -->
 							<div class="z-20 flex items-center gap-4">
 								<div class="pointer-events-none relative select-none rounded-full shadow-profile">
 									<Avatar
@@ -84,7 +83,7 @@
 							</div>
 						</div>
 
-						<div class="flex h-full flex-col px-[5%]">
+						<div class="flex h-full flex-col px-main">
 							<div
 								class="flex justify-center gap-1 py-4 lg:gap-2 [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md"
 							>

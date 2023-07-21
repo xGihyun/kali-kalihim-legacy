@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Avatar } from '@skeletonlabs/skeleton';
 	import { Edit } from '$lib/assets/icons';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
@@ -7,7 +6,7 @@
 	import { doc, onSnapshot } from 'firebase/firestore';
 	import { db } from '$lib/firebase/firebase';
 	import { enhance } from '$app/forms';
-	import { PowerCards, Rank } from '$lib/components/user';
+	import { PowerCards, Rank, UserAvatar } from '$lib/components/user';
 
 	export let data;
 
@@ -59,27 +58,14 @@
 			<div class="bg-surface-300-600-token h-40 lg:h-80" />
 		{/if}
 	</div>
-	<div class="bg-surface-200-700-token flex h-32 w-full items-center gap-4 px-main">
-		<div
-			class="flex h-20 w-20 rounded-full shadow-profile lg:mb-10 lg:h-40 lg:w-40 lg:flex-none lg:self-end"
-		>
-			<Avatar src={user.auth_data.photo_url || ''} width="w-20 lg:w-40" {initials} />
-		</div>
-		<div class="flex h-full flex-col justify-center">
-			<span class="text-xl lg:text-2xl">
-				{user.personal_data.name.first}
-				{user.personal_data.name.last}
-			</span>
-			<span class="text-secondary-700-200-token text-base lg:text-lg">
-				{$sectionsMap.get(user.personal_data.section)}
-			</span>
-		</div>
-	</div>
 
-	<Rank {user} />
+	<UserAvatar {user} {initials} />
 
-	<div class="flex w-full flex-col justify-center gap-2 lg:flex-row lg:px-main">
-		<PowerCards {user} />
+	<div class="w-full space-y-6">
+		<Rank {user} />
+		<div class="flex w-full flex-col justify-center gap-2 lg:flex-row lg:px-main">
+			<PowerCards {user} />
+		</div>
 	</div>
 
 	{#if $currentUser.auth_data.role === 'admin'}
@@ -99,6 +85,7 @@
 			class="bg-surface-100-800-token text-token w-modal-slim p-4 shadow-xl rounded-container-token"
 			bind:this={editModal}
 		>
+			<!-- Loading/success state can be improved, but use booleans for now -->
 			{#if !loading && !success}
 				<form
 					class="space-y-4"
