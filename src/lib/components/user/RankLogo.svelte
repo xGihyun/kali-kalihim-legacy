@@ -12,15 +12,17 @@
 
 {#if absolute}
 	{#if showContainer}
-		<div class="absolute -top-[14.5%] lg:-top-[13.5%] left-1/2 -translate-x-1/2">
+		<div class="absolute -top-[14.5%] left-1/2 -translate-x-1/2 lg:-top-[13.5%]">
 			<div
 				class={`bg-surface-200-700-token border-surface-400-500-token aspect-square rotate-45 border-l-[1px] border-t-[1px] ${containerWidth}`}
 			/>
 		</div>
 	{/if}
 	<div class={`absolute -top-[11%] left-1/2 -translate-x-1/2 lg:-top-[11.5%] ${zIndex}`}>
-		<div class={`aspect-square rotate-45 ${borderWidth} ${width} ${rankLogoColors.get(title)}`} />
+		<div
+			class={`aspect-square rotate-45 z-20 animate-gradient-x bg-[size:200%] ${borderWidth} ${width} ${rankLogoColors.get(title)}`}
+		/>
 	</div>
 {:else}
-	<div class={`aspect-square rotate-45 ${borderWidth} ${width} ${rankLogoColors.get(title)}`} />
+	<div class={`aspect-square rotate-45 animate-gradient-x bg-[size:200%] ${borderWidth} ${width} ${rankLogoColors.get(title)}`} />
 {/if}

@@ -31,7 +31,7 @@
 	<RankLogo title={user.rank.title} width="lg:w-24 w-16" absolute={true} showContainer={true} />
 	<div class="flex justify-center">
 		<div
-			class="relative z-[1] flex h-36 w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-r from-blue-950 to-rose-950 lg:h-64 lg:w-[95%]"
+			class="relative z-[1] flex h-36 w-full transform-gpu animate-gradient-x flex-col items-center justify-center overflow-hidden bg-gradient-to-r from-blue-950 to-rose-950 bg-[size:200%] lg:h-64 lg:w-[95%]"
 		>
 			<span
 				class="text-outline absolute left-1/2 z-10 w-full -translate-x-1/2 select-none text-start font-gt-walsheim-pro-medium text-[10rem] uppercase tracking-wide opacity-20 lg:text-center lg:text-[12rem]"
