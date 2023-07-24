@@ -1,33 +1,94 @@
 <script lang="ts">
-	import { hamster } from '$lib/assets/images';
+	import { getContext } from 'svelte';
+	import { twistOfFate } from './functions';
+	import type { UserData } from '$lib/types';
+	import { collection, getDocs, query, where } from 'firebase/firestore';
+	import { db } from '$lib/firebase/firebase';
+	import type { Writable } from 'svelte/store';
+	import { allUsersInSection } from '$lib/store';
 	import { powerCardsMap } from '$lib/data';
+	import { selectedPowerCard } from '$lib/store';
 
-	export let showName: boolean = true;
-	export let showDescription: boolean = false;
+	const usersInSection = getContext<Writable<UserData[]>>('usersInSection');
+	const user = getContext<Writable<UserData>>('user');
+	const opponent = getContext<Writable<UserData>>('opponent');
 
-	const card = powerCardsMap.get('twist-of-fate');
+	let selectedOpponent: UserData;
+	let used = false;
+
+	$: {
+		if ($usersInSection.length === 0) {
+			getAllUsers();
+		}
+	}
+
+	async function getAllUsers() {
+		const allUsersCollection = collection(db, 'users');
+		const q = query(
+			allUsersCollection,
+			where('personal_data.section', '==', $user.personal_data.section)
+		);
+		const allUsersInSectionDocs = await getDocs(q);
+		const allUsers = allUsersInSectionDocs.docs
+			.map((user) => user.data() as UserData)
+			.filter(
+				(userData) =>
+					userData.auth_data.uid !== $user.auth_data.uid &&
+					userData.auth_data.uid !== $opponent.auth_data.uid
+			);
+
+		allUsersInSection.set(allUsers);
+	}
+
+	function handleClick() {
+		twistOfFate($user, $opponent, selectedOpponent);
+		used = true;
+	}
+
+	$: powerCard = powerCardsMap.get($selectedPowerCard || '');
+
+	function cancelPowerCard() {
+		if (powerCard) {
+			powerCard.used = false;
+		}
+		$selectedPowerCard = null;
+	}
 </script>
 
-<div class="card relative flex aspect-[1/1.3] h-full flex-col justify-end overflow-hidden">
-	<img
-		class="absolute left-0 top-0 z-10 h-full w-full object-cover"
-		src={hamster}
-		alt="hamster"
-		loading="lazy"
-		draggable="false"
-	/>
-	{#if showName}
-		<div class="z-20 bg-black">
-			<span class="block text-center text-base">
-				{card?.name}
-			</span>
+{#if !used}
+	<span>Choose an opponent:</span>
+	{#if $usersInSection.length === 0}
+		<div class="flex justify-center">
+			<span>Loading users...</span>
 		</div>
+	{:else}
+		<label class="label">
+			<select class="input" size="1" name="opponent" required bind:value={selectedOpponent}>
+				{#each $usersInSection as user, idx (idx)}
+					<span>{user.personal_data.name.first} {user.personal_data.name.last}</span>
+					<option value={user}>
+						{user.personal_data.name.first}
+						{user.personal_data.name.last}
+					</option>
+				{/each}
+			</select>
+		</label>
 	{/if}
-	{#if showDescription}
-		<div
-			class="z-20 flex h-full flex-col justify-end bg-gradient-to-t from-black via-black to-[transparent_50%] p-4"
+	<div class="flex justify-end gap-4">
+		<button class="btn variant-ghost-surface" type="button" on:click={cancelPowerCard}>
+			Cancel
+		</button>
+		<button class="btn variant-filled-primary" type="button" on:click={handleClick}>Submit</button>
+	</div>
+{:else}
+	<p>Successfully used Twist of Fate</p>
+	<div class="flex justify-end gap-4">
+		<button
+			class="btn variant-ghost-surface"
+			type="button"
+			on:click={() => ($selectedPowerCard = null)}
 		>
-			<p class="text text-token text-xs opacity-75 lg:text-base">{card?.description}</p>
-		</div>
-	{/if}
-</div>
+			Cancel
+		</button>
+	</div>
+{/if}

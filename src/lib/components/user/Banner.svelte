@@ -84,7 +84,7 @@
 		<div class="h-40 bg-surface-300-600-token lg:h-80" />
 	{/if}
 	<button
-		class="absolute bottom-2 right-5 rounded-full p-2 shadow-profile transition-[background-color] duration-100 bg-surface-300-600-token hover:bg-surface-500-400-token"
+		class="absolute bottom-2 right-[5%] rounded-full p-2 shadow-profile transition-[background-color] duration-100 bg-surface-300-600-token hover:bg-surface-500-400-token"
 		use:popup={popupChangeBanner}
 	>
 		<Edit styles="w-5 h-5" />

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { powerCardsMap } from '$lib/data';
+	import { PowerCard } from '../powercards';
 
 	let checkedPowerCards: string[] = [];
 </script>
@@ -25,11 +26,7 @@
 					}`}
 				>
 					<div class="w-full">
-						<svelte:component
-							this={value.components.card}
-							showDescription={true}
-							showName={false}
-						/>
+						<PowerCard {key} showDescription={true} showName={true} />
 					</div>
 					<label class="flex w-full items-center gap-2">
 						<input

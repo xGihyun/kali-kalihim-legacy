@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { powerCardsMap } from '$lib/data';
 	import { selectedPowerCard } from '$lib/store';
+	import { PowerCard } from './powercards';
 
 	$: powerCard = powerCardsMap.get($selectedPowerCard || '');
 
@@ -29,7 +30,8 @@
 					</div>
 				{:else}
 					<div class="card mx-auto aspect-[1/1.3] w-1/2 p-4">
-						<svelte:component this={powerCard.components.card} />
+						<PowerCard key={$selectedPowerCard} />
+						<!-- <svelte:component this={powerCard.components.card} /> -->
 					</div>
 					<div class="flex flex-col gap-4">
 						<span class="text-center">

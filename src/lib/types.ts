@@ -64,13 +64,13 @@ export type MatchSet = {
 
 export type PowerCard = {
 	components: {
-		card: ConstructorOfATypedSvelteComponent;
 		ability: ConstructorOfATypedSvelteComponent;
 	};
 	name: string;
 	function: (...T: any) => Promise<typeof T>;
 	used: boolean;
 	description?: string;
+	image_url?: string;
 };
 
 export type Navigation = {

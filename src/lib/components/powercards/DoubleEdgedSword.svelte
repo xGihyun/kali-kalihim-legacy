@@ -1,33 +1,42 @@
 <script lang="ts">
-	import { hamster } from '$lib/assets/images';
+	import { getContext } from 'svelte';
+	import { doubleEdgedSword } from './functions';
+	import type { Writable } from 'svelte/store';
+	import type { UserData } from '$lib/types';
 	import { powerCardsMap } from '$lib/data';
+	import { selectedPowerCard } from '$lib/store';
 
-	export let showName: boolean = true;
-	export let showDescription: boolean = false;
+	let used = false;
 
-	const card = powerCardsMap.get('double-edged-sword');
+	$: powerCard = powerCardsMap.get($selectedPowerCard || '');
+
+	function cancelPowerCard() {
+		if (powerCard) {
+			powerCard.used = false;
+		}
+		$selectedPowerCard = null;
+	}
+
+	$: user = getContext<Writable<UserData>>('user');
 </script>
 
-<div class="card relative flex aspect-[1/1.3] h-full flex-col justify-end overflow-hidden">
-	<img
-		class="absolute left-0 top-0 z-10 h-full w-full object-cover"
-		src={hamster}
-		alt="hamster"
-		loading="lazy"
-		draggable="false"
-	/>
-	{#if showName}
-		<div class="z-20 bg-black">
-			<span class="block text-center text-base">
-				{card?.name}
-			</span>
-		</div>
-	{/if}
-	{#if showDescription}
-		<div
-			class="z-20 flex h-full flex-col justify-end bg-gradient-to-t from-black via-black to-[transparent_50%] p-4"
+{#if !used}
+	<p>Take the risk?</p>
+	<div class="flex justify-end gap-4 pt-4">
+		<button class="btn variant-ghost-surface" type="button" on:click={cancelPowerCard}>
+			Cancel
+		</button>
+		<button
+			class="btn variant-filled-primary"
+			type="button"
+			on:click={() => {
+				doubleEdgedSword($user.auth_data.uid);
+				used = true;
+			}}
 		>
-			<p class="text text-token text-xs opacity-75 lg:text-base">{card?.description}</p>
-		</div>
-	{/if}
-</div>
+			Use
+		</button>
+	</div>
+{:else}
+	<p>Successfully used Double-edged Sword</p>
+{/if}

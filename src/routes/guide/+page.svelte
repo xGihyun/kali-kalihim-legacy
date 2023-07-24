@@ -1,4 +1,5 @@
 <script>
+	import { PowerCard } from '$lib/components/powercards';
 	import { arnisFootworks, arnisSkills, powerCardsMap } from '$lib/data';
 </script>
 
@@ -36,11 +37,12 @@
 	<div>
 		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Power Cards</h2>
 		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">
-			{#each powerCardsMap as [_, value], idx (idx)}
-				<div class="flex aspect-square w-40 flex-col rounded-md lg:w-60 lg:gap-1">
-					<svelte:component this={value.components.card} showName={false} />
+			{#each powerCardsMap as [key, value], idx (idx)}
+				<button class="flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1">
+					<PowerCard {key} showName={false} />
+					<!-- <svelte:component this={value.components.card} showName={false} /> -->
 					<span class="flex-auto text-sm lg:text-lg">{value.name}</span>
-				</div>
+				</button>
 			{/each}
 		</div>
 	</div>

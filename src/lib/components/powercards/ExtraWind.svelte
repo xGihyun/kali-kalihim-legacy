@@ -1,33 +1,70 @@
 <script lang="ts">
-	import { hamster } from '$lib/assets/images';
 	import { powerCardsMap } from '$lib/data';
+	import { getContext } from 'svelte';
+	import { extraWind } from './functions';
+	import type { Writable } from 'svelte/store';
+	import type { UserData } from '$lib/types';
+	import { selectedPowerCard } from '$lib/store';
+	import { PowerCard } from '.';
 
-	export let showName: boolean = true;
-	export let showDescription: boolean = false;
+	let used = false;
+	let newPowerCard: string;
 
-	const card = powerCardsMap.get('extra-wind');
+	$: powerCard = powerCardsMap.get($selectedPowerCard || '');
+
+	function cancelPowerCard() {
+		if (powerCard) {
+			powerCard.used = false;
+		}
+		$selectedPowerCard = null;
+	}
+
+	$: user = getContext<Writable<UserData>>('user');
 </script>
 
-<div class="card relative flex aspect-[1/1.3] h-full flex-col justify-end overflow-hidden">
-	<img
-		class="absolute left-0 top-0 z-10 h-full w-full object-cover"
-		src={hamster}
-		alt="hamster"
-		loading="lazy"
-		draggable="false"
-	/>
-	{#if showName}
-		<div class="z-20 bg-black">
-			<span class="block text-center text-base">
-				{card?.name}
-			</span>
+{#if !used}
+	<div>
+		<p>Select a new card:</p>
+		<div class="flex max-h-96 flex-wrap items-center justify-center gap-4 overflow-auto p-4">
+			{#each powerCardsMap as [key, value], idx (idx)}
+				{#if key !== 'extra-wind'}
+					<label class="flex cursor-pointer flex-col items-center gap-2">
+						<div class="card aspect-[1/1.3] w-40 p-4">
+							<PowerCard {key} />
+						</div>
+						<label class="flex items-center gap-2">
+							<input
+								class="radio"
+								type="radio"
+								name="powercard"
+								value={key}
+								bind:group={newPowerCard}
+							/>
+							<p>
+								{value.name}
+							</p>
+						</label>
+					</label>
+				{/if}
+			{/each}
 		</div>
-	{/if}
-	{#if showDescription}
-		<div
-			class="z-20 flex h-full flex-col justify-end bg-gradient-to-t from-black via-black to-[transparent_50%] p-4"
-		>
-			<p class="text text-token text-xs opacity-75 lg:text-base">{card?.description}</p>
+
+		<div class="flex justify-end gap-4 pt-4">
+			<button class="btn variant-ghost-surface" type="button" on:click={cancelPowerCard}>
+				Cancel
+			</button>
+			<button
+				class="btn variant-filled-primary"
+				type="button"
+				on:click={() => {
+					extraWind($user.auth_data.uid, newPowerCard);
+					used = true;
+				}}
+			>
+				Submit
+			</button>
 		</div>
-	{/if}
-</div>
+	</div>
+{:else}
+	<p>Successfully used Extra Wind</p>
+{/if}

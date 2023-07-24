@@ -1,33 +1,55 @@
 <script lang="ts">
-	import { hamster } from '$lib/assets/images';
-	import { powerCardsMap } from '$lib/data';
+	import { powerCardsMap, skills } from '$lib/data';
+	import { getContext } from 'svelte';
+	import { warlordsDomain } from './functions';
+	import type { Writable } from 'svelte/store';
+	import type { UserData } from '$lib/types';
+	import { selectedPowerCard } from '$lib/store';
 
-	export let showName: boolean = true;
-	export let showDescription: boolean = false;
+	let selectedSkill: string;
+	let used = false;
 
-	const card = powerCardsMap.get("warlord's-domain");
+	$: powerCard = powerCardsMap.get($selectedPowerCard || '');
+
+	function cancelPowerCard() {
+		if (powerCard) {
+			powerCard.used = false;
+		}
+		$selectedPowerCard = null;
+	}
+
+	$: user = getContext<Writable<UserData>>('user');
 </script>
 
-<div class="card relative flex aspect-[1/1.3] h-full flex-col justify-end overflow-hidden">
-	<img
-		class="absolute left-0 top-0 z-10 h-full w-full object-cover"
-		src={hamster}
-		alt="hamster"
-		loading="lazy"
-		draggable="false"
-	/>
-	{#if showName}
-		<div class="z-20 bg-black">
-			<span class="block text-center text-base">
-				{card?.name}
-			</span>
-		</div>
-	{/if}
-	{#if showDescription}
-		<div
-			class="z-20 flex h-full flex-col justify-end bg-gradient-to-t from-black via-black to-[transparent_50%] p-4"
+{#if !used}
+	<label class="label">
+		<span>Choose a skill:</span>
+		<select class="input" size="1" name="skill" required bind:value={selectedSkill}>
+			{#each skills as skill, idx (idx)}
+				<span>{skill}</span>
+				<option value={skill}>{skill}</option>
+			{/each}
+		</select>
+	</label>
+	<div class="flex justify-end gap-4">
+		<button
+			class="btn variant-ghost-surface"
+			type="button"
+			on:click={cancelPowerCard}
 		>
-			<p class="text text-token text-xs opacity-75 lg:text-base">{card?.description}</p>
-		</div>
-	{/if}
-</div>
+			Cancel
+		</button>
+		<button
+			class="btn variant-filled-primary"
+			type="button"
+			on:click={() => {
+				warlordsDomain($user.auth_data.uid, selectedSkill);
+				used = true;
+			}}
+		>
+			Submit
+		</button>
+	</div>
+{:else}
+	<p>Successfully used Warlord's Domain</p>
+{/if}

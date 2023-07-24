@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PowerCard } from '$lib/components';
+	import { ActivatePowerCard } from '$lib/components';
 	import { db } from '$lib/firebase/firebase';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
 	import type { Match, UserData } from '$lib/types';
@@ -98,7 +98,7 @@
 			</div>
 
 			{#if $selectedPowerCard}
-				<PowerCard />
+				<ActivatePowerCard />
 			{/if}
 		{/if}
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
