@@ -34,7 +34,7 @@
 </script>
 
 <div class="w-full lg:w-1/2">
-	<div class="bg-surface-200-700-token border-surface-400-500-token border-token lg:rounded-md">
+	<div class="bg-surface-400-500-token border-surface-400-500-token border-token lg:rounded-md">
 		<div class="flex h-20 w-full items-center gap-4 px-main">
 			<Sword styles="w-8 h-8" />
 			<span class="w-full text-2xl uppercase">upcoming match</span>
@@ -85,11 +85,11 @@
 
 						<div class="flex h-full flex-col px-main">
 							<div
-								class="flex justify-center gap-1 py-4 lg:gap-2 [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md"
+								class="flex gap-1 py-4 lg:gap-2 [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md"
 							>
 								{#each stats as stat, idx (idx)}
 									<div
-										class="bg-surface-400-500-token flex w-40 flex-col justify-center p-2 shadow-lg"
+										class="bg-surface-300-600-token flex w-40 flex-col justify-center p-2"
 									>
 										<span class="text-sm lg:text-base">{stat.name}</span>
 										<span
@@ -101,7 +101,7 @@
 								{/each}
 							</div>
 
-							<div class="flex w-full justify-center gap-2 py-4">
+							<div class="flex w-full gap-2 py-4">
 								<div
 									class="bg-surface-300-600-token flex w-40 flex-col justify-center rounded-md p-2 shadow-lg"
 								>

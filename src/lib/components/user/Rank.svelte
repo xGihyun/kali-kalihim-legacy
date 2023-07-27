@@ -26,7 +26,7 @@
 
 <div class="relative w-full lg:px-main">
 	<div
-		class="bg-surface-200-700-token border-surface-400-500-token relative h-16 rounded-md border-token lg:h-20"
+		class="bg-surface-400-500-token border-surface-400-500-token relative h-16 rounded-md border-token lg:h-20"
 	/>
 	<RankLogo title={user.rank.title} width="lg:w-24 w-16" absolute={true} showContainer={true} />
 	<div class="flex justify-center">
@@ -43,7 +43,7 @@
 	<div class="absolute bottom-2 left-1/2 z-30 w-full -translate-x-1/2 px-main">
 		<div class="flex justify-center [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md">
 			{#each stats as stat, idx (idx)}
-				<div class="bg-surface-200-700-token flex w-40 flex-col justify-center p-2 lg:w-60 lg:p-4">
+				<div class="bg-surface-400-500-token flex w-40 flex-col justify-center p-2 lg:w-60 lg:p-4">
 					<span class="text-sm lg:text-xl">{stat.name}</span>
 					<span
 						class="text-secondary-700-200-token font-gt-walsheim-pro-medium text-lg lg:text-3xl"
@@ -55,7 +55,7 @@
 		</div>
 	</div>
 	<div
-		class="bg-surface-200-700-token border-surface-400-500-token relative h-16 rounded-md border-token lg:h-20"
+		class="bg-surface-400-500-token border-surface-400-500-token relative h-16 rounded-md border-token lg:h-20"
 	/>
 	<!-- <div class="bg-surface-200-700-token relative rounded-md py-4 lg:px-4">
 		<div class="absolute -top-[17.5%] left-1/2 -translate-x-1/2">

@@ -31,5 +31,10 @@ export const USER_ROUTES: Navigation = [
 		name: 'Guide',
 		path: '/guide',
 		icon: Guide
+	},
+	{
+		name: 'Battle',
+		path: '/battle',
+		icon: Sword,
 	}
 ];

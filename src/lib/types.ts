@@ -82,10 +82,30 @@ export type Navigation = {
 type Video = {
 	title: string;
 	url: string;
-}
+};
 
 export type Videos = Video[];
 
 export type Section = {
+	name: string;
+};
+
+export type Strike = {
+	name: string;
+	damage: number;
+	accuracy: number;
+};
+
+export type Strikes = Strike[];
+
+export type Block = {
+	name: string;
+	reduction: number;
+	strike_to_cancel: string;
+};
+
+export type Blocks = Block[];
+
+export type BattleCard = {
 	name: string;
 }

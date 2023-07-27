@@ -14,7 +14,7 @@ import {
 	viralxRival,
 	warlordsDomain
 } from './components/powercards/functions';
-import type { PowerCard, Videos } from './types';
+import type { Block, Blocks, PowerCard, Strike, Strikes, Videos } from './types';
 
 export const skills = [
 	'Strikes',
@@ -136,4 +136,123 @@ export const rankLogoColors: Map<string, string> = new Map([
 	['likha', 'border-white bg-gradient-to-l from-orange-900 to-orange-500'],
 	['lakan', 'border-black bg-gradient-to-l from-amber-900 to-amber-500'],
 	['grandmaster', 'border-red-800 bg-gradient-to-l from-red-900 to-red-600']
+]);
+
+export const strikeCards: Map<string, Strike> = new Map([
+	[
+		'Leg Strike',
+		{
+			name: 'Leg Strike',
+			damage: 5,
+			accuracy: 0.9
+		}
+	],
+	[
+		'Temple Strike',
+		{
+			name: 'Temple Strike',
+			damage: 10,
+			accuracy: 0.75
+		}
+	],
+	[
+		'Shoulder Strike',
+		{
+			name: 'Shoulder Strike',
+			damage: 10,
+			accuracy: 0.8
+		}
+	],
+	[
+		'Shoulder Thrust',
+		{
+			name: 'Shoulder Thrust',
+			damage: 8,
+			accuracy: 0.85
+		}
+	],
+	[
+		'Eye Poke',
+
+		{
+			name: 'Eye Poke',
+			damage: 12,
+			accuracy: 0.6
+		}
+	],
+	[
+		'Stomatch Thrust',
+		{
+			name: 'Stomach Thrust',
+			damage: 10,
+			accuracy: 0.85
+		}
+	],
+	[
+		'Head Strike',
+		{
+			name: 'Head Strike',
+			damage: 18,
+			accuracy: 0.5
+		}
+	]
+]);
+
+export const blockCards: Map<string, Block> = new Map([
+	[
+		'Leg Strike Block',
+		{
+			name: 'Leg Strike Block',
+			reduction: 0.1,
+			strike_to_cancel: 'Leg Strike'
+		}
+	],
+	[
+		'Temple Strike Block',
+		{
+			name: 'Temple Strike Block',
+			reduction: 0.15,
+			strike_to_cancel: 'Temple Strike'
+		}
+	],
+	[
+		'Shoulder Strike Block',
+		{
+			name: 'Shoulder Strike Block',
+			reduction: 0.15,
+			strike_to_cancel: 'Shoulder Strike'
+		}
+	],
+	[
+		'Shoulder Thrust Block',
+		{
+			name: 'Shoulder Thrust Block',
+			reduction: 0.15,
+			strike_to_cancel: 'Shoulder Thrust'
+		}
+	],
+	[
+		'Eye Poke Block',
+		{
+			name: 'Eye Poke Block',
+			reduction: 0.15,
+			strike_to_cancel: 'Eye Poke'
+		}
+	],
+	[
+		'Stomach Thrust Block',
+		{
+			name: 'Stomach Thrust Block',
+			reduction: 0.15,
+			strike_to_cancel: 'Stomach Thrust'
+		}
+	],
+	[
+		'Head Strike Block',
+		{
+			name: 'Head Strike Block',
+			reduction: 0.15,
+			strike_to_cancel: 'Head Strike'
+		}
+	]
 ]);

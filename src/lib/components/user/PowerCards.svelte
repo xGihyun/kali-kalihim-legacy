@@ -25,7 +25,7 @@
 
 {#if !user.is_private || user.auth_data.uid === $currentUser.auth_data.uid}
 	<div
-		class="bg-surface-200-700-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
+		class="bg-surface-400-500-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
 	>
 		<div class="flex h-20 w-full items-center gap-4 px-main">
 			<Cards styles="w-8 h-8" />

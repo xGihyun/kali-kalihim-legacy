@@ -6,7 +6,7 @@
 
 	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
-	let pendingMatches: Match[] = [];
+	let newMatches: Match[] = [];
 	let sectionValue: string;
 
 	// Stored in a new variable to avoid bind's reactive nature
@@ -21,7 +21,7 @@
 		const values = Object.values(response)[0];
 		const matches = JSON.parse(values) as Match[];
 
-		pendingMatches = matches;
+		newMatches = matches;
 	}
 </script>
 
@@ -37,7 +37,7 @@
 			</span>
 			<span class="text-center text-lg">{$sectionsMap.get(selectedSection)}</span>
 			<div class="table-container max-w-5xl">
-				<table class="table-hover table-compact table">
+				<table class="table table-hover table-compact">
 					<thead>
 						<tr class="text-sm md:text-base">
 							<th>Player 1</th>
@@ -47,22 +47,24 @@
 							<th>Footwork</th>
 						</tr>
 					</thead>
-					{#each pendingMatches as match, idx (idx)}
+					{#each newMatches as match, idx (idx)}
+						{@const player1 = match.players[0]}
+						{@const player2 = match.players[1]}
 						<tbody>
 							<tr>
 								<td>
 									<p class="text-xs md:text-sm">
-										{match.players[0].personal_data.name.first}
-										{match.players[0].personal_data.name.last}
+										{player1.personal_data.name.first}
+										{player1.personal_data.name.last}
 									</p>
 								</td>
 								<td>
-									<span class="uppercase text-primary-500-400-token">vs</span>
+									<span class="text-primary-500-400-token uppercase">vs</span>
 								</td>
 								<td>
 									<p class="text-xs md:text-sm">
-										{match.players[1].personal_data.name.first}
-										{match.players[1].personal_data.name.last}
+										{player2.personal_data.name.first}
+										{player2.personal_data.name.last}
 									</p>
 								</td>
 								<td>

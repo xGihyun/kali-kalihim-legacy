@@ -14,7 +14,7 @@
 	{#if showContainer}
 		<div class="absolute -top-[14.5%] left-1/2 -translate-x-1/2 lg:-top-[13.5%]">
 			<div
-				class={`bg-surface-200-700-token border-surface-400-500-token aspect-square rotate-45 border-l-[1px] border-t-[1px] ${containerWidth}`}
+				class={`bg-surface-400-500-token border-surface-400-500-token aspect-square rotate-45 border-l-[1px] border-t-[1px] ${containerWidth}`}
 			/>
 		</div>
 	{/if}
