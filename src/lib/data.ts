@@ -181,7 +181,7 @@ export const strikeCards: Map<string, Strike> = new Map([
 		}
 	],
 	[
-		'Stomatch Thrust',
+		'Stomach Thrust',
 		{
 			name: 'Stomach Thrust',
 			damage: 10,

@@ -106,6 +106,15 @@ export type Block = {
 
 export type Blocks = Block[];
 
+export type Skill = 'strike' | 'block'
+
 export type BattleCard = {
 	name: string;
-}
+	type: Skill;
+	used: boolean;
+};
+
+export type BattleCards = {
+	strikes: BattleCard[];
+	blocks: BattleCard[];
+};

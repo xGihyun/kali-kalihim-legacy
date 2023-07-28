@@ -34,7 +34,7 @@
 </script>
 
 <div class="w-full lg:w-1/2">
-	<div class="bg-surface-400-500-token border-surface-400-500-token border-token lg:rounded-md">
+	<div class="bg-surface-300-600-token border-surface-400-500-token border-token lg:rounded-md">
 		<div class="flex h-20 w-full items-center gap-4 px-main">
 			<Sword styles="w-8 h-8" />
 			<span class="w-full text-2xl uppercase">upcoming match</span>
