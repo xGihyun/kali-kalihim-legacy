@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, updateDoc } from 'firebase/firestore';
-import { storage, db } from '$lib/server/firebase/firebase';
+import { storage, db } from '$lib/firebase/firebase';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
 	const userUID = locals.userData.auth_data.uid;

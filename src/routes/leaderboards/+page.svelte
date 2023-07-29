@@ -9,8 +9,6 @@
 	export let data;
 
 	$: currentUser = data.user;
-	// $: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
-
 	$: users = data.users;
 
 	if (data.user?.auth_data.uid) {
