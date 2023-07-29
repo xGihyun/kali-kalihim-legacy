@@ -14,21 +14,17 @@
 		Rank,
 		PowerCards
 	} from '$lib/components/user';
+	import { Register, Login } from '$lib/components/auth';
 
 	export let data;
 
-	let initials: string = '';
-
-	$: user = getContext<Writable<UserData>>('user');
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
+	const user = getContext<Writable<UserData>>('user');
 
 	$: pendingMatch = data?.latestPendingMatch;
 
 	$: {
 		if (data.user) {
 			const userData = data.user;
-
-			initials = `${userData.personal_data.name.first[0]}${userData.personal_data.name.last[0]}`;
 
 			const userRef = doc(db, 'users', userData.auth_data.uid);
 			const pendingMatchesCollection = collection(
@@ -81,12 +77,15 @@
 	}
 </script>
 
-<!-- TODO: MAKE STUFF LOOK GOOD -->
+<!-- TODO: -->
+<!-- Make things look better -->
+<!-- Improve auth state management -->
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 		{#if $user.power_cards.length < 3}
 			<SelectPowerCards />
 		{:else}
+			{@const initials = `${$user.personal_data.name.first[0]}${$user.personal_data.name.last[0]}`}
 			<Banner />
 			<UserAvatar user={$user} {initials} />
 			<div class="w-full space-y-6">
@@ -102,124 +101,8 @@
 			{/if}
 		{/if}
 	{:else if $user.auth_data.is_logged_in && !$user.auth_data.is_registered}
-		<div class="variant-soft-surface rounded-md p-4">
-			<form class="space-y-4" method="post" action="?/register">
-				<label class="label">
-					<span>First Name</span>
-					<input
-						class="input variant-form-material"
-						type="text"
-						placeholder="eg. Ayaka"
-						name="first-name"
-						required
-					/>
-				</label>
-
-				<label class="label">
-					<span>Last Name</span>
-					<input
-						class="input variant-form-material"
-						type="text"
-						placeholder="eg. Kamisato"
-						name="last-name"
-						required
-					/>
-				</label>
-
-				<label class="label">
-					<span>Age</span>
-					<input
-						class="input variant-form-material"
-						type="text"
-						placeholder="eg. 18"
-						name="age"
-						required
-					/>
-				</label>
-
-				<label class="label">
-					<span>Sex</span>
-					<select class="select variant-form-material" value="male" name="sex" required>
-						<option value="male">Male</option>
-						<option value="female">Female</option>
-					</select>
-				</label>
-
-				<label class="label">
-					<span>Section</span>
-					<select class="select variant-form-material" value="section-1" name="section" required>
-						{#each $sectionsMap as [key, value], idx (idx)}
-							<option value={key}>{value}</option>
-						{/each}
-					</select>
-				</label>
-
-				<label class="label">
-					<span>Email</span>
-					<input
-						class="input variant-form-material opacity-50"
-						type="email"
-						placeholder="Aa"
-						name="email"
-						value={`${$user.auth_data.email}`}
-						readonly
-					/>
-				</label>
-
-				<label class="label">
-					<span>Contact No.</span>
-					<input
-						class="input variant-form-material"
-						type="tel"
-						placeholder="eg. 09123456789"
-						name="contact-number"
-						required
-					/>
-				</label>
-
-				<div class="flex w-full justify-end">
-					<button class="variant-filled-primary rounded-md p-2">Register</button>
-				</div>
-			</form>
-		</div>
+		<Register />
 	{:else if !$user.auth_data.is_logged_in && !$user.auth_data.is_registered}
-		<div class="flex h-full w-full items-center">
-			<!-- <img
-				src={arnis_bg}
-				class="hidden h-full w-full max-w-[50vw] object-cover object-[10%] lg:block"
-				draggable="false"
-				alt="arnis"
-			/> -->
-			<div class="flex h-full w-full flex-col items-center justify-center">
-				<h1
-					class="mb-10 select-none text-center font-gt-walsheim-pro-medium text-5xl uppercase md:text-7xl 2xl:text-9xl"
-				>
-					Kali Kalihim
-				</h1>
-				<div class="flex flex-col gap-4">
-					<form class="contents" method="post" action="?/login">
-						<div>
-							<label class="label text-lg">
-								<span>Email</span>
-								<input class="input variant-form-material" type="email" name="email" required />
-							</label>
-
-							<label class="label text-lg">
-								<span>Password</span>
-								<input
-									class="input variant-form-material"
-									type="password"
-									name="password"
-									required
-								/>
-							</label>
-						</div>
-						<button class="btn variant-filled-primary mx-auto flex">
-							<span class="text-lg">Submit</span>
-						</button>
-					</form>
-				</div>
-			</div>
-		</div>
+		<Login />
 	{/if}
 </div>

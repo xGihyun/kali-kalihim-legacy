@@ -1,5 +1,5 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/firebase/firebase';
+import { db } from '$lib/server/firebase/firebase';
 import type { UserData } from '$lib/types';
 import {
 	collection,

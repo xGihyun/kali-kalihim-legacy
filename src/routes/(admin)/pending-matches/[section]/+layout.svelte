@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { db } from '$lib/firebase/firebase.js';
-	import type { MatchSet } from '$lib/types.js';
+	import { db } from '$lib/firebase/firebase';
+	import type { MatchSet } from '$lib/types';
 	import { TabGroup, TabAnchor, type PopupSettings, popup } from '@skeletonlabs/skeleton';
 	import { collection, onSnapshot, query, where } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';

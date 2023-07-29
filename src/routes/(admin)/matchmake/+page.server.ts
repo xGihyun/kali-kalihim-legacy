@@ -88,7 +88,7 @@ export const actions: Actions = {
 
 		const responseString = JSON.stringify([...pendingMatches]);
 
-		return { responseString };
+		return { responseString }
 	}
 };
 

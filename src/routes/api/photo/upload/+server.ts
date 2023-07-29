@@ -1,4 +1,4 @@
-import { db, storage } from '$lib/firebase/firebase';
+import { db, storage } from '$lib/server/firebase/firebase';
 import type { RequestHandler } from '@sveltejs/kit';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';

@@ -9,7 +9,7 @@
 	export let data: PageServerData;
 
 	$: user = getContext<Writable<UserData>>('user');
-	$: opponent = data.latestOpponent?.auth_data.uid || ''
+	$: opponent = data.latestOpponent?.auth_data.uid || '';
 
 	$: ({ battleCards } = data);
 	$: cardsInQueue = [] as BattleCard[];
@@ -26,10 +26,7 @@
 <div>Battle Page</div>
 
 {#if opponent}
-	<button
-		class="btn variant-filled-primary"
-		on:click={() => battle($user.auth_data.uid, opponent)}
-	>
+	<button class="btn variant-filled-primary" on:click={() => battle($user.auth_data.uid, opponent)}>
 		Sample Battle
 	</button>
 {/if}
@@ -47,7 +44,11 @@
 			{#each strikeCards as card, idx (idx)}
 				<button
 					class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
-					on:click={() => addToQueue(card)}
+					on:click={() => {
+						addToQueue(card);
+						card.used = true;
+					}}
+					disabled={card.used}
 				>
 					<span>{card.name}</span>
 				</button>
@@ -58,7 +59,10 @@
 			{#each blockCards as card, idx (idx)}
 				<button
 					class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
-					on:click={() => addToQueue(card)}
+					on:click={() => {
+						addToQueue(card);
+						card.used = true;
+					}}
 				>
 					<span>{card.name}</span>
 				</button>

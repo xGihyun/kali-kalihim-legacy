@@ -3,11 +3,11 @@
 	import { twistOfFate } from './functions';
 	import type { UserData } from '$lib/types';
 	import { collection, getDocs, query, where } from 'firebase/firestore';
-	import { db } from '$lib/firebase/firebase';
 	import type { Writable } from 'svelte/store';
 	import { allUsersInSection } from '$lib/store';
 	import { powerCardsMap } from '$lib/data';
 	import { selectedPowerCard } from '$lib/store';
+	import { db } from '$lib/firebase/firebase';
 
 	const usersInSection = getContext<Writable<UserData[]>>('usersInSection');
 	const user = getContext<Writable<UserData>>('user');

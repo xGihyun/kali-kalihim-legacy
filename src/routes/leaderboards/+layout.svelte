@@ -1,9 +1,7 @@
 <script lang="ts">
+	import { getSections } from '$lib/utils/functions';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import { getContext } from 'svelte';
-	import type { Writable } from 'svelte/store';
 
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 	$: section = 'All';
 
 	const sectionPopup: PopupSettings = {
@@ -30,17 +28,21 @@
 					on:click={() => (section = 'All')}>All</a
 				>
 			</li>
-			{#each $sectionsMap as [key, value], idx (idx)}
-				<li class="flex">
-					<a
-						class={`flex-1 px-4 py-2 ${
-							section === value ? 'variant-filled' : 'bg-surface-100-800-token hover:variant-soft'
-						}`}
-						href={`/leaderboards/${key}`}
-						on:click={() => (section = value)}>{value}</a
-					>
-				</li>
-			{/each}
+			{#await getSections()}
+				<span>Loading sections...</span>
+			{:then sections}
+				{#each sections as [key, value], idx (idx)}
+					<li class="flex">
+						<a
+							class={`flex-1 px-4 py-2 ${
+								section === value ? 'variant-filled' : 'bg-surface-100-800-token hover:variant-soft'
+							}`}
+							href={`/leaderboards/${key}`}
+							on:click={() => (section = value)}>{value}</a
+						>
+					</li>
+				{/each}
+			{/await}
 		</ul>
 		<div class="arrow bg-surface-100-800-token" />
 	</div>

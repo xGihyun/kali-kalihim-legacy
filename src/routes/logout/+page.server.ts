@@ -25,7 +25,7 @@ export const actions: Actions = {
 			...defaultUserData
 		};
 
-		// Log out user from Google
+		// Log out user
 		await signOut(auth);
 		console.log("The user has been logged out, now redirecting to '/'");
 

@@ -2,7 +2,7 @@
 	import { db } from '$lib/firebase/firebase';
 	import { doc, setDoc } from 'firebase/firestore';
 
-	let section: string;
+	let section: string = '';
 
 	async function addSection() {
 		if (!section) {
@@ -10,8 +10,8 @@
 			return;
 		}
 
-		const key = section.toLowerCase().trim();
-		const value = key.charAt(0).toUpperCase() + key.slice(1);
+		const key = section.toLowerCase().trim().replace(' ', '_');
+		const value = section.charAt(0).toUpperCase() + section.slice(1);
 		const sectionRef = doc(db, 'sections', key);
 
 		await setDoc(sectionRef, { name: value });

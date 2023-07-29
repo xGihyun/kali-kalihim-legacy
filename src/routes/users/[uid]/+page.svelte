@@ -10,9 +10,8 @@
 
 	export let data;
 
-	$: currentUser = getContext<Writable<UserData>>('user');
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
-	$: user = data.user;
+	const currentUser = getContext<Writable<UserData>>('user');
+	$: ({ user, sections } = data);
 
 	let loading = false;
 	let success = false;
@@ -23,9 +22,6 @@
 
 	if (data.user) {
 		initials = `${data.user.personal_data.name.first[0]}${data.user.personal_data.name.last[0]}`;
-	}
-
-	if (data.user) {
 		const userRef = doc(db, 'users', data.user.auth_data.uid);
 
 		const unsubUser = onSnapshot(userRef, (snapshot) => {
@@ -165,7 +161,7 @@
 							name="section"
 							required
 						>
-							{#each $sectionsMap as [key, value], idx (idx)}
+							{#each sections as [key, value], idx (idx)}
 								<option value={key}>{value}</option>
 							{/each}
 						</select>

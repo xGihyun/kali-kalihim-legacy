@@ -14,7 +14,10 @@ export async function handle({ event, resolve }) {
 	}
 
 	// If there is no user, do nothing
-	if (!session) return await resolve(event);
+	if (!session) {
+		console.log('No user session');
+		return await resolve(event);
+	}
 
 	console.log('User exists.');
 
@@ -22,8 +25,14 @@ export async function handle({ event, resolve }) {
 	const userRef = doc(db, 'users', session);
 	const docSnap = await getDoc(userRef);
 
-	if (!docSnap.exists()) return await resolve(event);
+	if (!docSnap.exists()) {
+		console.error("Document snapshot doesn't exist")
+		return await resolve(event);
+	}
 
+	console.log("User exists (from hooks.server.ts)")
+
+	// I might not need to set the locals as the whole user data, will probably set to the uid only
 	const data = docSnap.data() as UserData;
 	event.locals.userData = data;
 

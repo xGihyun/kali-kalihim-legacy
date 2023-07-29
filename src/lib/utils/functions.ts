@@ -1,5 +1,7 @@
 import { blockCards, footworks, skills, strikeCards } from '$lib/data';
-import type { BattleCard, BattleCards, Skill } from '$lib/types';
+import { db } from '$lib/firebase/firebase';
+import type { BattleCard, BattleCards, Section, Skill } from '$lib/types';
+import { collection, getDocs } from 'firebase/firestore';
 
 export function getRandomArnisSkill() {
 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
@@ -72,3 +74,30 @@ function getRandomBattleCard(skills: string[], type: Skill) {
 
 // 	return battlecard;
 // }
+
+export async function getSections(): Promise<Map<string, string>> {
+	const sectionsCollection = collection(db, 'sections');
+	const getSections = await getDocs(sectionsCollection);
+
+	if (getSections.empty) {
+		console.error('No sections yet');
+	}
+
+	const sections: Map<string, string> = getSections.docs.reduce((result, section) => {
+		const sectionData = section.data() as Section;
+		const value = sectionData.name;
+		const key = section.id;
+
+		result.set(key, value);
+
+		return result;
+	}, new Map());
+
+	return sections;
+}
+
+export function formatSection(section: string): string {
+	const formatted = section.replace('_', ' ').charAt(0).toUpperCase() + section.slice(1);
+
+	return formatted;
+}

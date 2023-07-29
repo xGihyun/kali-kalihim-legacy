@@ -5,6 +5,7 @@ import type { UserData } from '$lib/types';
 import type { Actions } from '@sveltejs/kit';
 import { updateOverallRankings, updateRankTitle, updateSectionRankings } from '$lib/utils/update';
 import { CACHE_DURATION } from '$lib/constants';
+import { getSections } from '$lib/utils/functions';
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const uid = params.uid;
@@ -12,11 +13,13 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const userRef = doc(db, 'users', uid);
 	const userDoc = await getDoc(userRef);
 	const user = userDoc.data() as UserData;
+	const sections = await getSections();
 
 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
-		user
+		user,
+		sections
 	};
 };
 

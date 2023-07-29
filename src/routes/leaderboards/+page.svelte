@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { db } from '$lib/firebase/firebase';
 	import type { UserData } from '$lib/types';
+	import { formatSection } from '$lib/utils/functions.js';
 	import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	export let data;
 
-	$: currentUser = getContext<Writable<UserData>>('user');
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
+	$: currentUser = data.user;
+	// $: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
-	let users = data.users;
+	$: users = data.users;
 
 	if (data.user?.auth_data.uid) {
 		const usersCollection = collection(db, 'users');
@@ -38,7 +39,7 @@
 			{#each users as user, idx (idx)}
 				<tr
 					class={`${
-						user.auth_data.uid === $currentUser.auth_data.uid
+						user.auth_data.uid === currentUser?.auth_data.uid
 							? 'text-tertiary-600-300-token'
 							: 'text-secondary-700-200-token'
 					}`}
@@ -56,7 +57,7 @@
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							St. {$sectionsMap.get(user.personal_data.section)}
+							St. {formatSection(user.personal_data.section)}
 						</p>
 					</td>
 					<td class="w-1/4">

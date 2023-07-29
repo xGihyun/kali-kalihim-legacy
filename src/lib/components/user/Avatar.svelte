@@ -8,12 +8,12 @@
 	import { doc, updateDoc } from 'firebase/firestore';
 	import { db } from '$lib/firebase/firebase';
 	import { currentUser } from '$lib/store';
+	import { formatSection } from '$lib/utils/functions';
 
 	export let initials: string;
 	export let user: UserData;
 
 	$: currentUserCx = getContext<Writable<UserData>>('user');
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 
 	let selectedAvatar: File | null = null;
 	let uploadAvatarEl: HTMLInputElement;
@@ -138,7 +138,7 @@
 				{user.personal_data.name.last}
 			</span>
 			<span class="text-secondary-700-200-token text-sm lg:text-lg">
-				St. {$sectionsMap.get(user.personal_data.section)}
+				St. {formatSection(user.personal_data.section)}
 			</span>
 		</div>
 	</div>

@@ -1,5 +1,7 @@
 import type { Timestamp } from 'firebase/firestore';
 
+// USER
+
 export type UserData = {
 	auth_data: UserAuthData;
 	personal_data: UserPersonalData;
@@ -46,6 +48,8 @@ export type UserPowerCard = {
 	used: boolean;
 };
 
+// MATCH
+
 export type Match = {
 	players: UserData[];
 	section: string;
@@ -62,6 +66,12 @@ export type MatchSet = {
 	status: string;
 };
 
+export type Section = {
+	name: string;
+};
+
+// POWER CARD
+
 export type PowerCard = {
 	components: {
 		ability: ConstructorOfATypedSvelteComponent;
@@ -73,40 +83,44 @@ export type PowerCard = {
 	image_url?: string;
 };
 
+// NAVIGATION
+
 export type Navigation = {
 	name: string;
 	path: string;
 	icon?: ConstructorOfATypedSvelteComponent;
 }[];
 
-type Video = {
+export type Video = {
 	title: string;
 	url: string;
 };
 
-export type Videos = Video[];
+// BATTLE CARDS
 
-export type Section = {
-	name: string;
+export type Skill = 'strike' | 'block';
+
+export type Change = 'increase' | 'decrease';
+
+export type Effect = {
+	type: Change;
+	number: number;
 };
 
+// It's probably better to do some OOP stuff here but nevermind for now
 export type Strike = {
 	name: string;
 	damage: number;
 	accuracy: number;
+	effect: Effect;
 };
-
-export type Strikes = Strike[];
 
 export type Block = {
 	name: string;
 	reduction: number;
 	strike_to_cancel: string;
+	effect: Effect;
 };
-
-export type Blocks = Block[];
-
-export type Skill = 'strike' | 'block'
 
 export type BattleCard = {
 	name: string;
@@ -118,3 +132,16 @@ export type BattleCards = {
 	strikes: BattleCard[];
 	blocks: BattleCard[];
 };
+
+export type Damage = {
+	player1: number;
+	player2: number;
+};
+
+export type BattleCardInteraction = Map<
+	Skill,
+	{
+		[key in Skill]: (card1: BattleCard, card2: BattleCard) => Damage;
+	}
+>;
+// export type AuthState = 'logged_in' | 'registered' | 'logged_out'

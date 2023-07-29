@@ -1,6 +1,15 @@
 import { blockCards, strikeCards } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
-import type { BattleCard, UserData } from '$lib/types';
+import type {
+	BattleCard,
+	BattleCardInteraction,
+	Block,
+	Damage,
+	Skill,
+	Strike,
+	UserData
+} from '$lib/types';
+import { error } from '@sveltejs/kit';
 import { collection, getDocs } from 'firebase/firestore';
 
 export async function battle(player1: string, player2: string) {
@@ -17,97 +26,37 @@ export async function battle(player1: string, player2: string) {
 	console.log(player2Cards);
 
 	// Have a mutable variable for both player's HP
-	let PLAYER1_DMG = 0;
-	let PLAYER2_DMG = 0;
+	let PLAYER_1_DMG = 0;
+	let PLAYER_2_DMG = 0;
 
 	for (let i = 0; i < 6; i++) {
 		const player1Card = player1Cards[i];
 		const player2Card = player2Cards[i];
 
 		// If both cards are blocks, do nothing
+		console.log('NEW TURN');
 		console.log(`(${i}) Player 1: ${player1Card.name}`);
 		console.log(`(${i}) Player 2: ${player2Card.name}`);
 
-		const interaction = map.get(player1Card.type);
+		const interaction = battleCardInteractions.get(player1Card.type);
 
 		if (!interaction) {
 			console.log('No interaction');
 			return;
 		}
 
-		console.log('Running interaction...');
-		interaction[player2Card.type](player1Card, player2Card);
+		const damageDealt = interaction[player2Card.type](player1Card, player2Card);
 
-		// Otherwise, if one is a block, check which strike card the other player uses
-		// if (player1Card.type === 'block') {
-		// 	const blockCard = blockCards.get(player1Card.name);
+		PLAYER_1_DMG += damageDealt.player1;
+		PLAYER_2_DMG += damageDealt.player2;
 
-		// 	if (!blockCard) {
-		// 		console.log("Card doesn't exist.");
-		// 		return;
-		// 	}
-
-		// 	if (player2Card.type === 'block') {
-		// 		console.log('Both cards are blocks.');
-		// 		continue;
-		// 	} else if (player2Card.type === 'strike') {
-		// 		const strikeCard = strikeCards.get(player2Card.name);
-
-		// 		if (!strikeCard) {
-		// 			console.log("Card doesn't exist.");
-		// 			return;
-		// 		}
-
-		// 		const isCancelled = blockCard.strike_to_cancel === player2Card.name;
-
-		// 		// If the strike is cancelled, apply the effects for successful cancellation
-		// 		if (isCancelled) {
-		// 			console.log(player2Card.name + ' was cancelled by ' + blockCard.name);
-		// 		} else {
-		// 			// If the strike wasn't cancelled and it hits, apply the effects for successful hit
-		// 			const isHit = simulateAttack(strikeCard.accuracy);
-
-		// 			if (isHit) {
-		// 				console.log('Hit!');
-		// 			}
-		// 		}
-		// 	}
-		// } else if (player1Card.type === 'strike') {
-		// 	const strikeCard = strikeCards.get(player2Card.name);
-
-		// 	if (!strikeCard) {
-		// 		console.log("Card doesn't exist.");
-		// 		return;
-		// 	}
-
-		// 	if (player2Card.type === 'block') {
-		// 		const blockCard = blockCards.get(player2Card.name);
-
-		// 		if (!blockCard) {
-		// 			console.log("Card doesn't exist.");
-		// 			return;
-		// 		}
-
-		// 		const isCancelled = blockCard.name === player2Card.name;
-
-		// 		// If the strike is cancelled, apply the effects for successful cancellation
-		// 		if (isCancelled) {
-		// 			console.log(player2Card.name + ' was cancelled by ' + blockCard.name);
-		// 		} else {
-		// 			// If the strike wasn't cancelled and it hits, apply the effects for successful hit
-		// 			const isHit = simulateAttack(strikeCard.accuracy);
-
-		// 			if (isHit) {
-		// 				console.log('Hit!');
-		// 			} else {
-		// 				console.log('Missed!');
-		// 			}
-		// 		}
-		// 	} else {
-		// 		console.log('Both are strikes');
-		// 	}
-		// }
+		console.log(`(${i}) Player 1 Damage: ${PLAYER_1_DMG}`);
+		console.log(`(${i}) Player 2 Damage: ${PLAYER_2_DMG}`);
 	}
+
+	console.log('TOTAL DAMAGE:');
+	console.log('Player 1: ' + PLAYER_1_DMG);
+	console.log('Player 2: ' + PLAYER_2_DMG);
 
 	// Check which player has the highest score and set them as the winner
 }
@@ -115,8 +64,11 @@ export async function battle(player1: string, player2: string) {
 function simulateAttack(accuracy: number): boolean {
 	const rng = Math.random();
 
-	console.log('RNG: ' + rng);
-	console.log('ACC: ' + accuracy);
+	if (rng <= accuracy) {
+		console.log('Hit!');
+	} else {
+		console.log('Miss!');
+	}
 
 	return rng <= accuracy;
 }
@@ -131,20 +83,61 @@ async function getPlayerCards(uid: string): Promise<BattleCard[]> {
 	return battleCards;
 }
 
-const map = new Map([
+const noDamage: Damage = {
+	player1: 0,
+	player2: 0
+};
+
+// function getCard(card: BattleCard) {
+// 	try {
+// 		const validateCardType = battleCardMap.get(card.type);
+
+// 		if (!validateCardType) {
+// 			console.error("Card type doesn't exist");
+// 			throw error;
+// 		}
+
+// 		const validateCard = validateCardType(card);
+
+// 		if (!validateCard) {
+// 			console.error("Card doesn't exist");
+// 			throw error;
+// 		}
+
+// 		return validateCard;
+// 	} catch (error) {
+// 		console.error('Error in battle cards: ' + error);
+// 		return 0;
+// 	}
+// }
+
+const battleCardInteractions: BattleCardInteraction = new Map([
 	[
 		'strike',
 		{
-			strike: (card1: BattleCard, card2: BattleCard) => {
-				console.log('Both are strikes');
+			strike: (card1: BattleCard, card2: BattleCard): Damage => {
+				const strike1 = strikeCards.get(card1.name);
+				const strike2 = strikeCards.get(card2.name);
+
+				if (!strike1 || !strike2) {
+					throw error(400, "Card doesn't exist");
+				}
+
+				const isHit1 = simulateAttack(strike1.accuracy);
+				const isHit2 = simulateAttack(strike2.accuracy);
+
+				// Return damage
+				return {
+					player1: isHit1 ? strike1.damage : 0,
+					player2: isHit2 ? strike2.damage : 0
+				};
 			},
-			block: (card1: BattleCard, card2: BattleCard) => {
+			block: (card1: BattleCard, card2: BattleCard): Damage => {
 				const strike = strikeCards.get(card1.name);
 				const block = blockCards.get(card2.name);
 
 				if (!block || !strike) {
-					console.error("Card doesn't exist");
-					return;
+					throw error(400, "Card doesn't exist");
 				}
 
 				const isCancelled = block.strike_to_cancel === strike.name;
@@ -152,27 +145,27 @@ const map = new Map([
 				// If the strike is cancelled, apply the effects for successful cancellation
 				if (isCancelled) {
 					console.log(strike.name + ' was cancelled by ' + block.name);
-				} else {
-					// If the strike wasn't cancelled and it hits, apply the effects for successful hit
-					const isHit = simulateAttack(strike.accuracy);
-
-					if (isHit) {
-						console.log('Hit!');
-					}
+					return noDamage;
 				}
+				// If the strike wasn't cancelled and it hits, apply the effects for successful hit
+				const isHit = simulateAttack(strike.accuracy);
+
+				return {
+					player1: isHit ? strike.damage : 0,
+					player2: 0
+				};
 			}
 		}
 	],
 	[
 		'block',
 		{
-			strike: (card1: BattleCard, card2: BattleCard) => {
+			strike: (card1: BattleCard, card2: BattleCard): Damage => {
 				const strike = strikeCards.get(card2.name);
 				const block = blockCards.get(card1.name);
 
 				if (!block || !strike) {
-					console.error("Card doesn't exist");
-					return;
+					throw error(400, "Card doesn't exist");
 				}
 
 				const isCancelled = block.strike_to_cancel === strike.name;
@@ -180,17 +173,20 @@ const map = new Map([
 				// If the strike is cancelled, apply the effects for successful cancellation
 				if (isCancelled) {
 					console.log(strike.name + ' was cancelled by ' + block.name);
-				} else {
-					// If the strike wasn't cancelled and it hits, apply the effects for successful hit
-					const isHit = simulateAttack(strike.accuracy);
-
-					if (isHit) {
-						console.log('Hit!');
-					}
+					return noDamage;
 				}
+
+				// If the strike wasn't cancelled and it hits, apply the effects for successful hit
+				const isHit = simulateAttack(strike.accuracy);
+
+				return {
+					player1: 0,
+					player2: isHit ? strike.damage : 0
+				};
 			},
-			block: (card1: BattleCard, card2: BattleCard) => {
+			block: (card1: BattleCard, card2: BattleCard): Damage => {
 				console.log('Both are blocks');
+				return noDamage;
 			}
 		}
 	]

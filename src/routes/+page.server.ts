@@ -6,6 +6,7 @@ import {
 	getCountFromServer,
 	getDoc,
 	getDocs,
+	limit,
 	orderBy,
 	query,
 	setDoc,
@@ -25,7 +26,7 @@ import type {
 	UserPersonalData,
 	UserPowerCard,
 	UserRankingData
-} from '$lib/types.js';
+} from '$lib/types';
 import type { PageServerLoad } from './$types';
 import { CACHE_DURATION } from '$lib/constants';
 import { powerCardsMap } from '$lib/data';
@@ -39,7 +40,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		db,
 		`users/${locals.userData.auth_data.uid}/pending_matches`
 	);
-	const pendingMatchesQuery = query(pendingMatchesCollection, orderBy('timestamp', 'desc'));
+	const pendingMatchesQuery = query(pendingMatchesCollection, orderBy('timestamp', 'desc'), limit(1));
 	const getPendingMatchesDocs = await getDocs(pendingMatchesQuery);
 
 	if (getPendingMatchesDocs.empty) {
@@ -120,6 +121,7 @@ export const actions: Actions = {
 			title: ''
 		};
 
+		// DONT DO THIS
 		currentUser.update(
 			(val) =>
 				(val = {

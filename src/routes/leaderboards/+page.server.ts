@@ -13,6 +13,6 @@ export const load: PageServerLoad = async ({ setHeaders }) => {
 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
-		users: users
+		users
 	};
 };

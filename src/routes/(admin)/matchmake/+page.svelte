@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { Match } from '$lib/types';
-	import { getContext } from 'svelte';
-	import type { Writable } from 'svelte/store';
-
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
+	import { formatSection, getSections } from '$lib/utils/functions';
 
 	let newMatches: Match[] = [];
 	let sectionValue: string;
@@ -16,12 +13,19 @@
 	let loading = false;
 
 	function matchmake(data: Record<string, unknown> | undefined) {
-		const response: Record<string, string> = data as Record<string, string>;
+		try {
+			if (!data) {
+				throw new Error();
+			}
 
-		const values = Object.values(response)[0];
-		const matches = JSON.parse(values) as Match[];
+			const response = data as Record<string, string>;
+			const values = Object.values(response)[0];
+			const matches = JSON.parse(values) as Match[];
 
-		newMatches = matches;
+			newMatches = matches;
+		} catch (error) {
+			console.error('Error in match making: ' + error);
+		}
 	}
 </script>
 
@@ -35,7 +39,7 @@
 			>
 				match found
 			</span>
-			<span class="text-center text-lg">{$sectionsMap.get(selectedSection)}</span>
+			<span class="text-center text-lg">{formatSection(selectedSection)}</span>
 			<div class="table-container max-w-5xl">
 				<table class="table table-hover table-compact">
 					<thead>
@@ -106,9 +110,13 @@
 			<label class="label">
 				<span>Section</span>
 				<select class="select" name="section" required bind:value={sectionValue}>
-					{#each $sectionsMap as [key, value], idx (idx)}
-						<option value={key}>{value}</option>
-					{/each}
+					{#await getSections()}
+						<span>Loading sections...</span>
+					{:then sections}
+						{#each sections as [key, value], idx (idx)}
+							<option value={key}>{value}</option>
+						{/each}
+					{/await}
 				</select>
 			</label>
 			<button class="btn variant-filled-primary" type="submit">Matchmake</button>

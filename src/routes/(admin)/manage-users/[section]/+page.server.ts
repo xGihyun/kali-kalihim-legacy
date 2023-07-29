@@ -7,6 +7,8 @@ import { CACHE_DURATION } from '$lib/constants';
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const section = params.section;
 
+	console.log(section)
+
 	const usersCollection = collection(db, 'users');
 	const q = query(usersCollection, where('personal_data.section', '==', section));
 	const getUsersInSectionDocs = await getDocs(q);

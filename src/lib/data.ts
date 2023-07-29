@@ -14,7 +14,7 @@ import {
 	viralxRival,
 	warlordsDomain
 } from './components/powercards/functions';
-import type { Block, Blocks, PowerCard, Strike, Strikes, Videos } from './types';
+import type { Block, PowerCard, Strike, Video } from './types';
 
 export const skills = [
 	'Strikes',
@@ -89,7 +89,7 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 	]
 ]);
 
-export const arnisSkills: Videos = [
+export const arnisSkills: Video[] = [
 	{
 		title: 'Strikes',
 		url: 'https://youtu.be/9ImJFGii6lg'
@@ -112,7 +112,7 @@ export const arnisSkills: Videos = [
 	}
 ];
 
-export const arnisFootworks: Videos = [
+export const arnisFootworks: Video[] = [
 	{
 		title: 'Caballero',
 		url: 'https://youtu.be/jrXYbouUFR8?t=312'
@@ -144,7 +144,12 @@ export const strikeCards: Map<string, Strike> = new Map([
 		{
 			name: 'Leg Strike',
 			damage: 5,
-			accuracy: 0.9
+			accuracy: 0.9,
+
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -152,7 +157,11 @@ export const strikeCards: Map<string, Strike> = new Map([
 		{
 			name: 'Temple Strike',
 			damage: 10,
-			accuracy: 0.75
+			accuracy: 0.75,
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -160,7 +169,11 @@ export const strikeCards: Map<string, Strike> = new Map([
 		{
 			name: 'Shoulder Strike',
 			damage: 10,
-			accuracy: 0.8
+			accuracy: 0.8,
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -168,16 +181,24 @@ export const strikeCards: Map<string, Strike> = new Map([
 		{
 			name: 'Shoulder Thrust',
 			damage: 8,
-			accuracy: 0.85
+			accuracy: 0.85,
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
 		'Eye Poke',
-
 		{
 			name: 'Eye Poke',
 			damage: 12,
-			accuracy: 0.6
+			accuracy: 0.6,
+
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -185,7 +206,11 @@ export const strikeCards: Map<string, Strike> = new Map([
 		{
 			name: 'Stomach Thrust',
 			damage: 10,
-			accuracy: 0.85
+			accuracy: 0.85,
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -193,7 +218,11 @@ export const strikeCards: Map<string, Strike> = new Map([
 		{
 			name: 'Head Strike',
 			damage: 18,
-			accuracy: 0.5
+			accuracy: 0.5,
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	]
 ]);
@@ -204,7 +233,11 @@ export const blockCards: Map<string, Block> = new Map([
 		{
 			name: 'Leg Strike Block',
 			reduction: 0.1,
-			strike_to_cancel: 'Leg Strike'
+			strike_to_cancel: 'Leg Strike',
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -212,7 +245,11 @@ export const blockCards: Map<string, Block> = new Map([
 		{
 			name: 'Temple Strike Block',
 			reduction: 0.15,
-			strike_to_cancel: 'Temple Strike'
+			strike_to_cancel: 'Temple Strike',
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -220,7 +257,11 @@ export const blockCards: Map<string, Block> = new Map([
 		{
 			name: 'Shoulder Strike Block',
 			reduction: 0.15,
-			strike_to_cancel: 'Shoulder Strike'
+			strike_to_cancel: 'Shoulder Strike',
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -228,7 +269,11 @@ export const blockCards: Map<string, Block> = new Map([
 		{
 			name: 'Shoulder Thrust Block',
 			reduction: 0.15,
-			strike_to_cancel: 'Shoulder Thrust'
+			strike_to_cancel: 'Shoulder Thrust',
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -236,7 +281,11 @@ export const blockCards: Map<string, Block> = new Map([
 		{
 			name: 'Eye Poke Block',
 			reduction: 0.15,
-			strike_to_cancel: 'Eye Poke'
+			strike_to_cancel: 'Eye Poke',
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -244,7 +293,11 @@ export const blockCards: Map<string, Block> = new Map([
 		{
 			name: 'Stomach Thrust Block',
 			reduction: 0.15,
-			strike_to_cancel: 'Stomach Thrust'
+			strike_to_cancel: 'Stomach Thrust',
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	],
 	[
@@ -252,7 +305,11 @@ export const blockCards: Map<string, Block> = new Map([
 		{
 			name: 'Head Strike Block',
 			reduction: 0.15,
-			strike_to_cancel: 'Head Strike'
+			strike_to_cancel: 'Head Strike',
+			effect: {
+				type: 'increase',
+				number: 90
+			}
 		}
 	]
 ]);

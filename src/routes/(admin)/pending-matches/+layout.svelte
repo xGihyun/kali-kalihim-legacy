@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getSections } from '$lib/utils/functions';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
@@ -21,17 +22,21 @@
 
 	<div class="card w-48 py-2 shadow-xl" data-popup="sections">
 		<ul>
-			{#each $sectionsMap as [key, value], idx (idx)}
-				<li class="flex">
-					<a
-						class={`flex-1 px-4 py-2 ${
-							section === key ? 'variant-filled' : 'bg-surface-100-800-token hover:variant-soft'
-						}`}
-						href={`/pending-matches/${key}`}
-						on:click={() => (section = value)}>{value}</a
-					>
-				</li>
-			{/each}
+			{#await getSections()}
+				<span>Loading sections...</span>
+			{:then sections}
+				{#each sections as [key, value], idx (idx)}
+					<li class="flex">
+						<a
+							class={`flex-1 px-4 py-2 ${
+								section === key ? 'variant-filled' : 'bg-surface-100-800-token hover:variant-soft'
+							}`}
+							href={`/pending-matches/${key}`}
+							on:click={() => (section = value)}>{value}</a
+						>
+					</li>
+				{/each}
+			{/await}
 		</ul>
 		<div class="arrow bg-surface-100-800-token" />
 	</div>
