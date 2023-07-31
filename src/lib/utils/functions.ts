@@ -36,14 +36,13 @@ export function getRandomBattleCards(): BattleCards {
 	return battlecards;
 }
 
-function getRandomBattleCard(skills: string[], type: Skill) {
+function getRandomBattleCard(skills: string[], skill: Skill) {
 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
 	const randomSkills = skills[randomSkillIndex];
 
-	let battlecard: BattleCard = {
+	const battlecard: BattleCard = {
 		name: randomSkills,
-		type,
-		used: false
+		skill,
 	};
 
 	return battlecard;

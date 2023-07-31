@@ -37,18 +37,17 @@
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
 	{#if battleCards}
-		{@const strikeCards = battleCards.filter((card) => card.type === 'strike')}
-		{@const blockCards = battleCards.filter((card) => card.type === 'block')}
+		{@const strikeCards = battleCards.filter((card) => card.skill === 'strike')}
+		{@const blockCards = battleCards.filter((card) => card.skill === 'block')}
 
 		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">
 			{#each strikeCards as card, idx (idx)}
 				<button
 					class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
-					on:click={() => {
+					on:click={(e) => {
 						addToQueue(card);
-						card.used = true;
+						e.currentTarget.disabled = true;
 					}}
-					disabled={card.used}
 				>
 					<span>{card.name}</span>
 				</button>
@@ -59,9 +58,9 @@
 			{#each blockCards as card, idx (idx)}
 				<button
 					class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
-					on:click={() => {
+					on:click={(e) => {
 						addToQueue(card);
-						card.used = true;
+						e.currentTarget.disabled = true;
 					}}
 				>
 					<span>{card.name}</span>

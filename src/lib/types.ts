@@ -99,12 +99,13 @@ export type Video = {
 // BATTLE CARDS
 
 export type Skill = 'strike' | 'block';
-
 export type Change = 'increase' | 'decrease';
+export type Stat = 'accuracy' | 'damage';
 
 export type Effect = {
 	type: Change;
 	number: number;
+	stat: Stat;
 };
 
 // It's probably better to do some OOP stuff here but nevermind for now
@@ -124,8 +125,7 @@ export type Block = {
 
 export type BattleCard = {
 	name: string;
-	type: Skill;
-	used: boolean;
+	skill: Skill;
 };
 
 export type BattleCards = {
@@ -141,7 +141,29 @@ export type Damage = {
 export type BattleCardInteraction = Map<
 	Skill,
 	{
-		[key in Skill]: (card1: BattleCard, card2: BattleCard) => Damage;
+		[key in Skill]: (
+			card1: BattleCard,
+			card2: BattleCard,
+			prevCard1?: BattleCard,
+			prevCard2?: BattleCard
+		) => Damage;
 	}
 >;
+
+// export type BattleCardEffects = Map<Stat, 
+
+// export type GetBattleCard = {
+// 	'strike': (card: BattleCard) => Strike | undefined,
+// 	'block': (card: BattleCard) => Block | undefined,
+// }
+
+// export type GetBattleCard = {
+// 	[key in Skill]: (
+// 		card: BattleCard
+// 	) => key extends 'strike' ? Strike | undefined : Block | undefined;
+// };
+
+// export type GetBattleCard = {
+// 	[key in Skill]: (card: BattleCard) => Strike | Block | undefined
+// }
 // export type AuthState = 'logged_in' | 'registered' | 'logged_out'

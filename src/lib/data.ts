@@ -145,10 +145,10 @@ export const strikeCards: Map<string, Strike> = new Map([
 			name: 'Leg Strike',
 			damage: 5,
 			accuracy: 0.9,
-
 			effect: {
 				type: 'increase',
-				number: 90
+				number: 0.1,
+				stat: 'accuracy'
 			}
 		}
 	],
@@ -159,8 +159,9 @@ export const strikeCards: Map<string, Strike> = new Map([
 			damage: 10,
 			accuracy: 0.75,
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.1,
+				stat: 'accuracy'
 			}
 		}
 	],
@@ -171,8 +172,9 @@ export const strikeCards: Map<string, Strike> = new Map([
 			damage: 10,
 			accuracy: 0.8,
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.1,
+				stat: 'accuracy'
 			}
 		}
 	],
@@ -183,8 +185,9 @@ export const strikeCards: Map<string, Strike> = new Map([
 			damage: 8,
 			accuracy: 0.85,
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.1,
+				stat: 'accuracy'
 			}
 		}
 	],
@@ -197,7 +200,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 
 			effect: {
 				type: 'increase',
-				number: 90
+				number: 0.15,
+				stat: 'accuracy'
 			}
 		}
 	],
@@ -209,7 +213,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 			accuracy: 0.85,
 			effect: {
 				type: 'increase',
-				number: 90
+				number: 0.5,
+				stat: 'damage'
 			}
 		}
 	],
@@ -220,8 +225,9 @@ export const strikeCards: Map<string, Strike> = new Map([
 			damage: 18,
 			accuracy: 0.5,
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.15,
+				stat: 'accuracy'
 			}
 		}
 	]
@@ -236,7 +242,8 @@ export const blockCards: Map<string, Block> = new Map([
 			strike_to_cancel: 'Leg Strike',
 			effect: {
 				type: 'increase',
-				number: 90
+				number: 0.1,
+				stat: 'accuracy'
 			}
 		}
 	],
@@ -247,8 +254,9 @@ export const blockCards: Map<string, Block> = new Map([
 			reduction: 0.15,
 			strike_to_cancel: 'Temple Strike',
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.1,
+				stat: 'accuracy'
 			}
 		}
 	],
@@ -259,8 +267,9 @@ export const blockCards: Map<string, Block> = new Map([
 			reduction: 0.15,
 			strike_to_cancel: 'Shoulder Strike',
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.1,
+				stat: 'accuracy',
 			}
 		}
 	],
@@ -271,8 +280,9 @@ export const blockCards: Map<string, Block> = new Map([
 			reduction: 0.15,
 			strike_to_cancel: 'Shoulder Thrust',
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.1,
+				stat: 'accuracy'
 			}
 		}
 	],
@@ -283,8 +293,9 @@ export const blockCards: Map<string, Block> = new Map([
 			reduction: 0.15,
 			strike_to_cancel: 'Eye Poke',
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.1,
+				stat: 'damage'
 			}
 		}
 	],
@@ -296,7 +307,8 @@ export const blockCards: Map<string, Block> = new Map([
 			strike_to_cancel: 'Stomach Thrust',
 			effect: {
 				type: 'increase',
-				number: 90
+				number: 0.5,
+				stat: 'damage'
 			}
 		}
 	],
@@ -307,8 +319,9 @@ export const blockCards: Map<string, Block> = new Map([
 			reduction: 0.15,
 			strike_to_cancel: 'Head Strike',
 			effect: {
-				type: 'increase',
-				number: 90
+				type: 'decrease',
+				number: 0.2,
+				stat: 'damage'
 			}
 		}
 	]

@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	}
 
 	const battleCards = getBattleCards.docs
-		.filter((card) => !card.id.startsWith('card'))
+		.filter((card) => card.id.startsWith('card'))
 		.map((card) => card.data() as BattleCard);
 
 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
@@ -57,13 +57,13 @@ export const actions: Actions = {
 
 		for (let i = 0; i < battlecards.strikes.length; i++) {
 			const strike = battlecards.strikes[i];
-			const battleCardsRef = doc(db, `users/${userUID}/stock_battle_cards/strike_${i + 1}`);
+			const battleCardsRef = doc(db, `users/${userUID}/stock_battle_cards/card_strike_${i + 1}`);
 			batch.set(battleCardsRef, { ...strike });
 		}
 
 		for (let i = 0; i < battlecards.blocks.length; i++) {
 			const block = battlecards.blocks[i];
-			const battleCardsRef = doc(db, `users/${userUID}/stock_battle_cards/block_${i + 1}`);
+			const battleCardsRef = doc(db, `users/${userUID}/stock_battle_cards/card_block_${i + 1}`);
 			batch.set(battleCardsRef, { ...block });
 		}
 
