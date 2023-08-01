@@ -3,6 +3,7 @@ import { db } from '$lib/firebase/firebase';
 import type {
 	BattleCard,
 	BattleCardInteraction,
+	BattleCardResults,
 	Block,
 	Damage,
 	Skill,
@@ -13,79 +14,42 @@ import { error } from '@sveltejs/kit';
 import { collection, getDocs } from 'firebase/firestore';
 import { card_battle } from '$lib/pkg/my_package';
 
-export async function battle(player1: string, player2: string) {
+export async function battle(player1: string, player2: string): Promise<string> {
 	console.log(player1);
 	console.log(player2);
 
-	// Get cards of both players
 	const player1Cards = await getPlayerCards(player1);
 	const player2Cards = await getPlayerCards(player2);
 
-	console.log('Player 1 JS:');
+	console.log('Player 1:');
 	console.log(player1Cards);
-	console.log('Player 2 JS:');
+	console.log('Player 2:');
 	console.log(player2Cards);
 
 	const player1CardsStr = JSON.stringify(player1Cards);
 	const player2CardsStr = JSON.stringify(player2Cards);
 
-	console.log('Player 1 JS string:');
-	console.log(player1CardsStr);
-	console.log('Player 2 JS string:');
-	console.log(player2CardsStr);
+	const battleResults: BattleCardResults = card_battle(player1CardsStr, player2CardsStr);
 
-	// Rust stuff
-	console.log('Player 1 Rust string:');
-	console.log(card_battle(player1CardsStr, player2CardsStr));
+	let player1TotalDamage = 0;
+	let player2TotalDamage = 0;
 
-	// Have a mutable variable for both player's HP
-	// let PLAYER_1_DMG = 0;
-	// let PLAYER_2_DMG = 0;
+	battleResults.player_1.forEach((result) => {
+		if (!result.is_cancelled) {
+			player1TotalDamage += result.damage;
+		}
+	});
 
-	// for (let i = 0; i < 6; i++) {
-	// 	const player1Card = player1Cards[i];
-	// 	const player2Card = player2Cards[i];
+	battleResults.player_2.forEach((result) => {
+		if (!result.is_cancelled) {
+			player2TotalDamage += result.damage;
+		}
+	});
 
-	// 	let damageDealt: Damage;
+	console.log(player1TotalDamage);
+	console.log(player2TotalDamage);
 
-	// 	// If both cards are blocks, do nothing
-	// 	console.log('NEW TURN');
-	// 	console.log(`(${i}) Player 1: ${player1Card.name}`);
-	// 	console.log(`(${i}) Player 2: ${player2Card.name}`);
-
-	// 	const interaction = battleCardInteractions.get(player1Card.type);
-
-	// 	if (!interaction) {
-	// 		console.log('No interaction');
-	// 		return;
-	// 	}
-
-	// 	if (i > 0) {
-	// 		const player1PrevCard = player1Cards[i - 1];
-	// 		const player2PrevCard = player2Cards[i - 1];
-
-	// 		damageDealt = interaction[player2Card.type](
-	// 			player1Card,
-	// 			player2Card,
-	// 			player1PrevCard,
-	// 			player2PrevCard
-	// 		);
-	// 	} else {
-	// 		damageDealt = interaction[player1Card.type](player1Card, player2Card);
-	// 	}
-
-	// 	PLAYER_1_DMG += damageDealt.player1;
-	// 	PLAYER_2_DMG += damageDealt.player2;
-
-	// 	console.log(`(${i}) Player 1 Damage: ${PLAYER_1_DMG}`);
-	// 	console.log(`(${i}) Player 2 Damage: ${PLAYER_2_DMG}`);
-	// }
-
-	// console.log('TOTAL DAMAGE:');
-	// console.log('Player 1: ' + PLAYER_1_DMG);
-	// console.log('Player 2: ' + PLAYER_2_DMG);
-
-	// Check which player has the highest score and set them as the winner
+	return player1TotalDamage > player2TotalDamage ? player1 : player2;
 }
 
 function simulateAttack(accuracy: number): boolean {

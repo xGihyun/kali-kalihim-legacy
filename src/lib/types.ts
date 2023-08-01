@@ -150,20 +150,12 @@ export type BattleCardInteraction = Map<
 	}
 >;
 
-// export type BattleCardEffects = Map<Stat, 
+export type BattleCardTurn = {
+	damage: number,
+	is_cancelled: boolean
+}
 
-// export type GetBattleCard = {
-// 	'strike': (card: BattleCard) => Strike | undefined,
-// 	'block': (card: BattleCard) => Block | undefined,
-// }
-
-// export type GetBattleCard = {
-// 	[key in Skill]: (
-// 		card: BattleCard
-// 	) => key extends 'strike' ? Strike | undefined : Block | undefined;
-// };
-
-// export type GetBattleCard = {
-// 	[key in Skill]: (card: BattleCard) => Strike | Block | undefined
-// }
-// export type AuthState = 'logged_in' | 'registered' | 'logged_out'
+export type BattleCardResults = {
+	player_1: BattleCardTurn[],
+	player_2: BattleCardTurn[]
+}

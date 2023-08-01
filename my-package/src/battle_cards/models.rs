@@ -66,3 +66,9 @@ pub struct PlayerTurns {
     pub damage: f32,
     pub is_cancelled: bool,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Multiplier {
+    pub damage: f32,
+    pub accuracy: f32,
+}

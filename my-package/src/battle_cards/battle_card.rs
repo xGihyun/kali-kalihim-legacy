@@ -1,29 +1,9 @@
 use rand::Rng;
 use std::collections::HashMap;
 
-use super::models::{BattleCard, Block, Card, Change, Effect, PlayerTurns, Stat, Strike, Target};
-
-impl Strike {
-    // If strike hits, return the damage dealt
-    // Otherwise, return 0
-    pub fn simulate_strike(&self) -> f32 {
-        let rng: f32 = rand::thread_rng().gen_range(0.0..1.0);
-        let accuracy = self.accuracy;
-
-        if rng <= accuracy {
-            return self.damage;
-        }
-        0.0
-    }
-
-    // Checks for increase or decrease
-    pub fn apply_effects(&mut self, affected_stat: &Stat, multiplier: f32) {
-        match affected_stat {
-            Stat::Accuracy => self.accuracy *= multiplier,
-            Stat::Damage => self.damage *= multiplier,
-        }
-    }
-}
+use super::models::{
+    BattleCard, Block, Card, Change, Effect, Multiplier, PlayerTurns, Stat, Strike, Target,
+};
 
 pub fn get_strike_cards() -> HashMap<String, Strike> {
     let mut strike_cards: HashMap<String, Strike> = HashMap::with_capacity(7);
@@ -250,6 +230,30 @@ fn get_battle_cards(cards_data: &Vec<BattleCard>, battle_cards: &mut Vec<Card>) 
     }
 }
 
+impl Strike {
+    // If strike hits, return the damage dealt
+    // Otherwise, return 0
+    pub fn simulate(
+        &self,
+        accuracy_multiplier: Option<f32>,
+        damage_multiplier: Option<f32>,
+    ) -> f32 {
+        let rng: f32 = rand::thread_rng().gen_range(0.0..1.0);
+        let accuracy = match accuracy_multiplier {
+            Some(multiplier) => self.accuracy * multiplier,
+            None => self.accuracy,
+        };
+
+        if rng <= accuracy {
+            match damage_multiplier {
+                Some(multiplier) => return self.damage * multiplier,
+                None => return self.damage,
+            };
+        }
+        0.0
+    }
+}
+
 const NUMBER_OF_CARDS: usize = 6;
 
 pub fn player_turn(
@@ -258,78 +262,152 @@ pub fn player_turn(
     owner_turns: &mut Vec<PlayerTurns>,
     opponent_turns: &mut Vec<PlayerTurns>,
 ) {
-    // I need a copy since I fight against the borrow checker on borrowing mutables more than once
-    // Fix if possible
     let mut owner_battle_cards: Vec<Card> = Vec::with_capacity(NUMBER_OF_CARDS);
-    // let mut owner_battle_cards_copy: Vec<Card> = Vec::with_capacity(owner_cards.len());
     let mut opponent_battle_cards: Vec<Card> = Vec::with_capacity(NUMBER_OF_CARDS);
-    // let mut opponent_battle_cards_copy: Vec<Card> = Vec::with_capacity(opponent_cards.len());
 
     get_battle_cards(owner_cards, &mut owner_battle_cards);
-    // get_battle_cards(owner_cards, &mut owner_battle_cards_copy);
     get_battle_cards(opponent_cards, &mut opponent_battle_cards);
-    // get_battle_cards(opponent_cards, &mut opponent_battle_cards_copy);
 
-    for (i, card) in owner_battle_cards.iter_mut().enumerate() {
-        match card {
+    let mut owner_prev_effect: Option<&Effect> = None;
+    let mut opponent_prev_effect: Option<&Effect> = None;
+
+    for (i, owner_card) in owner_battle_cards.iter().enumerate() {
+        let mut owner_damage: f32 = 0.0;
+        let mut owner_multipliers = Multiplier {
+            accuracy: 1.0,
+            damage: 1.0,
+        };
+        let mut owner_damage_reduction: f32 = 0.0;
+
+        let mut opponent_damage: f32 = 0.0;
+        let opponent_card = &opponent_battle_cards[i];
+        let mut opponent_multipliers = Multiplier {
+            accuracy: 1.0,
+            damage: 1.0,
+        };
+        let mut opponent_damage_reduction: f32 = 0.0;
+
+        // No effects will be applied on the first turn since there would be no previous card
+        apply_effects(
+            owner_card,
+            opponent_card,
+            owner_prev_effect,
+            opponent_prev_effect,
+            &mut owner_multipliers,
+            &mut opponent_multipliers,
+        );
+
+        match owner_card {
             Card::Strike(strike) => {
-                let damage = strike.simulate_strike();
+                owner_damage = strike.simulate(
+                    Some(owner_multipliers.accuracy),
+                    Some(owner_multipliers.damage),
+                );
 
-                if damage > 0.0 && i > 0 {
-                    match strike.effect.target {
-                        Target::Opponent => {
-                            // let mut owner_prev_card = &owner_battle_cards[i - 1];
-
-                            let mut opponent_next_card = &mut opponent_battle_cards[i + 1];
-
-                            apply_strike_effects(strike, &mut opponent_next_card);
-                        }
-                        Target::Owner => {
-                            // Instead of mutating the next card, an idea is to just store the effects in some variable and apply it?
-
-                            // let mut owner_next_card = &mut owner_battle_cards[i + 1];
-
-                            // apply_strike_effects(strike, &mut owner_next_card);
-                        }
-                    }
+                if owner_damage > 0.0 {
+                    owner_prev_effect = Some(&strike.effect);
                 }
-
-                owner_turns[i].damage = damage;
             }
             Card::Block(block) => {
-                let opponent_card = &opponent_battle_cards[i];
+                owner_damage_reduction = block.damage_reduction;
 
-                match opponent_card {
-                    Card::Strike(strike) => {
-                        let is_cancelled = block.strike_to_cancel == strike.name;
+                if let Card::Strike(strike) = opponent_card {
+                    let is_cancelled = block.strike_to_cancel == strike.name;
 
-                        if is_cancelled {
-                            opponent_turns[i].is_cancelled = true;
-                        }
+                    if is_cancelled {
+                        opponent_turns[i].is_cancelled = true;
+                        owner_prev_effect = Some(&block.effect);
                     }
-                    Card::Block(_) => (),
                 }
             }
         }
+
+        match opponent_card {
+            Card::Strike(strike) => {
+                opponent_damage = strike.simulate(
+                    Some(opponent_multipliers.accuracy),
+                    Some(opponent_multipliers.damage),
+                );
+
+                if opponent_damage > 0.0 {
+                    opponent_prev_effect = Some(&strike.effect);
+                }
+            }
+            Card::Block(block) => {
+                opponent_damage_reduction = block.damage_reduction;
+
+                if let Card::Strike(strike) = owner_card {
+                    let is_cancelled = block.strike_to_cancel == strike.name;
+
+                    if is_cancelled {
+                        owner_turns[i].is_cancelled = true;
+                        opponent_prev_effect = Some(&block.effect);
+                    }
+                }
+            }
+        }
+
+        owner_turns[i].damage += owner_damage * (1.0 - opponent_damage_reduction);
+        opponent_turns[i].damage += opponent_damage * (1.0 - owner_damage_reduction);
     }
 }
 
-// The stats that can change are accuracy and damage, both stats are only present on strike cards
-fn apply_strike_effects(strike: &Strike, strike_card_to_affect: &mut Card) {
-    let affected_stat = &strike.effect.stat;
-    let action = &strike.effect.action;
-    let amount = &strike.effect.amount;
+fn change_stat(effect: &Effect, multipliers: &mut Multiplier) {
+    match effect.stat {
+        Stat::Accuracy => match effect.action {
+            Change::Decrease => {
+                multipliers.accuracy -= effect.amount;
+            }
+            Change::Increase => {
+                multipliers.accuracy += effect.amount;
+            }
+        },
+        Stat::Damage => match effect.action {
+            Change::Decrease => {
+                multipliers.damage -= effect.amount;
+            }
+            Change::Increase => {
+                multipliers.damage += effect.amount;
+            }
+        },
+    }
+}
 
-    let multiplier = match action {
-        Change::Decrease => 1.0 - amount,
-        Change::Increase => 1.0 + amount,
-    };
+fn apply_effects(
+    player_1_card: &Card,
+    player_2_card: &Card,
+    player_1_prev_effect: Option<&Effect>,
+    player_2_prev_effect: Option<&Effect>,
+    player_1_multipliers: &mut Multiplier,
+    player_2_multipliers: &mut Multiplier,
+) {
+    match player_1_card {
+        Card::Strike(_) => match player_1_prev_effect {
+            Some(effect) => match effect.target {
+                Target::Opponent => {
+                    change_stat(effect, player_2_multipliers);
+                }
+                Target::Owner => {
+                    change_stat(effect, player_1_multipliers);
+                }
+            },
+            None => (),
+        },
+        Card::Block(_) => {}
+    }
 
-    // If the strike card doesn't exist / if it wasn't a strike, do nothing
-    match strike_card_to_affect {
-        Card::Strike(strike) => {
-            strike.apply_effects(affected_stat, multiplier);
-        }
-        Card::Block(_) => (),
+    match player_2_card {
+        Card::Strike(_) => match player_2_prev_effect {
+            Some(effect) => match effect.target {
+                Target::Opponent => {
+                    change_stat(effect, player_1_multipliers);
+                }
+                Target::Owner => {
+                    change_stat(effect, player_2_multipliers);
+                }
+            },
+            None => (),
+        },
+        Card::Block(_) => {}
     }
 }

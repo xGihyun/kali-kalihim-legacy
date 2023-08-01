@@ -37,12 +37,12 @@ pub fn card_battle(
         &mut player_1_turns,
         &mut player_2_turns,
     );
-    player_turn(
-        &player_2_cards,
-        &player_1_cards,
-        &mut player_2_turns,
-        &mut player_1_turns,
-    );
+    // player_turn(
+    //     &player_2_cards,
+    //     &player_1_cards,
+    //     &mut player_2_turns,
+    //     &mut player_1_turns,
+    // );
 
     // Iterate over the player turns and apply the effects of the cards and add/deduct stats fr
 
