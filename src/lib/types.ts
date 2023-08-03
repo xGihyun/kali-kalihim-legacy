@@ -99,29 +99,6 @@ export type Video = {
 // BATTLE CARDS
 
 export type Skill = 'strike' | 'block';
-export type Change = 'increase' | 'decrease';
-export type Stat = 'accuracy' | 'damage';
-
-export type Effect = {
-	type: Change;
-	number: number;
-	stat: Stat;
-};
-
-// It's probably better to do some OOP stuff here but nevermind for now
-export type Strike = {
-	name: string;
-	damage: number;
-	accuracy: number;
-	effect: Effect;
-};
-
-export type Block = {
-	name: string;
-	reduction: number;
-	strike_to_cancel: string;
-	effect: Effect;
-};
 
 export type BattleCard = {
 	name: string;
@@ -151,11 +128,24 @@ export type BattleCardInteraction = Map<
 >;
 
 export type BattleCardTurn = {
-	damage: number,
-	is_cancelled: boolean
-}
+	damage: number;
+	is_cancelled: boolean;
+};
+
+export type BattleCardTurns = {
+	player_1: BattleCardTurn[];
+	player_2: BattleCardTurn[];
+};
 
 export type BattleCardResults = {
-	player_1: BattleCardTurn[],
-	player_2: BattleCardTurn[]
+	uid: string;
+	totalDamage: number | null;
+};
+
+export interface PlayerWithDamage extends UserData {
+	total_damage: number | null;
 }
+
+export type CardBattle = {
+	players: PlayerWithDamage[];
+};

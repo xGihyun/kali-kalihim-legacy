@@ -4,7 +4,7 @@
 	import { formatSection, getSections } from '$lib/utils/functions';
 
 	let newMatches: Match[] = [];
-	let sectionValue: string;
+	let sectionValue: string = 'Agatha';
 
 	// Stored in a new variable to avoid bind's reactive nature
 	let selectedSection: string;

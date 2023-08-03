@@ -8,7 +8,6 @@ use gloo_utils::format::JsValueSerdeExt;
 
 mod battle_cards;
 
-// use battle_cards::battle_card::simulate_strike;
 use battle_cards::models::{BattleCard, PlayerDamages, PlayerTurns};
 
 #[wasm_bindgen]
@@ -24,39 +23,24 @@ pub fn card_battle(
     let player_2_cards: Vec<BattleCard> =
         serde_json::from_str(&player_2_cards_json).expect("Failed to parse Player 2 cards");
 
-    // let mut player_1_damage = 0;
-    // let mut player_2_damage = 0;
-
     let mut player_1_turns: Vec<PlayerTurns> = vec![PlayerTurns::default(); 6];
     let mut player_2_turns: Vec<PlayerTurns> = vec![PlayerTurns::default(); 6];
 
-    // Iterate over each players' cards and determine which cards dealt damage and which cards were cancelled
     player_turn(
         &player_1_cards,
         &player_2_cards,
         &mut player_1_turns,
         &mut player_2_turns,
     );
-    // player_turn(
-    //     &player_2_cards,
-    //     &player_1_cards,
-    //     &mut player_2_turns,
-    //     &mut player_1_turns,
-    // );
 
-    // Iterate over the player turns and apply the effects of the cards and add/deduct stats fr
-
-    // Change variable names later
-    // It works!
-    // Remember to return only the total damage dealt by each player later
-    let test = PlayerDamages {
+    let battle_results = PlayerDamages {
         player_1: player_1_turns,
         player_2: player_2_turns,
     };
 
-    let test2 = JsValue::from_serde(&test).expect("Failed to serialize");
+    let battle_results_js = JsValue::from_serde(&battle_results).expect("Failed to serialize");
 
-    Ok(test2)
+    Ok(battle_results_js)
 }
 
 #[wasm_bindgen]

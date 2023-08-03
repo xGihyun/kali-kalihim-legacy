@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { getSections } from '$lib/utils/functions';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import { getContext } from 'svelte';
-	import type { Writable } from 'svelte/store';
 
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
 	$: section = 'Select a section';
 
 	const sectionPopup: PopupSettings = {

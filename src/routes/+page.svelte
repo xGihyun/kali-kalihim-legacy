@@ -80,6 +80,7 @@
 <!-- TODO: -->
 <!-- Make things look better -->
 <!-- Improve auth state management -->
+<div class="h-full flex flex-col w-full"></div>
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
 		{#if $user.power_cards.length < 3}
