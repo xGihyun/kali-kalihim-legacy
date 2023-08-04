@@ -68,6 +68,7 @@ export type MatchSet = {
 
 export type Section = {
 	name: string;
+	id: string;
 };
 
 // POWER CARD

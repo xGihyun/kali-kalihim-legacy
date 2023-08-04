@@ -2,7 +2,7 @@
 	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
-	import { allUsersInSection, currentUser, latestOpponent } from '$lib/store';
+	import { allUsersInSection, currentUser, latestOpponent, section } from '$lib/store';
 	import { getContext, setContext } from 'svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -52,6 +52,7 @@
 	setContext('user', currentUser);
 	setContext('opponent', latestOpponent);
 	setContext('usersInSection', allUsersInSection);
+	setContext('section', section);
 
 	const user = getContext<Writable<UserData>>('user');
 </script>

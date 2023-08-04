@@ -13,3 +13,4 @@ export const allUsersInSection = writable<UserData[]>([]);
 // export const battleCards = writable<any>([]);
 // export const matchResults = writable<Promise<Match[]>>();
 // export const matchSetId = writable<string>();
+export const section = writable<string>();

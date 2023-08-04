@@ -1,16 +1,20 @@
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import type { PageServerLoad } from './$types';
 import { db } from '$lib/firebase/firebase';
 import type { MatchSet, MatchSets } from '$lib/types';
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
-export const load: PageServerLoad = async ({ params }) => {
-	const { section } = params;
+export const POST: RequestHandler = async ({ request }) => {
+	const { selectedSection: section } = await request.json();
+
+	console.log('Getting match sets');
+
+	if (!section) {
+		throw new Error('No section on POST request.');
+	}
 
 	const matchSets = await getMatchSets(section);
 
-	return {
-		matchSets
-	};
+	return json(matchSets);
 };
 
 async function getMatchSets(section: string) {

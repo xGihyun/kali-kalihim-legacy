@@ -124,6 +124,7 @@ export async function getMatch(matchSetId: string): Promise<Match[]> {
 	}
 }
 
+// Move to server side if possible
 export async function getCardBattle(matchSetId: string): Promise<CardBattle[]> {
 	const matchSetRef = doc(db, `match_sets/${matchSetId}`);
 	const matchSetDoc = await getDoc(matchSetRef);

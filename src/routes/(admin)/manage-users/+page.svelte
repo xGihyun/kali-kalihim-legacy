@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { db } from '$lib/firebase/firebase';
+	import type { Section } from '$lib/types';
 	import { doc, setDoc } from 'firebase/firestore';
 
 	let section: string = '';
@@ -13,8 +14,12 @@
 		const key = section.toLowerCase().trim().replace(' ', '_');
 		const value = section.charAt(0).toUpperCase() + section.slice(1);
 		const sectionRef = doc(db, 'sections', key);
+		const data: Section = {
+			name: value,
+			id: key
+		};
 
-		await setDoc(sectionRef, { name: value });
+		await setDoc(sectionRef, { ...data });
 
 		section = '';
 	}
