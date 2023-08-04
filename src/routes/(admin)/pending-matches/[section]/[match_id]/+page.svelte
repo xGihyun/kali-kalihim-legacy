@@ -1,67 +1,67 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { CircleCheckFilled, ClockPause } from '$lib/assets/icons/index.js';
-	import { db } from '$lib/firebase/firebase';
-	import type { UserData } from '$lib/types';
-	import { Timestamp, addDoc, collection } from 'firebase/firestore';
+	// import { enhance } from '$app/forms';
+	// import { CircleCheckFilled, ClockPause } from '$lib/assets/icons/index.js';
+	// import { db } from '$lib/firebase/firebase';
+	// import type { UserData } from '$lib/types';
+	// import { Timestamp, addDoc, collection } from 'firebase/firestore';
 
 	export let data;
 
 	$: ({ cardBattle, matchSetId, matches } = data);
 
-	let clickedRow: number | null = null;
+	// let clickedRow: number | null = null;
 
-	function toggleRow(idx: number) {
-		clickedRow = clickedRow === idx ? null : idx;
-	}
+	// function toggleRow(idx: number) {
+	// 	clickedRow = clickedRow === idx ? null : idx;
+	// }
 
-	function addToMatchHistory(users: UserData[]) {
-		const currentDate = new Date();
+	// function addToMatchHistory(users: UserData[]) {
+	// 	const currentDate = new Date();
 
-		const matchHistoryData = {
-			players: [...users],
-			timestamp: Timestamp.fromDate(currentDate)
-		};
+	// 	const matchHistoryData = {
+	// 		players: [...users],
+	// 		timestamp: Timestamp.fromDate(currentDate)
+	// 	};
 
-		users.forEach(async (user) => {
-			const matchHistoryCollection = collection(db, `users/${user.auth_data.uid}/match_history`);
+	// 	users.forEach(async (user) => {
+	// 		const matchHistoryCollection = collection(db, `users/${user.auth_data.uid}/match_history`);
 
-			await addDoc(matchHistoryCollection, matchHistoryData);
-		});
-	}
+	// 		await addDoc(matchHistoryCollection, matchHistoryData);
+	// 	});
+	// }
 
-	// Might change this to a form action instead?
-	async function handleSubmit(event: SubmitEvent, users: UserData[], matchSetId: string) {
-		const form = event?.target as HTMLFormElement;
-		const formData = new FormData(form);
+	// // Might change this to a form action instead?
+	// async function handleSubmit(event: SubmitEvent, users: UserData[], matchSetId: string) {
+	// 	const form = event?.target as HTMLFormElement;
+	// 	const formData = new FormData(form);
 
-		formData.append('matchSetId', matchSetId);
-		formData.append('userUid', users[0].auth_data.uid);
+	// 	formData.append('matchSetId', matchSetId);
+	// 	formData.append('userUid', users[0].auth_data.uid);
 
-		const response = await fetch('/api/submit-score', {
-			method: 'POST',
-			body: formData
-		});
+	// 	const response = await fetch('/api/submit-score', {
+	// 		method: 'POST',
+	// 		body: formData
+	// 	});
 
-		if (!response.ok) {
-			throw new Error('Error in submitting score: ' + response.statusText);
-		}
+	// 	if (!response.ok) {
+	// 		throw new Error('Error in submitting score: ' + response.statusText);
+	// 	}
 
-		console.log('Scores submitted successfully!');
-		form.reset();
-		addToMatchHistory(users);
-	}
+	// 	console.log('Scores submitted successfully!');
+	// 	form.reset();
+	// 	addToMatchHistory(users);
+	// }
 
-	type BattleTab = 'arnis' | 'card_battle';
+	// type BattleTab = 'arnis' | 'card_battle';
 
-	let currentTab: BattleTab = 'arnis';
+	// let currentTab: BattleTab = 'arnis';
 </script>
 
 <div>{matchSetId}</div>
-<div class="flex gap-4">
+<!-- <div class="flex gap-4">
 	<button class="btn variant-filled" on:click={() => (currentTab = 'arnis')}>Arnis</button>
 	<button class="btn variant-filled" on:click={() => (currentTab = 'card_battle')}>Cards</button>
-</div>
+</div> -->
 
 <div>hello</div>
 <!-- 
