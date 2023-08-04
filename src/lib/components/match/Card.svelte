@@ -1,18 +1,38 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { CardBattle, MatchSets } from '$lib/types';
+	import { getCardBattle } from '$lib/utils/functions';
+	import { onMount } from 'svelte';
 
-	export let cardBattleResult: Promise<CardBattle[]> | undefined;
 	export let matchSets: MatchSets[];
-	export let matchSetId: string = matchSets[0].id;
+	let matchSetId: string;
+	let cardBattleResult: Promise<CardBattle[]> | undefined;
 
 	function refreshCardBattle(data: Promise<unknown>) {
 		const newData = data as Promise<CardBattle[]>;
 
 		cardBattleResult = newData;
 	}
+
+	onMount(() => {
+		matchSetId = matchSets[0].id;
+		cardBattleResult = getCardBattle(matchSetId);
+	});
 </script>
 
+<div class="hidden lg:block">
+	{#each matchSets as matchSet, idx (idx)}
+		<button
+			class="btn variant-filled"
+			on:click={() => {
+				matchSetId = matchSet.id;
+				cardBattleResult = getCardBattle(matchSetId);
+			}}
+		>
+			Match {matchSet.data.set}
+		</button>
+	{/each}
+</div>
 {#await cardBattleResult}
 	<div>Loading card battle...</div>
 {:then cardBattle}

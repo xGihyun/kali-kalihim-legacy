@@ -4,11 +4,11 @@
 	import type { Match, MatchSets, UserData } from '$lib/types';
 	import { getMatch } from '$lib/utils/functions';
 	import { Timestamp, addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
+	import { onMount } from 'svelte';
 
-	export let section: string;
 	export let matchSets: MatchSets[];
-	export let matchSetId: string = matchSets[0].id;
-	export let matchesResult: Promise<Match[]> | undefined;
+	let matchSetId: string;
+	let matchesResult: Promise<Match[]> | undefined;
 
 	let clickedRow: number | null = null;
 
@@ -51,13 +51,17 @@
 			await addDoc(matchHistoryCollection, matchHistoryData);
 		});
 	}
+
+	onMount(() => {
+		matchSetId = matchSets[0].id;
+		matchesResult = getMatch(matchSetId);
+	});
 </script>
 
-<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
+<!-- <h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
 	{section}
-</h1>
+</h1> -->
 <div class="hidden lg:block">
-	<!-- <TabGroup justify="justify-center"> -->
 	{#each matchSets as matchSet, idx (idx)}
 		<button
 			class="btn variant-filled"
@@ -70,6 +74,7 @@
 		</button>
 	{/each}
 </div>
+<div>ID: {matchSetId}</div>
 {#if matchesResult}
 	{#await matchesResult}
 		<div class="p-4">Loading matches...</div>

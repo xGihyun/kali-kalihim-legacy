@@ -1,7 +1,16 @@
 import { blockCards, footworks, skills, strikeCards } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
-import type { BattleCard, BattleCards, CardBattle, Match, Section, Skill } from '$lib/types';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import type {
+	BattleCard,
+	BattleCards,
+	CardBattle,
+	Match,
+	MatchSet,
+	MatchSets,
+	Section,
+	Skill
+} from '$lib/types';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 
 export function getRandomArnisSkill() {
 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
@@ -102,19 +111,17 @@ export function formatSection(section: string): string {
 }
 
 export async function getMatch(matchSetId: string): Promise<Match[]> {
-	const matchSetRef = doc(db, `match_sets/${matchSetId}`);
-	const matchSetDoc = await getDoc(matchSetRef);
+	try {
+		const matchSetCollection = collection(db, `match_sets/${matchSetId}/matches`);
+		const matchesDocs = await getDocs(matchSetCollection);
 
-	if (!matchSetDoc.exists) {
-		throw new Error("Match set doesn't exist");
+		const matches: Match[] = matchesDocs.docs.map((match) => match.data() as Match);
+
+		return matches;
+	} catch (error) {
+		// Handle any potential errors during data fetching
+		throw new Error('Failed to fetch matches: ' + error);
 	}
-
-	const matchesCollection = collection(db, `match_sets/${matchSetId}/matches`);
-	const matchesDocs = await getDocs(matchesCollection);
-
-	let matches = matchesDocs.docs.map((match) => JSON.parse(JSON.stringify(match.data())) as Match);
-
-	return matches;
 }
 
 export async function getCardBattle(matchSetId: string): Promise<CardBattle[]> {
@@ -133,4 +140,28 @@ export async function getCardBattle(matchSetId: string): Promise<CardBattle[]> {
 	);
 
 	return cardBattle;
+}
+
+export async function getMatchSets(section: string) {
+	const matchesCollection = collection(db, 'match_sets');
+	const matchQuery = query(matchesCollection, where('section', '==', section));
+	const matchSetsDocs = await getDocs(matchQuery);
+
+	// if (matchSetsDocs.empty) {
+	// 	return;
+	// }
+
+	const matchSets: MatchSets[] = matchSetsDocs.docs
+		.map((matchSet) => {
+			const matchSetId = matchSet.id;
+			const matchSetData = matchSet.data() as MatchSet;
+
+			return {
+				id: matchSetId,
+				data: matchSetData
+			};
+		})
+		.sort((a, b) => a.data.set - b.data.set);
+
+	return matchSets;
 }
