@@ -149,3 +149,8 @@ export interface PlayerWithDamage extends UserData {
 export type CardBattle = {
 	players: PlayerWithDamage[];
 };
+
+export type MatchSets = {
+	id: string;
+	data: MatchSet;
+};
