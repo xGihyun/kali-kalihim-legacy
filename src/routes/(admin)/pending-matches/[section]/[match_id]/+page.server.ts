@@ -22,10 +22,6 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 
 	// let matches = matchesDocs.docs.map((match) => JSON.parse(JSON.stringify(match.data())) as Match);
 
-	// if (matchesDocs.empty) {
-	// 	matches = [];
-	// }
-
 	// const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
 	// const cardBattleDocs = await getDocs(cardBattleCollection);
 

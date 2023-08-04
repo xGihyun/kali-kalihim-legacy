@@ -10,23 +10,25 @@
 
 	$: ({ matchSets, section } = data);
 
-	const matchesCollection = collection(db, 'match_sets');
-	const matchQuery = query(matchesCollection, where('section', '==', data.section));
-	const unsubMatchSets = onSnapshot(matchQuery, (snapshot) => {
-		matchSets = snapshot.docs
-			.map((matchSet) => {
-				const matchSetId = matchSet.id;
-				const matchSetData = matchSet.data() as MatchSet;
+	console.log(matchSets);
 
-				return {
-					id: matchSetId,
-					data: matchSetData
-				};
-			})
-			.sort((a, b) => a.data.set - b.data.set);
+	// const matchesCollection = collection(db, 'match_sets');
+	// const matchQuery = query(matchesCollection, where('section', '==', data.section));
+	// const unsubMatchSets = onSnapshot(matchQuery, (snapshot) => {
+	// 	matchSets = snapshot.docs
+	// 		.map((matchSet) => {
+	// 			const matchSetId = matchSet.id;
+	// 			const matchSetData = matchSet.data() as MatchSet;
 
-		console.log('Updated match sets.');
-	});
+	// 			return {
+	// 				id: matchSetId,
+	// 				data: matchSetData
+	// 			};
+	// 		})
+	// 		.sort((a, b) => a.data.set - b.data.set);
+
+	// 	console.log('Updated match sets.');
+	// });
 
 	// $: match = 'Match';
 
@@ -36,7 +38,7 @@
 	// 	placement: 'bottom'
 	// };
 
-	onDestroy(() => unsubMatchSets());
+	// onDestroy(() => unsubMatchSets());
 </script>
 
 <div>{section}</div>
