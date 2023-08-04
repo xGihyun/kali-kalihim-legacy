@@ -10,8 +10,6 @@
 
 	$: ({ matchSets, section } = data);
 
-	console.log(matchSets);
-
 	// const matchesCollection = collection(db, 'match_sets');
 	// const matchQuery = query(matchesCollection, where('section', '==', data.section));
 	// const unsubMatchSets = onSnapshot(matchQuery, (snapshot) => {
@@ -43,19 +41,22 @@
 
 <div>{section}</div>
 <div class="flex h-full w-full flex-col items-center justify-center py-10">
-	{#if matchSets.length > 0}
+	{#if matchSets && matchSets.length > 0}
 		<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
 			{section}
 		</h1>
 		<div class="hidden lg:block">
 			<TabGroup justify="justify-center">
 				{#each matchSets as matchSet, idx (idx)}
-					<TabAnchor
-						href={`/pending-matches/${data.section}/${matchSet.id}`}
-						selected={$page.url.pathname === `/pending-matches/${data.section}/${matchSet.id}`}
-					>
-						Match {matchSet.data.set}
-					</TabAnchor>
+					{#if matchSet.id}
+						<TabAnchor
+							href={`/pending-matches/${data.section}/${matchSet.id}`}
+							selected={$page.url.pathname === `/pending-matches/${data.section}/${matchSet.id}`}
+						>
+							Match {matchSet.data.set}
+							{matchSet.id}
+						</TabAnchor>
+					{/if}
 				{/each}
 			</TabGroup>
 		</div>
