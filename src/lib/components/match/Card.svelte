@@ -16,7 +16,6 @@
 {#await cardBattleResult}
 	<div>Loading card battle...</div>
 {:then cardBattle}
-	<button on:click={() => console.log(cardBattle)}>Click</button>
 	<form
 		method="post"
 		action="?/card_battle"

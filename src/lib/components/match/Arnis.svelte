@@ -2,31 +2,13 @@
 	import { CircleCheckFilled, ClockPause } from '$lib/assets/icons';
 	import { db } from '$lib/firebase/firebase';
 	import type { Match, MatchSets, UserData } from '$lib/types';
+	import { getMatch } from '$lib/utils/functions';
 	import { Timestamp, addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
-	import { onMount } from 'svelte';
 
 	export let section: string;
 	export let matchSets: MatchSets[];
 	export let matchSetId: string = matchSets[0].id;
 	export let matchesResult: Promise<Match[]> | undefined;
-
-	async function getMatch(matchSetId: string): Promise<Match[]> {
-		const matchSetRef = doc(db, `match_sets/${matchSetId}`);
-		const matchSetDoc = await getDoc(matchSetRef);
-
-		if (!matchSetDoc.exists) {
-			throw new Error("Match set doesn't exist");
-		}
-
-		const matchesCollection = collection(db, `match_sets/${matchSetId}/matches`);
-		const matchesDocs = await getDocs(matchesCollection);
-
-		let matches = matchesDocs.docs.map(
-			(match) => JSON.parse(JSON.stringify(match.data())) as Match
-		);
-
-		return matches;
-	}
 
 	let clickedRow: number | null = null;
 
@@ -79,41 +61,41 @@
 	// });
 </script>
 
-<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
-	{section}
-</h1>
-<div class="hidden lg:block">
-	<!-- <TabGroup justify="justify-center"> -->
-	{#each matchSets as matchSet, idx (idx)}
-		<button
-			class="btn variant-filled"
-			on:click={() => {
-				matchSetId = matchSet.id;
-				matchesResult = getMatch(matchSetId);
-			}}
-		>
-			Match {matchSet.data.set}
-		</button>
-	{/each}
-</div>
 {#if matchesResult}
-	<div class="flex h-full w-full flex-col items-center justify-center">
-		<div class="table-container max-w-5xl">
-			<table class="table-hover table-interactive table-compact table">
-				<thead>
-					<tr class="text-sm md:text-base">
-						<th>Player 1</th>
-						<th>VS</th>
-						<th>Player 2</th>
-						<th>Skill</th>
-						<th>Footwork</th>
-						<th>Status</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#await matchesResult}
-						<div class="p-4">Loading matches...</div>
-					{:then matches}
+	{#await matchesResult}
+		<div class="p-4">Loading matches...</div>
+	{:then matches}
+		<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
+			{section}
+		</h1>
+		<div class="hidden lg:block">
+			<!-- <TabGroup justify="justify-center"> -->
+			{#each matchSets as matchSet, idx (idx)}
+				<button
+					class="btn variant-filled"
+					on:click={() => {
+						matchSetId = matchSet.id;
+						matchesResult = getMatch(matchSetId);
+					}}
+				>
+					Match {matchSet.data.set}
+				</button>
+			{/each}
+		</div>
+		<div class="flex h-full w-full flex-col items-center justify-center">
+			<div class="table-container max-w-5xl">
+				<table class="table-hover table-interactive table-compact table">
+					<thead>
+						<tr class="text-sm md:text-base">
+							<th>Player 1</th>
+							<th>VS</th>
+							<th>Player 2</th>
+							<th>Skill</th>
+							<th>Footwork</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
 						{#each matches as match, idx (idx)}
 							{@const players = match.players}
 
@@ -211,9 +193,9 @@
 								</div>
 							{/if}
 						{/each}
-					{/await}
-				</tbody>
-			</table>
+					</tbody>
+				</table>
+			</div>
 		</div>
-	</div>
+	{/await}
 {/if}

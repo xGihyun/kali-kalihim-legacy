@@ -1,7 +1,7 @@
 import { blockCards, footworks, skills, strikeCards } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
-import type { BattleCard, BattleCards, Section, Skill } from '$lib/types';
-import { collection, getDocs } from 'firebase/firestore';
+import type { BattleCard, BattleCards, CardBattle, Match, Section, Skill } from '$lib/types';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 
 export function getRandomArnisSkill() {
 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
@@ -42,7 +42,7 @@ function getRandomBattleCard(skills: string[], skill: Skill) {
 
 	const battlecard: BattleCard = {
 		name: randomSkills,
-		skill,
+		skill
 	};
 
 	return battlecard;
@@ -99,4 +99,38 @@ export function formatSection(section: string): string {
 	const formatted = section.replace('_', ' ').charAt(0).toUpperCase() + section.slice(1);
 
 	return formatted;
+}
+
+export async function getMatch(matchSetId: string): Promise<Match[]> {
+	const matchSetRef = doc(db, `match_sets/${matchSetId}`);
+	const matchSetDoc = await getDoc(matchSetRef);
+
+	if (!matchSetDoc.exists) {
+		throw new Error("Match set doesn't exist");
+	}
+
+	const matchesCollection = collection(db, `match_sets/${matchSetId}/matches`);
+	const matchesDocs = await getDocs(matchesCollection);
+
+	let matches = matchesDocs.docs.map((match) => JSON.parse(JSON.stringify(match.data())) as Match);
+
+	return matches;
+}
+
+export async function getCardBattle(matchSetId: string): Promise<CardBattle[]> {
+	const matchSetRef = doc(db, `match_sets/${matchSetId}`);
+	const matchSetDoc = await getDoc(matchSetRef);
+
+	if (!matchSetDoc.exists) {
+		throw new Error("Match set doesn't exist");
+	}
+
+	const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
+	const cardBattleDocs = await getDocs(cardBattleCollection);
+
+	let cardBattle: CardBattle[] = cardBattleDocs.docs.map(
+		(match) => JSON.parse(JSON.stringify(match.data())) as CardBattle
+	);
+
+	return cardBattle;
 }
