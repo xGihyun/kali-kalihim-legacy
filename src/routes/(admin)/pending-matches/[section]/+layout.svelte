@@ -12,7 +12,7 @@
 
 	const matchesCollection = collection(db, 'match_sets');
 	const matchQuery = query(matchesCollection, where('section', '==', data.section));
-	const unsubMatchSets = onSnapshot(matchQuery, async (snapshot) => {
+	const unsubMatchSets = onSnapshot(matchQuery, (snapshot) => {
 		matchSets = snapshot.docs
 			.map((matchSet) => {
 				const matchSetId = matchSet.id;
@@ -28,13 +28,13 @@
 		console.log('Updated match sets.');
 	});
 
-	$: match = 'Match';
+	// $: match = 'Match';
 
-	const matchPopup: PopupSettings = {
-		event: 'click',
-		target: 'matches',
-		placement: 'bottom'
-	};
+	// const matchPopup: PopupSettings = {
+	// 	event: 'click',
+	// 	target: 'matches',
+	// 	placement: 'bottom'
+	// };
 
 	onDestroy(() => unsubMatchSets());
 </script>
@@ -58,7 +58,7 @@
 			</TabGroup>
 		</div>
 
-		<button class="btn flex variant-filled w-48 justify-between lg:hidden" use:popup={matchPopup}>
+		<!-- <button class="btn flex variant-filled w-48 justify-between lg:hidden" use:popup={matchPopup}>
 			<span class="capitalize">{match}</span>
 			<span>↓</span>
 		</button>
@@ -81,7 +81,7 @@
 				{/each}
 			</ul>
 			<div class="arrow bg-surface-100-800-token" />
-		</div>
+		</div> -->
 
 		<div class="flex h-full w-full flex-col items-center justify-center">
 			<slot />
