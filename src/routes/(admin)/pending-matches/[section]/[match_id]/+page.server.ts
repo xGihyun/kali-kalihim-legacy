@@ -44,8 +44,8 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 
 	return {
 		matchSetId,
-		matches
-		// matchSet,
+		matches,
+		matchSet
 		// cardBattle
 	};
 };

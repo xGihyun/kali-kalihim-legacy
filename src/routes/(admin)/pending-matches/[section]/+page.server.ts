@@ -1,17 +1,21 @@
-import type { LayoutServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '$lib/firebase/firebase';
 import type { MatchSet } from '$lib/types';
 import { error } from '@sveltejs/kit';
 
-export const load: LayoutServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params }) => {
 	const section = params.section;
 	const matchesCollection = collection(db, 'match_sets');
 	const matchQuery = query(matchesCollection, where('section', '==', section));
 	const matchSetsDocs = await getDocs(matchQuery);
 
 	if (matchSetsDocs.empty) {
-		throw error(404, 'No matches available.');
+		console.log('No matches for: ' + section);
+		return {
+			section,
+			matchSets: undefined
+		};
 	}
 
 	const matchSets = matchSetsDocs.docs

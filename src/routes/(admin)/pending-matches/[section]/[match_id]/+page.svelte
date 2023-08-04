@@ -8,7 +8,7 @@
 
 	export let data;
 
-	$: ({ matchSetId, matches } = data);
+	$: ({ matchSetId, matches, matchSet } = data);
 
 	let clickedRow: number | null = null;
 
