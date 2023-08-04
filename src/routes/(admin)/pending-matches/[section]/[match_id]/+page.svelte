@@ -3,18 +3,8 @@
 	import CircleCheckFilled from '$lib/assets/icons/CircleCheckFilled.svelte';
 	import ClockPause from '$lib/assets/icons/ClockPause.svelte';
 	import { db } from '$lib/firebase/firebase';
-	import { card_battle } from '$lib/pkg/my_package';
-	import type { CardBattle, Match, UserData } from '$lib/types';
-	import { battle } from '$lib/utils/battlecards.js';
-	import {
-		Timestamp,
-		addDoc,
-		collection,
-		doc,
-		getDocs,
-		onSnapshot,
-		updateDoc
-	} from 'firebase/firestore';
+	import type { Match, UserData } from '$lib/types';
+	import { Timestamp, addDoc, collection, onSnapshot } from 'firebase/firestore';
 	import { onDestroy } from 'svelte';
 
 	export let data;
@@ -80,71 +70,6 @@
 	type BattleTab = 'arnis' | 'card_battle';
 
 	let currentTab: BattleTab = 'arnis';
-
-	async function updateCardBattleDocument(idx: number) {
-		const match = cardBattle[idx];
-		const player1 = match.players[0];
-		const player2 = match.players[1];
-
-		const result = await battle(player1.auth_data.uid, player2.auth_data.uid);
-
-		console.log('Result in updateCardBattle');
-		console.log(result);
-
-		const player1TotalDamage = result[0].totalDamage;
-		const player2TotalDamage = result[1].totalDamage;
-
-		const cardBattleRef = doc(db, `match_sets/${matchSetId}/card_battle/${idx + 1}`);
-
-		if (player1TotalDamage !== null) {
-			player1.total_damage = player1TotalDamage;
-		} else {
-			player1.total_damage = null;
-		}
-
-		if (player2TotalDamage !== null) {
-			player2.total_damage = player2TotalDamage;
-		} else {
-			player2.total_damage = null;
-		}
-
-		console.log('Updating doc');
-		await updateDoc(cardBattleRef, { players: [player1, player2] });
-	}
-
-	async function runCardBattle() {
-		for (let idx = 0; idx < cardBattle.length; idx++) {
-			await updateCardBattleDocument(idx);
-
-			console.log('Refreshing cardBattle data...');
-
-			const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
-			const snapshot = await getDocs(cardBattleCollection);
-
-			if (snapshot.empty) {
-				throw new Error('Card battle collection is empty.');
-			}
-			cardBattle = snapshot.docs.map((doc) => doc.data() as CardBattle);
-		}
-	}
-
-	// const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
-	// const unsubCardBattle = onSnapshot(cardBattleCollection, async (snapshot) => {
-	// 	console.log('Card battle collection changed.');
-	// 	cardBattle = snapshot.docs.map((battle) => battle.data() as CardBattle);
-	// 	snapshot.docs.forEach((doc, i) => {
-	// 		// console.log(doc.data());
-	// 		// cardBattle[i] = doc.data() as CardBattle;
-	// 		// const cardBattleRef = doc.ref;
-	// 		// onSnapshot(cardBattleRef, (snapshot2) => {
-	// 		// 	const updated = snapshot2.data() as CardBattle;
-	// 		// 	// Do something with the updated data
-	// 		// 	// console.log('DATA HAS CHANGED:', updated);
-	// 		// });
-	// 	});
-	// });
-
-	// onDestroy(() => unsubCardBattle());
 </script>
 
 <div class="flex gap-4">
@@ -302,32 +227,30 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#if cardBattle}
-					{#each cardBattle as battles, idx (idx)}
-						{@const players = battles.players}
-						<tr>
-							{#each players as player, idx (player.auth_data.uid)}
-								{@const name = `${player.personal_data.name.first} ${player.personal_data.name.last}`}
-								{@const totalDamage = player.total_damage}
+				<!-- {#each cardBattle as battles, idx (idx)}
+					{@const players = battles.players}
+					<tr>
+						{#each players as player, idx (player.auth_data.uid)}
+							{@const name = `${player.personal_data.name.first} ${player.personal_data.name.last}`}
+							{@const totalDamage = player.total_damage}
+							<td>
+								<span>{name}</span>
+							</td>
+							{#if idx < 1}
 								<td>
-									<span>{name}</span>
+									<span class="uppercase text-primary-500-400-token">vs</span>
 								</td>
-								{#if idx < 1}
-									<td>
-										<span class="uppercase text-primary-500-400-token">vs</span>
-									</td>
-								{/if}
-								{#if totalDamage !== null}
-									<span class="text-base">
-										{totalDamage.toFixed(2)}
-									</span>
-								{:else}
-									<span class="italic opacity-75 text-base">null</span>
-								{/if}
-							{/each}
-						</tr>
-					{/each}
-				{/if}
+							{/if}
+							{#if totalDamage !== null}
+								<span class="text-base">
+									{totalDamage.toFixed(2)}
+								</span>
+							{:else}
+								<span class="italic opacity-75 text-base">null</span>
+							{/if}
+						{/each}
+					</tr>
+				{/each} -->
 			</tbody>
 		</table>
 	</div>
