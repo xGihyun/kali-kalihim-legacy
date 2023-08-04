@@ -51,37 +51,29 @@
 			await addDoc(matchHistoryCollection, matchHistoryData);
 		});
 	}
-
-	// afterUpdate(() => {
-	// 	if (matchSets) {
-	// 		matchSetId = matchSets[0].id;
-	// 		matchesResult = getMatch(matchSetId);
-	// 		cardBattleResult = getCardBattle(matchSetId);
-	// 	}
-	// });
 </script>
 
+<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
+	{section}
+</h1>
+<div class="hidden lg:block">
+	<!-- <TabGroup justify="justify-center"> -->
+	{#each matchSets as matchSet, idx (idx)}
+		<button
+			class="btn variant-filled"
+			on:click={() => {
+				matchSetId = matchSet.id;
+				matchesResult = getMatch(matchSetId);
+			}}
+		>
+			Match {matchSet.data.set}
+		</button>
+	{/each}
+</div>
 {#if matchesResult}
 	{#await matchesResult}
 		<div class="p-4">Loading matches...</div>
 	{:then matches}
-		<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
-			{section}
-		</h1>
-		<div class="hidden lg:block">
-			<!-- <TabGroup justify="justify-center"> -->
-			{#each matchSets as matchSet, idx (idx)}
-				<button
-					class="btn variant-filled"
-					on:click={() => {
-						matchSetId = matchSet.id;
-						matchesResult = getMatch(matchSetId);
-					}}
-				>
-					Match {matchSet.data.set}
-				</button>
-			{/each}
-		</div>
 		<div class="flex h-full w-full flex-col items-center justify-center">
 			<div class="table-container max-w-5xl">
 				<table class="table-hover table-interactive table-compact table">

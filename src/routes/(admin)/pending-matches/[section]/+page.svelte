@@ -43,23 +43,23 @@
 		}
 	});
 
-	const matchesCollection = collection(db, 'match_sets');
-	const matchQuery = query(matchesCollection, where('section', '==', data.section));
-	const unsubMatchSets = onSnapshot(matchQuery, (snapshot) => {
-		matchSets = snapshot.docs
-			.map((matchSet) => {
-				const matchSetId = matchSet.id;
-				const matchSetData = matchSet.data() as MatchSet;
+	// const matchesCollection = collection(db, 'match_sets');
+	// const matchQuery = query(matchesCollection, where('section', '==', data.section));
+	// const unsubMatchSets = onSnapshot(matchQuery, (snapshot) => {
+	// 	matchSets = snapshot.docs
+	// 		.map((matchSet) => {
+	// 			const matchSetId = matchSet.id;
+	// 			const matchSetData = matchSet.data() as MatchSet;
 
-				return {
-					id: matchSetId,
-					data: matchSetData
-				};
-			})
-			.sort((a, b) => a.data.set - b.data.set);
+	// 			return {
+	// 				id: matchSetId,
+	// 				data: matchSetData
+	// 			};
+	// 		})
+	// 		.sort((a, b) => a.data.set - b.data.set);
 
-		console.log('Updated match sets.');
-	});
+	// 	console.log('Updated match sets.');
+	// });
 
 	// onDestroy(() => unsubMatchSets());
 </script>
