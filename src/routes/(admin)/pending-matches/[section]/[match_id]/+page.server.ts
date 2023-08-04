@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	);
 
 	// console.log(cardBattle);
-	// setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		matchSetId,

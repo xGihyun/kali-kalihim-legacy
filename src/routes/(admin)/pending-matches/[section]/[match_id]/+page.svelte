@@ -227,7 +227,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<!-- {#each cardBattle as battles, idx (idx)}
+				{#each cardBattle as battles, idx (idx)}
 					{@const players = battles.players}
 					<tr>
 						{#each players as player, idx (player.auth_data.uid)}
@@ -250,7 +250,7 @@
 							{/if}
 						{/each}
 					</tr>
-				{/each} -->
+				{/each}
 			</tbody>
 		</table>
 	</div>
