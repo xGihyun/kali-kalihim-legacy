@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const matchSetId = params.match_id;
 
 	if (!matchSetId) {
-		throw error(404, "Match doesn't exist");
+		return;
 	}
 
 	// const matchSetRef = doc(db, `match_sets/${matchSetId}`);

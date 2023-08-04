@@ -57,7 +57,9 @@
 	// let currentTab: BattleTab = 'arnis';
 </script>
 
-<div>{matchSetId}</div>
+{#if matchSetId}
+	<div>{matchSetId}</div>
+{/if}
 <!-- <div class="flex gap-4">
 	<button class="btn variant-filled" on:click={() => (currentTab = 'arnis')}>Arnis</button>
 	<button class="btn variant-filled" on:click={() => (currentTab = 'card_battle')}>Cards</button>

@@ -13,14 +13,16 @@ export async function handle({ event, resolve }) {
 	}
 
 	if (!session) {
-		throw new Error('No user session.');
+		console.log('No user session.');
+		return await resolve(event);
 	}
 
 	const userRef = doc(db, 'users', session);
 	const docSnap = await getDoc(userRef);
 
 	if (!docSnap.exists()) {
-		throw new Error("Document snapshot doesn't exist.");
+		console.log("Document snapshot doesn't exist");
+		return await resolve(event);
 	}
 
 	console.log('User exists.');
