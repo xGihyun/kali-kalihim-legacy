@@ -1,14 +1,9 @@
-import { blockCards, strikeCards } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
 import type { BattleCard, BattleCardResults, BattleCardTurns } from '$lib/types';
-import { error } from '@sveltejs/kit';
 import { collection, getDocs } from 'firebase/firestore';
 import { card_battle } from '$lib/pkg/my_package';
 
 export async function battle(player1: string, player2: string): Promise<BattleCardResults[]> {
-	console.log(player1);
-	console.log(player2);
-
 	const [player1Cards, player2Cards] = await Promise.all([
 		getPlayerCards(player1),
 		getPlayerCards(player2)
@@ -30,13 +25,13 @@ export async function battle(player1: string, player2: string): Promise<BattleCa
 
 		battleResults.player_1.forEach((result) => {
 			if (!result.is_cancelled) {
-				player1TotalDamage! += result.damage; // Add the '!' to assert non-null
+				player1TotalDamage! += result.damage;
 			}
 		});
 
 		battleResults.player_2.forEach((result) => {
 			if (!result.is_cancelled) {
-				player2TotalDamage! += result.damage; // Add the '!' to assert non-null
+				player2TotalDamage! += result.damage;
 			}
 		});
 	}
@@ -57,10 +52,15 @@ export async function battle(player1: string, player2: string): Promise<BattleCa
 
 async function getPlayerCards(uid: string): Promise<BattleCard[]> {
 	const cardCollection = collection(db, `users/${uid}/battle_cards`);
-	const getCards = await getDocs(cardCollection);
-	const battleCards = getCards.docs
-		.filter((card) => card.id.startsWith('card'))
-		.map((card) => card.data() as BattleCard);
 
-	return battleCards;
+	try {
+		const getCards = await getDocs(cardCollection);
+		const battleCards = getCards.docs
+			.filter((card) => card.id.startsWith('card'))
+			.map((card) => card.data() as BattleCard);
+
+		return battleCards;
+	} catch (err) {
+		throw new Error('Error getting player cards: ' + err);
+	}
 }

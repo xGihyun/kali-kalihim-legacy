@@ -7,30 +7,23 @@ import { doc, getDoc } from 'firebase/firestore';
 export async function handle({ event, resolve }) {
 	const session = event.cookies.get('session');
 
-	// Redirects to login page if an unknown user tries to access other pages
 	if (event.url.pathname !== '/' && !session) {
 		console.log('Access Denied');
 		throw redirect(307, '/');
 	}
 
-	// If there is no user, do nothing
 	if (!session) {
-		console.log('No user session');
-		return await resolve(event);
+		throw new Error('No user session.');
 	}
 
-	console.log('User exists.');
-
-	// Fetch data from firestore and set the locals
 	const userRef = doc(db, 'users', session);
 	const docSnap = await getDoc(userRef);
 
 	if (!docSnap.exists()) {
-		console.error("Document snapshot doesn't exist")
-		return await resolve(event);
+		throw new Error("Document snapshot doesn't exist.");
 	}
 
-	console.log("User exists (from hooks.server.ts)")
+	console.log('User exists.');
 
 	// I might not need to set the locals as the whole user data, will probably set to the uid only
 	const data = docSnap.data() as UserData;

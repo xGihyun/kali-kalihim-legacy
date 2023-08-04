@@ -3,18 +3,16 @@
 	import CircleCheckFilled from '$lib/assets/icons/CircleCheckFilled.svelte';
 	import ClockPause from '$lib/assets/icons/ClockPause.svelte';
 	import { db } from '$lib/firebase/firebase';
-	import { card_battle } from '$lib/pkg/my_package_bg.js';
+	import { card_battle } from '$lib/pkg/my_package';
 	import type { CardBattle, Match, UserData } from '$lib/types';
 	import { battle } from '$lib/utils/battlecards.js';
 	import {
 		Timestamp,
 		addDoc,
-		arrayUnion,
 		collection,
 		doc,
 		getDocs,
 		onSnapshot,
-		setDoc,
 		updateDoc
 	} from 'firebase/firestore';
 	import { onDestroy } from 'svelte';
@@ -58,8 +56,7 @@
 		});
 
 		if (!response.ok) {
-			console.error('Error submitting form: ', response.statusText);
-			return;
+			throw new Error('Error in submitting score: ' + response.statusText);
 		}
 
 		console.log('Scores submitted successfully!');
@@ -123,25 +120,31 @@
 
 			const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
 			const snapshot = await getDocs(cardBattleCollection);
+
+			if (snapshot.empty) {
+				throw new Error('Card battle collection is empty.');
+			}
 			cardBattle = snapshot.docs.map((doc) => doc.data() as CardBattle);
 		}
 	}
 
-	if (cardBattle) {
-		const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
-		const unsubCardBattle = onSnapshot(cardBattleCollection, async (snapshot) => {
-			snapshot.docs.forEach((doc) => {
-				const cardBattleRef = doc.ref;
-				onSnapshot(cardBattleRef, (snapshot2) => {
-					const updated = snapshot2.data() as CardBattle;
-					// Do something with the updated data
-					console.log('DATA HAS CHANGED:', updated);
-				});
-			});
-		});
+	// const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
+	// const unsubCardBattle = onSnapshot(cardBattleCollection, async (snapshot) => {
+	// 	console.log('Card battle collection changed.');
+	// 	cardBattle = snapshot.docs.map((battle) => battle.data() as CardBattle);
+	// 	snapshot.docs.forEach((doc, i) => {
+	// 		// console.log(doc.data());
+	// 		// cardBattle[i] = doc.data() as CardBattle;
+	// 		// const cardBattleRef = doc.ref;
+	// 		// onSnapshot(cardBattleRef, (snapshot2) => {
+	// 		// 	const updated = snapshot2.data() as CardBattle;
+	// 		// 	// Do something with the updated data
+	// 		// 	// console.log('DATA HAS CHANGED:', updated);
+	// 		// });
+	// 	});
+	// });
 
-		onDestroy(() => unsubCardBattle());
-	}
+	// onDestroy(() => unsubCardBattle());
 </script>
 
 <div class="flex gap-4">
@@ -262,16 +265,32 @@
 		</table>
 	</div>
 {:else}
-	<!-- <form
+	<form
 		method="post"
 		action="?/card_battle"
 		use:enhance={(e) => {
 			e.formData.append('card_battle', JSON.stringify(cardBattle));
+
+			return async ({ result }) => {
+				if (result.type === 'success') {
+					const { data } = result;
+					console.log(data);
+
+					if (!data) {
+						throw new Error('Data undefined after running card battle.');
+					}
+
+					// Ignore weird TS errors, this will work fine
+					cardBattle = data.cardBattleResults;
+				} else {
+					throw new Error('Failed to run card battle.');
+				}
+			};
 		}}
 	>
 		<button class="btn variant-ghost" type="submit">Run all card battle</button>
-	</form> -->
-	<button class="btn variant-ghost" on:click={runCardBattle}>Run all card battle client</button>
+	</form>
+	<!-- <button class="btn variant-ghost" on:click={runCardBattle}>Run all card battle client</button> -->
 	<div class="table-container max-w-5xl">
 		<table class="table-hover table-interactive table-compact table">
 			<thead>
@@ -283,30 +302,32 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each cardBattle as battles, idx (idx)}
-					{@const players = battles.players}
-					<tr>
-						{#each players as player, idx (player.auth_data.uid)}
-							{@const name = `${player.personal_data.name.first} ${player.personal_data.name.last}`}
-							{@const totalDamage = player.total_damage}
-							<td>
-								<span>{name}</span>
-							</td>
-							{#if idx < 1}
+				{#if cardBattle}
+					{#each cardBattle as battles, idx (idx)}
+						{@const players = battles.players}
+						<tr>
+							{#each players as player, idx (player.auth_data.uid)}
+								{@const name = `${player.personal_data.name.first} ${player.personal_data.name.last}`}
+								{@const totalDamage = player.total_damage}
 								<td>
-									<span class="uppercase text-primary-500-400-token">vs</span>
+									<span>{name}</span>
 								</td>
-							{/if}
-							{#if totalDamage !== null}
-								<span class="text-base">
-									{totalDamage}
-								</span>
-							{:else}
-								<span class="italic opacity-75 text-base">null</span>
-							{/if}
-						{/each}
-					</tr>
-				{/each}
+								{#if idx < 1}
+									<td>
+										<span class="uppercase text-primary-500-400-token">vs</span>
+									</td>
+								{/if}
+								{#if totalDamage !== null}
+									<span class="text-base">
+										{totalDamage.toFixed(2)}
+									</span>
+								{:else}
+									<span class="italic opacity-75 text-base">null</span>
+								{/if}
+							{/each}
+						</tr>
+					{/each}
+				{/if}
 			</tbody>
 		</table>
 	</div>

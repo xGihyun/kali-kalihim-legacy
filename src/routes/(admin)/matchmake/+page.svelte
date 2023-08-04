@@ -15,7 +15,7 @@
 	function matchmake(data: Record<string, unknown> | undefined) {
 		try {
 			if (!data) {
-				throw new Error();
+				throw new Error('No data in matchmake function.');
 			}
 
 			const response = data as Record<string, string>;
@@ -101,8 +101,8 @@
 						loading = false;
 						dataFetched = true;
 					} else {
-						console.error("Something went wrong, check if there's enough number of participants");
 						loading = false;
+						throw new Error("Something went wrong, check if there's enough number of participants");
 					}
 				};
 			}}
