@@ -3,9 +3,9 @@ import { db } from '$lib/firebase/firebase';
 import type { CardBattle, Section } from '$lib/types';
 import { battle } from '$lib/utils/battlecards';
 import type { Actions } from '@sveltejs/kit';
-import type { LayoutServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async () => {
+export const load: PageServerLoad = async () => {
 	const sectionsCollection = collection(db, 'sections');
 	const getSections = await getDocs(sectionsCollection);
 
@@ -16,26 +16,26 @@ export const load: LayoutServerLoad = async () => {
 	};
 };
 
-// export const actions: Actions = {
-// 	card_battle: async ({ request }) => {
-// 		const data = await request.formData();
-// 		const cardBattle = data.get('card_battle')?.toString();
-// 		const matchSetId = data.get('match_set_id')?.toString();
+export const actions: Actions = {
+	card_battle: async ({ request }) => {
+		const data = await request.formData();
+		const cardBattle = data.get('card_battle')?.toString();
+		const matchSetId = data.get('match_set_id')?.toString();
 
-// 		if (!matchSetId) {
-// 			throw new Error('Match set not found.');
-// 		}
+		if (!matchSetId) {
+			throw new Error('Match set not found.');
+		}
 
-// 		if (!cardBattle) {
-// 			throw new Error('Cards are undefined.');
-// 		}
+		if (!cardBattle) {
+			throw new Error('Cards are undefined.');
+		}
 
-// 		const parsedCardBattle = JSON.parse(cardBattle) as CardBattle[];
-// 		const cardBattleResults = await runCardBattle(parsedCardBattle, matchSetId);
+		const parsedCardBattle = JSON.parse(cardBattle) as CardBattle[];
+		const cardBattleResults = await runCardBattle(parsedCardBattle, matchSetId);
 
-// 		return { cardBattleResults };
-// 	}
-// };
+		return { cardBattleResults };
+	}
+};
 
 async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: string, idx: number) {
 	const match = cardBattle[idx];

@@ -1,15 +1,21 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/firebase/firebase';
-import type { MatchSet, MatchSets } from '$lib/types';
+import type { MatchSet, MatchSets, Section } from '$lib/types';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { section } = params;
 
 	const matchSets = await getMatchSets(section);
+	const sectionsCollection = collection(db, 'sections');
+	const getSections = await getDocs(sectionsCollection);
+
+	const sections = getSections.docs.map((section) => section.data() as Section);
 
 	return {
-		matchSets
+		matchSets,
+		section,
+		sections
 	};
 };
 
