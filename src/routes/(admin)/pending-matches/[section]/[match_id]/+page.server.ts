@@ -17,30 +17,31 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	}
 
 	const matchSet = matchSetDoc.data() as MatchSet;
-
 	const matchesCollection = collection(db, `match_sets/${matchSetId}/matches`);
 	const matchesDocs = await getDocs(matchesCollection);
 
-	if (matchesDocs.empty) {
-		throw error(404, 'No matches found');
-	}
+	let matches = matchesDocs.docs.map((match) => JSON.parse(JSON.stringify(match.data())) as Match);
 
-	const matches = matchesDocs.docs.map(
-		(match) => JSON.parse(JSON.stringify(match.data())) as Match
-	);
+	if (matchesDocs.empty) {
+		matches = [];
+	}
 
 	const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
 	const cardBattleDocs = await getDocs(cardBattleCollection);
 
-	if (cardBattleDocs.empty) {
-		throw error(404, 'No card battles found');
-	}
-
-	const cardBattle: CardBattle[] = cardBattleDocs.docs.map(
+	let cardBattle: CardBattle[] = cardBattleDocs.docs.map(
 		(match) => JSON.parse(JSON.stringify(match.data())) as CardBattle
 	);
 
-	// console.log(cardBattle);
+	if (cardBattleDocs.empty) {
+		cardBattle = [];
+	}
+
+	if (!cardBattle || !matches) {
+		cardBattle = [];
+		matches = [];
+	}
+
 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {

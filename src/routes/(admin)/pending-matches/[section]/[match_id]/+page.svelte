@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import CircleCheckFilled from '$lib/assets/icons/CircleCheckFilled.svelte';
-	import ClockPause from '$lib/assets/icons/ClockPause.svelte';
+	import { CircleCheckFilled, ClockPause } from '$lib/assets/icons/index.js';
 	import { db } from '$lib/firebase/firebase';
-	import type { Match, UserData } from '$lib/types';
-	import { Timestamp, addDoc, collection, onSnapshot } from 'firebase/firestore';
-	import { onDestroy } from 'svelte';
+	import type { UserData } from '$lib/types';
+	import { Timestamp, addDoc, collection } from 'firebase/firestore';
 
 	export let data;
 
@@ -54,24 +52,12 @@
 		addToMatchHistory(users);
 	}
 
-	$: {
-		if (matchSetId) {
-			const matchSetCollection = collection(db, `match_sets/${matchSetId}/matches`);
-			const unsubMatches = onSnapshot(matchSetCollection, (snapshot) => {
-				matches = snapshot.docs.map((match) => match.data() as Match);
-			});
-
-			console.log('Match set snapshot ran.');
-
-			onDestroy(() => unsubMatches());
-		}
-	}
-
 	type BattleTab = 'arnis' | 'card_battle';
 
 	let currentTab: BattleTab = 'arnis';
 </script>
 
+<div>{matchSetId}</div>
 <div class="flex gap-4">
 	<button class="btn variant-filled" on:click={() => (currentTab = 'arnis')}>Arnis</button>
 	<button class="btn variant-filled" on:click={() => (currentTab = 'card_battle')}>Cards</button>

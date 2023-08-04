@@ -39,6 +39,7 @@
 	onDestroy(() => unsubMatchSets());
 </script>
 
+<div>{section}</div>
 <div class="flex h-full w-full flex-col items-center justify-center py-10">
 	{#if matchSets.length > 0}
 		<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
