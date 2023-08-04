@@ -7,7 +7,7 @@
 
 	export let data;
 
-	$: ({ matchSetId } = data);
+	// $: ({ matchSetId } = data);
 
 	// let clickedRow: number | null = null;
 
@@ -57,9 +57,7 @@
 	// let currentTab: BattleTab = 'arnis';
 </script>
 
-{#if matchSetId}
-	<div>{matchSetId}</div>
-{/if}
+<div>{data.matchSetId}</div>
 <!-- <div class="flex gap-4">
 	<button class="btn variant-filled" on:click={() => (currentTab = 'arnis')}>Arnis</button>
 	<button class="btn variant-filled" on:click={() => (currentTab = 'card_battle')}>Cards</button>

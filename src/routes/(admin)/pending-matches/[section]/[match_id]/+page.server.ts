@@ -9,9 +9,7 @@ import { battle } from '$lib/utils/battlecards';
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const matchSetId = params.match_id;
 
-	if (!matchSetId) {
-		return;
-	}
+	console.log(matchSetId);
 
 	// const matchSetRef = doc(db, `match_sets/${matchSetId}`);
 	// const matchSetDoc = await getDoc(matchSetRef);
