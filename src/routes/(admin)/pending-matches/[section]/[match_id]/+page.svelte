@@ -7,7 +7,7 @@
 
 	export let data;
 
-	$: ({ cardBattle, matchSetId, matches } = data);
+	$: ({ matchSetId } = data);
 
 	// let clickedRow: number | null = null;
 

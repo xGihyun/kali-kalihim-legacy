@@ -9,46 +9,46 @@ import { battle } from '$lib/utils/battlecards';
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const matchSetId = params.match_id;
 
-	const matchSetRef = doc(db, `match_sets/${matchSetId}`);
-	const matchSetDoc = await getDoc(matchSetRef);
+	// const matchSetRef = doc(db, `match_sets/${matchSetId}`);
+	// const matchSetDoc = await getDoc(matchSetRef);
 
-	if (!matchSetDoc.exists) {
-		throw new Error("Match set doesn't exist");
-	}
+	// if (!matchSetDoc.exists) {
+	// 	throw new Error("Match set doesn't exist");
+	// }
 
-	const matchSet = matchSetDoc.data() as MatchSet;
-	const matchesCollection = collection(db, `match_sets/${matchSetId}/matches`);
-	const matchesDocs = await getDocs(matchesCollection);
+	// const matchSet = matchSetDoc.data() as MatchSet;
+	// const matchesCollection = collection(db, `match_sets/${matchSetId}/matches`);
+	// const matchesDocs = await getDocs(matchesCollection);
 
-	let matches = matchesDocs.docs.map((match) => JSON.parse(JSON.stringify(match.data())) as Match);
+	// let matches = matchesDocs.docs.map((match) => JSON.parse(JSON.stringify(match.data())) as Match);
 
-	if (matchesDocs.empty) {
-		matches = [];
-	}
+	// if (matchesDocs.empty) {
+	// 	matches = [];
+	// }
 
-	const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
-	const cardBattleDocs = await getDocs(cardBattleCollection);
+	// const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
+	// const cardBattleDocs = await getDocs(cardBattleCollection);
 
-	let cardBattle: CardBattle[] = cardBattleDocs.docs.map(
-		(match) => JSON.parse(JSON.stringify(match.data())) as CardBattle
-	);
+	// let cardBattle: CardBattle[] = cardBattleDocs.docs.map(
+	// 	(match) => JSON.parse(JSON.stringify(match.data())) as CardBattle
+	// );
 
-	if (cardBattleDocs.empty) {
-		cardBattle = [];
-	}
+	// if (cardBattleDocs.empty) {
+	// 	cardBattle = [];
+	// }
 
-	if (!cardBattle || !matches) {
-		cardBattle = [];
-		matches = [];
-	}
+	// if (!cardBattle || !matches) {
+	// 	cardBattle = [];
+	// 	matches = [];
+	// }
 
-	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+	// setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
-		matchSetId,
-		matches,
-		matchSet,
-		cardBattle
+		matchSetId
+		// matches,
+		// matchSet,
+		// cardBattle
 	};
 };
 
