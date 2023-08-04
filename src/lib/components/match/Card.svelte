@@ -3,6 +3,7 @@
 	import type { CardBattle, MatchSets } from '$lib/types';
 	import { getCardBattle } from '$lib/utils/functions';
 	import { onMount } from 'svelte';
+	import { Table } from '../placeholders';
 
 	export let matchSets: MatchSets[];
 	let matchSetId: string;
@@ -34,7 +35,7 @@
 	{/each}
 </div>
 {#await cardBattleResult}
-	<div>Loading card battle...</div>
+	<Table />
 {:then cardBattle}
 	<form
 		method="post"

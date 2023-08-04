@@ -5,6 +5,7 @@
 	import { getMatch } from '$lib/utils/functions';
 	import { Timestamp, addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
 	import { onMount } from 'svelte';
+	import { Table } from '../placeholders';
 
 	export let matchSets: MatchSets[];
 	let matchSetId: string;
@@ -58,9 +59,6 @@
 	});
 </script>
 
-<!-- <h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
-	{section}
-</h1> -->
 <div class="hidden lg:block">
 	{#each matchSets as matchSet, idx (idx)}
 		<button
@@ -74,12 +72,11 @@
 		</button>
 	{/each}
 </div>
-<div>ID: {matchSetId}</div>
 {#if matchesResult}
-	{#await matchesResult}
-		<div class="p-4">Loading matches...</div>
-	{:then matches}
-		<div class="flex h-full w-full flex-col items-center justify-center">
+	<div class="flex h-full w-full flex-col items-center justify-center">
+		{#await matchesResult}
+			<Table />
+		{:then matches}
 			<div class="table-container max-w-5xl">
 				<table class="table-hover table-interactive table-compact table">
 					<thead>
@@ -193,6 +190,6 @@
 					</tbody>
 				</table>
 			</div>
-		</div>
-	{/await}
+		{/await}
+	</div>
 {/if}

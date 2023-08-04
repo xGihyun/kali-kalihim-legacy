@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { getMatchSets, getSections } from '$lib/utils/functions';
-	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
-	import { CircleCheckFilled, ClockPause } from '$lib/assets/icons/index.js';
 	import { Arnis, Card } from '$lib/components/match';
-	import { db } from '$lib/firebase/firebase';
-	import type { CardBattle, Match, MatchSet, MatchSets, UserData } from '$lib/types';
-	import { getCardBattle, getMatch } from '$lib/utils/functions.js';
-	import { TabGroup, TabAnchor, type PopupSettings, popup } from '@skeletonlabs/skeleton';
-	import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
-	import { afterUpdate, onDestroy, onMount } from 'svelte';
+	import type { MatchSets } from '$lib/types';
+	import { type PopupSettings, popup } from '@skeletonlabs/skeleton';
+	import { afterUpdate, onMount } from 'svelte';
 
+	type BattleTab = 'arnis' | 'card_battle';
+
+	let currentTab: BattleTab = 'arnis';
+	let matchSetsResult: Promise<MatchSets[]>;
 	let section = 'agatha';
 
 	const sectionPopup: PopupSettings = {
@@ -19,29 +17,12 @@
 		placement: 'bottom'
 	};
 
-	type BattleTab = 'arnis' | 'card_battle';
-
-	let currentTab: BattleTab = 'arnis';
-	// let clickedRow: number | null = null;
-
-	// function toggleRow(idx: number) {
-	// 	clickedRow = clickedRow === idx ? null : idx;
-	// }
-
-	let matchesResult: Promise<Match[]> | undefined;
-	let matchSetId: string;
-	let cardBattleResult: Promise<CardBattle[]> | undefined;
-	let matchSetsResult: Promise<MatchSets[]>;
-
 	onMount(() => {
 		matchSetsResult = getMatchSets(section);
-		console.log(matchSetsResult);
-		// cardBattleResult = getCardBattle(matchSetId);
 	});
 
 	afterUpdate(() => {
 		matchSetsResult = getMatchSets(section);
-		// cardBattleResult = getCardBattle(matchSetId);
 	});
 </script>
 
@@ -73,8 +54,9 @@
 	<div class="flex h-full w-full flex-col items-center justify-center">
 		<div class="flex gap-4">
 			<button class="btn variant-filled" on:click={() => (currentTab = 'arnis')}>Arnis</button>
-			<button class="btn variant-filled" on:click={() => (currentTab = 'card_battle')}>Cards</button
-			>
+			<button class="btn variant-filled" on:click={() => (currentTab = 'card_battle')}>
+				Cards
+			</button>
 		</div>
 
 		<div>{section}</div>
