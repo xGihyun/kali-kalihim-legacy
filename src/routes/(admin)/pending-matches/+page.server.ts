@@ -1,20 +1,8 @@
-import { collection, doc, getDocs, limit, query, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '$lib/firebase/firebase';
-import type { CardBattle, Section } from '$lib/types';
+import type { CardBattle } from '$lib/types';
 import { battle } from '$lib/utils/battlecards';
 import type { Actions } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-
-export const load: PageServerLoad = async () => {
-	const sectionsCollection = collection(db, 'sections');
-	const getSections = await getDocs(sectionsCollection);
-
-	const sections = getSections.docs.map((section) => section.data() as Section);
-
-	return {
-		sections
-	};
-};
 
 export const actions: Actions = {
 	card_battle: async ({ request }) => {
