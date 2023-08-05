@@ -1,22 +1,20 @@
 <script lang="ts">
 	import { db } from '$lib/firebase/firebase.js';
 	import type { UserData } from '$lib/types.js';
+	import { formatSection } from '$lib/utils/functions.js';
 	import { collection, onSnapshot, query, where } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	export let data;
 
-	$: users = data.users;
-	$: currentUser = getContext<Writable<UserData>>('user');
-	$: sectionsMap = getContext<Writable<Map<string, string>>>('sections');
+	$: ({ users, section } = data);
+	const currentUser = getContext<Writable<UserData>>('user');
 
 	const usersCollection = collection(db, 'users');
-	const q = query(usersCollection, where('personal_data.section', '==', data.section));
+	const q = query(usersCollection, where('personal_data.section', '==', section));
 	const unsubRank = onSnapshot(q, async (snapshot) => {
 		users = snapshot.docs.map((user) => user.data() as UserData).sort((a, b) => b.score - a.score);
-
-		// console.log('Section leaderboards snapshot ran. (client)');
 	});
 
 	onDestroy(() => unsubRank());
@@ -53,7 +51,7 @@
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							St. {$sectionsMap.get(user.personal_data.section)}
+							St. {formatSection(user.personal_data.section)}
 						</p>
 					</td>
 					<td class="w-1/4">
