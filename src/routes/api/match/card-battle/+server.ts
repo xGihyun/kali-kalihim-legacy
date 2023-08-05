@@ -1,9 +1,10 @@
+import { CACHE_DURATION } from '$lib/constants';
 import { db } from '$lib/firebase/firebase';
 import type { CardBattle, Match } from '$lib/types';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, setHeaders }) => {
 	const { matchSetId } = await request.json();
 
 	if (!matchSetId) {
@@ -12,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const cardBattleMatch = await getMatch(matchSetId);
 
-	console.log(cardBattleMatch);
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return json(cardBattleMatch);
 };

@@ -1,9 +1,10 @@
+import { CACHE_DURATION } from '$lib/constants';
 import { db } from '$lib/firebase/firebase';
 import type { Match } from '$lib/types';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { collection, getDocs } from 'firebase/firestore';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, setHeaders }) => {
 	const { matchSetId } = await request.json();
 
 	if (!matchSetId) {
@@ -12,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const arnisMatch = await getMatch(matchSetId);
 
-	console.log(arnisMatch);
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return json(arnisMatch);
 };

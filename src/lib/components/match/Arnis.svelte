@@ -84,7 +84,7 @@
 <div class="hidden lg:block">
 	{#each matchSets as matchSet, idx (idx)}
 		<button
-			class="btn variant-filled"
+			class={`btn ${matchSetId === matchSet.id ? 'variant-filled' : 'variant-outline'}`}
 			on:click={() => {
 				matchSetId = matchSet.id;
 
@@ -95,7 +95,7 @@
 		</button>
 	{/each}
 </div>
-<div class="flex h-full w-full flex-col items-center justify-center">
+<div class="flex h-full w-full flex-col items-center">
 	{#if state === 'done'}
 		<div class="table-container max-w-5xl">
 			<table class="table-hover table-interactive table-compact table">

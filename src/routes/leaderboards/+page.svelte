@@ -3,8 +3,7 @@
 	import type { UserData } from '$lib/types';
 	import { formatSection } from '$lib/utils/functions.js';
 	import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-	import { getContext, onDestroy } from 'svelte';
-	import type { Writable } from 'svelte/store';
+	import { onDestroy } from 'svelte';
 
 	export let data;
 
@@ -16,8 +15,6 @@
 		const q = query(usersCollection, orderBy('score', 'desc'));
 		const unsubRank = onSnapshot(q, async (snapshot) => {
 			users = snapshot.docs.map((user) => user.data() as UserData);
-
-			// console.log('Global leaderboards snapshot ran. (client)');
 		});
 
 		onDestroy(() => unsubRank());

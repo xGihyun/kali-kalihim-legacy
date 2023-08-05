@@ -110,39 +110,6 @@ export function formatSection(section: string): string {
 	return formatted;
 }
 
-export async function getMatch(matchSetId: string): Promise<Match[]> {
-	try {
-		const matchSetCollection = collection(db, `match_sets/${matchSetId}/matches`);
-		const matchesDocs = await getDocs(matchSetCollection);
-
-		const matches: Match[] = matchesDocs.docs.map((match) => match.data() as Match);
-
-		return matches;
-	} catch (error) {
-		// Handle any potential errors during data fetching
-		throw new Error('Failed to fetch matches: ' + error);
-	}
-}
-
-// Move to server side if possible
-export async function getCardBattle(matchSetId: string): Promise<CardBattle[]> {
-	const matchSetRef = doc(db, `match_sets/${matchSetId}`);
-	const matchSetDoc = await getDoc(matchSetRef);
-
-	if (!matchSetDoc.exists) {
-		throw new Error("Match set doesn't exist");
-	}
-
-	const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
-	const cardBattleDocs = await getDocs(cardBattleCollection);
-
-	let cardBattle: CardBattle[] = cardBattleDocs.docs.map(
-		(match) => JSON.parse(JSON.stringify(match.data())) as CardBattle
-	);
-
-	return cardBattle;
-}
-
 export async function getMatchSets(section: string) {
 	const matchesCollection = collection(db, 'match_sets');
 	const matchQuery = query(matchesCollection, where('section', '==', section));

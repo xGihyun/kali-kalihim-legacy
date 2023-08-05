@@ -53,13 +53,18 @@
 	</div>
 	<div class="flex h-full w-full flex-col items-center justify-center">
 		<div class="flex gap-4">
-			<button class="btn variant-filled" on:click={() => (currentTab = 'arnis')}>Arnis</button>
-			<button class="btn variant-filled" on:click={() => (currentTab = 'card_battle')}>
+			<button
+				class={`btn ${currentTab === 'arnis' ? 'variant-filled' : 'variant-outline'}`}
+				on:click={() => (currentTab = 'arnis')}>Arnis</button
+			>
+			<button
+				class={`btn ${currentTab === 'card_battle' ? 'variant-filled' : 'variant-outline'}`}
+				on:click={() => (currentTab = 'card_battle')}
+			>
 				Cards
 			</button>
 		</div>
 
-		<div>{section}</div>
 		<div class="flex h-full w-full flex-col items-center justify-center py-10">
 			{#await matchSetsResult}
 				<div>Loading match sets...</div>
