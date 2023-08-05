@@ -11,13 +11,18 @@
 	$: ({ users, section } = data);
 	const currentUser = getContext<Writable<UserData>>('user');
 
-	const usersCollection = collection(db, 'users');
-	const q = query(usersCollection, where('personal_data.section', '==', section));
-	const unsubRank = onSnapshot(q, async (snapshot) => {
-		users = snapshot.docs.map((user) => user.data() as UserData).sort((a, b) => b.score - a.score);
-	});
+	$: {
+		const usersCollection = collection(db, 'users');
+		const q = query(usersCollection, where('personal_data.section', '==', section));
+		const unsubRank = onSnapshot(q, async (snapshot) => {
+			users = snapshot.docs
+				.map((user) => user.data() as UserData)
+				.sort((a, b) => b.score - a.score);
+		});
+		console.log('asd');
 
-	onDestroy(() => unsubRank());
+		onDestroy(() => unsubRank());
+	}
 </script>
 
 <div class="table-container max-w-5xl">
