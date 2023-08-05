@@ -99,6 +99,26 @@ export type Video = {
 
 // BATTLE CARDS
 
+export type Effect = {
+	type: 'increase' | 'decrease';
+	amount: number;
+	stat: 'accuracy' | 'damage';
+};
+
+export type Block = {
+	name: string;
+	reduction: number;
+	strike_to_cancel: string;
+	effect: Effect;
+};
+
+export type Strike = {
+	name: string;
+	damage: number;
+	accuracy: number;
+	effect: Effect;
+};
+
 export type Skill = 'strike' | 'block';
 
 export type BattleCard = {
@@ -116,17 +136,17 @@ export type Damage = {
 	player2: number;
 };
 
-export type BattleCardInteraction = Map<
-	Skill,
-	{
-		[key in Skill]: (
-			card1: BattleCard,
-			card2: BattleCard,
-			prevCard1?: BattleCard,
-			prevCard2?: BattleCard
-		) => Damage;
-	}
->;
+// export type BattleCardInteraction = Map<
+// 	Skill,
+// 	{
+// 		[key in Skill]: (
+// 			card1: BattleCard,
+// 			card2: BattleCard,
+// 			prevCard1?: BattleCard,
+// 			prevCard2?: BattleCard
+// 		) => Damage;
+// 	}
+// >;
 
 export type BattleCardTurn = {
 	damage: number;

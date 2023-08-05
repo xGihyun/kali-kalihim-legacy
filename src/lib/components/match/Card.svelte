@@ -43,7 +43,7 @@
 	});
 </script>
 
-<div class="hidden lg:block">
+<div class="hidden lg:block space-x-2">
 	{#each matchSets as matchSet, idx (idx)}
 		<button
 			class={`btn ${matchSetId === matchSet.id ? 'variant-filled' : 'variant-outline'}`}
@@ -85,7 +85,7 @@
 				};
 			}}
 		>
-			<button class="btn variant-ghost" type="submit">Run all card battle</button>
+			<button class="btn variant-filled-primary" type="submit">Run card battle</button>
 		</form>
 		<div class="table-container max-w-5xl">
 			<table class="table-hover table-interactive table-compact table">

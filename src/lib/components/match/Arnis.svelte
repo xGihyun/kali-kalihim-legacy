@@ -81,13 +81,12 @@
 	});
 </script>
 
-<div class="hidden lg:block">
+<div class="hidden lg:block space-x-2">
 	{#each matchSets as matchSet, idx (idx)}
 		<button
 			class={`btn ${matchSetId === matchSet.id ? 'variant-filled' : 'variant-outline'}`}
 			on:click={() => {
 				matchSetId = matchSet.id;
-
 				getArnisMatch();
 			}}
 		>

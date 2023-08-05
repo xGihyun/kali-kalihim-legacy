@@ -7,13 +7,24 @@
 
 	type BattleTab = 'arnis' | 'card_battle';
 
-	let currentTab: BattleTab = 'arnis';
 	let matchSetsResult: Promise<MatchSets[]>;
+	let matchCategory: BattleTab = 'arnis';
 	let section = 'agatha';
+	let matchCategories: BattleTab[] = ['arnis', 'card_battle'];
 
 	const sectionPopup: PopupSettings = {
 		event: 'click',
 		target: 'sections',
+		placement: 'bottom'
+	};
+	const matchSetPopup: PopupSettings = {
+		event: 'click',
+		target: 'match_set',
+		placement: 'bottom'
+	};
+	const matchCategoryPopup: PopupSettings = {
+		event: 'click',
+		target: 'match_category',
 		placement: 'bottom'
 	};
 
@@ -27,53 +38,71 @@
 </script>
 
 <div class="flex h-full w-full flex-col items-center justify-center py-10">
-	<button class="btn variant-filled w-48 justify-between" use:popup={sectionPopup}>
-		<span class="capitalize">{section}</span>
-		<span>↓</span>
-	</button>
+	<div class="flex gap-4 w-full max-w-5xl relative">
+		<button class="btn variant-filled w-full justify-between" use:popup={sectionPopup}>
+			<span class="capitalize">{section}</span>
+			<span>↓</span>
+		</button>
 
-	<div class="card w-48 py-2 shadow-xl" data-popup="sections">
+		<div class="card w-3/4 max-w-5xl py-2 shadow-xl" data-popup="sections">
+			<ul>
+				{#await getSections()}
+					<span>Loading sections...</span>
+				{:then sections}
+					{#each sections as [key, value], idx (idx)}
+						<li class="flex">
+							<button
+								class={`flex-1 px-4 py-2 ${
+									section === key ? 'variant-filled' : 'bg-surface-100-800-token hover:variant-soft'
+								}`}
+								on:click={() => (section = key)}>{value}</button
+							>
+						</li>
+					{/each}
+				{/await}
+			</ul>
+			<div class="arrow bg-surface-100-800-token" />
+		</div>
+
+		<button class="btn variant-filled w-1/4 justify-between" use:popup={matchCategoryPopup}>
+			<span class="capitalize">{matchCategory}</span>
+			<span>↓</span>
+		</button>
+
+		<!-- <button class="btn variant-filled w-1/4 justify-between" use:popup={matchSetPopup}>
+			<span class="capitalize">{matchset}</span>
+			<span>↓</span>
+		</button> -->
+	</div>
+
+	<div class="card w-48 py-2 shadow-xl" data-popup="match_category">
 		<ul>
-			{#await getSections()}
-				<span>Loading sections...</span>
-			{:then sections}
-				{#each sections as [key, value], idx (idx)}
-					<li class="flex">
-						<button
-							class={`flex-1 px-4 py-2 ${
-								section === key ? 'variant-filled' : 'bg-surface-100-800-token hover:variant-soft'
-							}`}
-							on:click={() => (section = key)}>{value}</button
-						>
-					</li>
-				{/each}
-			{/await}
+			{#each matchCategories as category (category)}
+				<li class="flex">
+					<button
+						class={`flex-1 px-4 py-2 ${
+							matchCategory === category
+								? 'variant-filled'
+								: 'bg-surface-100-800-token hover:variant-soft'
+						}`}
+						on:click={() => (matchCategory = category)}>{category}</button
+					>
+				</li>
+			{/each}
 		</ul>
 		<div class="arrow bg-surface-100-800-token" />
 	</div>
-	<div class="flex h-full w-full flex-col items-center justify-center">
-		<div class="flex gap-4">
-			<button
-				class={`btn ${currentTab === 'arnis' ? 'variant-filled' : 'variant-outline'}`}
-				on:click={() => (currentTab = 'arnis')}>Arnis</button
-			>
-			<button
-				class={`btn ${currentTab === 'card_battle' ? 'variant-filled' : 'variant-outline'}`}
-				on:click={() => (currentTab = 'card_battle')}
-			>
-				Cards
-			</button>
-		</div>
 
-		<div class="flex h-full w-full flex-col items-center justify-center py-10">
+	<div class="flex h-full w-full flex-col items-center justify-center">
+		<div class="flex h-full w-full flex-col items-center justify-center py-10 gap-5">
 			{#await matchSetsResult}
 				<div>Loading match sets...</div>
 			{:then matchSets}
 				{#if matchSets && matchSets.length > 0}
-					<h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
+					<!-- <h1 class="mb-5 text-center font-gt-walsheim-pro-medium text-2xl uppercase">
 						{section}
-					</h1>
-					{#if currentTab === 'arnis'}
+					</h1> -->
+					{#if matchCategory === 'arnis'}
 						<Arnis {matchSets} />
 					{:else}
 						<Card {matchSets} />
