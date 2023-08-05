@@ -1,23 +1,45 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { CardBattle, MatchSets } from '$lib/types';
-	import { getCardBattle } from '$lib/utils/functions';
 	import { onMount } from 'svelte';
 	import { Table } from '../placeholders';
 
 	export let matchSets: MatchSets[];
 	let matchSetId: string;
-	let cardBattleResult: Promise<CardBattle[]> | undefined;
+	let cardBattle: CardBattle[] = [];
+	type LoadState = 'loading' | 'done';
 
-	function refreshCardBattle(data: Promise<unknown>) {
-		const newData = data as Promise<CardBattle[]>;
+	let clickedRow: number | null = null;
+	let state: LoadState = 'loading';
 
-		cardBattleResult = newData;
+	function refreshCardBattle(data: unknown) {
+		const newData = data as CardBattle[];
+
+		cardBattle = newData;
+	}
+
+	async function getCardBattleMatch() {
+		state = 'loading';
+
+		const response = await fetch('/api/match/card-battle', {
+			method: 'POST',
+			body: JSON.stringify({ matchSetId })
+		});
+
+		if (!response.ok) {
+			throw new Error('Error in fetching arnis matches: ' + response.statusText);
+		}
+
+		const data = await response.json();
+
+		cardBattle = data as CardBattle[];
+
+		state = 'done';
 	}
 
 	onMount(() => {
 		matchSetId = matchSets[0].id;
-		cardBattleResult = getCardBattle(matchSetId);
+		getCardBattleMatch();
 	});
 </script>
 
@@ -27,16 +49,17 @@
 			class="btn variant-filled"
 			on:click={() => {
 				matchSetId = matchSet.id;
-				cardBattleResult = getCardBattle(matchSetId);
+				getCardBattleMatch();
 			}}
 		>
 			Match {matchSet.data.set}
 		</button>
 	{/each}
 </div>
-{#await cardBattleResult}
-	<Table />
-{:then cardBattle}
+<!-- {#await cardBattleResult}
+	<Table /> -->
+<!-- {:then cardBattle} -->
+{#if state === 'done'}
 	<form
 		method="post"
 		action="?/card_battle"
@@ -54,7 +77,7 @@
 						throw new Error('Data undefined after running card battle.');
 					}
 
-					const updated = Promise.resolve(data.cardBattleResults);
+					const updated = data.cardBattleResults;
 
 					refreshCardBattle(updated);
 				} else {
@@ -105,4 +128,7 @@
 			</tbody>
 		</table>
 	</div>
-{/await}
+{:else}
+	<Table />
+{/if}
+<!-- {/await} -->
