@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { getMatchSets, getSections } from '$lib/utils/functions';
 	import { Arnis, Card } from '$lib/components/match';
-	import type { MatchSets } from '$lib/types';
+	import type { MatchSets, Section } from '$lib/types';
 	import { type PopupSettings, popup } from '@skeletonlabs/skeleton';
 	import { afterUpdate, onMount } from 'svelte';
 
-	export let data;
+	// export let data;
 
-	$: ({ sections } = data);
+	// $: ({ sections } = data);
+	let sections: Section[] = [];
 
 	type BattleTab = 'arnis' | 'card_battle';
 
@@ -32,10 +33,19 @@
 		placement: 'bottom'
 	};
 
+	async function test() {
+		const response = await fetch('/api/section', { method: 'GET' });
+		const result = await response.json();
+
+		console.log(result);
+
+		sections = result as Section[];
+	}
+
 	onMount(() => {
 		matchSetsResult = getMatchSets(selectedSection);
 
-		sections = sections;
+		test();
 	});
 
 	afterUpdate(() => {
@@ -50,10 +60,10 @@
 			<span>↓</span>
 		</button>
 
-		{#if sections && sections.length > 0}
-			<div class="card w-3/4 max-w-5xl py-2 shadow-xl" data-popup="sections">
-				<ul>
-					<!-- {#await getSections()}
+		<!-- {#if sections && sections.length > 0} -->
+		<div class="card w-3/4 max-w-5xl py-2 shadow-xl" data-popup="sections">
+			<ul>
+				<!-- {#await getSections()}
 					<span>Loading sections...</span>
 				{:then sections}
 					{#each sections as [key, value], idx (idx)}
@@ -67,22 +77,22 @@
 						</li>
 					{/each}
 				{/await} -->
-					{#each sections as section, idx (idx)}
-						<li class="flex">
-							<button
-								class={`flex-1 px-4 py-2 ${
-									selectedSection === section.id
-										? 'variant-filled'
-										: 'bg-surface-100-800-token hover:variant-soft'
-								}`}
-								on:click={() => (selectedSection = section.id)}>{section.name}</button
-							>
-						</li>
-					{/each}
-				</ul>
-				<div class="arrow bg-surface-100-800-token" />
-			</div>
-		{/if}
+				{#each sections as section, idx (idx)}
+					<li class="flex">
+						<button
+							class={`flex-1 px-4 py-2 ${
+								selectedSection === section.id
+									? 'variant-filled'
+									: 'bg-surface-100-800-token hover:variant-soft'
+							}`}
+							on:click={() => (selectedSection = section.id)}>{section.name}</button
+						>
+					</li>
+				{/each}
+			</ul>
+			<div class="arrow bg-surface-100-800-token" />
+		</div>
+		<!-- {/if} -->
 		<button class="btn variant-filled w-1/4 justify-between" use:popup={matchCategoryPopup}>
 			<span class="capitalize">{matchCategory}</span>
 			<span>↓</span>
