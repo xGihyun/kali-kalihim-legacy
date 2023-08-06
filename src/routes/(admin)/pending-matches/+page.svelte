@@ -34,6 +34,8 @@
 
 	onMount(() => {
 		matchSetsResult = getMatchSets(selectedSection);
+
+		sections = sections;
 	});
 
 	afterUpdate(() => {
@@ -85,6 +87,11 @@
 			<span class="capitalize">{matchCategory}</span>
 			<span>↓</span>
 		</button>
+
+		<!-- <button class="btn variant-filled w-1/4 justify-between" use:popup={matchSetPopup}>
+			<span class="capitalize">{matchset}</span>
+			<span>↓</span>
+		</button> -->
 	</div>
 
 	<div class="card w-48 py-2 shadow-xl" data-popup="match_category">

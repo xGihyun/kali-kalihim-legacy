@@ -14,6 +14,7 @@ import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { CACHE_DURATION } from '$lib/constants';
 
+// Load function very inconsistent on Vercel???
 export const load: PageServerLoad = async ({ setHeaders }) => {
 	const sectionsCollection = collection(db, 'sections');
 	const getSections = await getDocs(sectionsCollection);
