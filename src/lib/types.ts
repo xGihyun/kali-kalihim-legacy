@@ -182,3 +182,5 @@ export type MatchSets = {
 	id: string;
 	data: MatchSet;
 };
+
+export type LoadState = 'initial' | 'loading' | 'done';

@@ -3,12 +3,13 @@ import {
 	collection,
 	doc,
 	getCountFromServer,
+	getDoc,
 	getDocs,
 	setDoc,
 	updateDoc
 } from 'firebase/firestore';
 import { db } from '$lib/firebase/firebase';
-import type { CardBattle, PlayerWithDamage, Section } from '$lib/types';
+import type { CardBattle, PlayerWithDamage, Section, UserData } from '$lib/types';
 import { battle } from '$lib/utils/battlecards';
 import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
@@ -78,7 +79,7 @@ async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: st
 	const player1 = match.players[0];
 	const player2 = match.players[1];
 
-	const result = await battle(player1.auth_data.uid, player2.auth_data.uid);
+	const result = await battle(player1, player2);
 
 	console.log('Result in updateCardBattle');
 	console.log(result);
@@ -100,10 +101,38 @@ async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: st
 		player2.total_damage = null;
 	}
 
+	if (player1TotalDamage && player2TotalDamage) {
+		if (player1TotalDamage > player2TotalDamage) {
+			console.log('Player 1 scored higher, adding 10 points.');
+			await addPointsToWinner(player1);
+		} else if (player2TotalDamage > player1TotalDamage) {
+			console.log('Player 2 scored higher, adding 10 points.');
+			await addPointsToWinner(player2);
+		}
+	} else if (player1TotalDamage && !player2TotalDamage) {
+		console.log('Player 2 has no cards, player 1 wins by default.');
+		await addPointsToWinner(player1);
+	} else if (player2TotalDamage && !player1TotalDamage) {
+		console.log('Player 1 has no cards, player 2 wins by default.');
+		await addPointsToWinner(player2);
+	}
+
 	console.log('Updating doc');
 	await updateDoc(cardBattleRef, { players: [player1, player2] });
 
 	addToMatchHistory(match.players);
+}
+
+async function addPointsToWinner(user: PlayerWithDamage) {
+	const userRef = doc(db, 'users', user.auth_data.uid);
+	const userDoc = await getDoc(userRef);
+	const userData = userDoc.data() as UserData;
+
+	const newScore = userData.score + 10;
+
+	await updateDoc(userRef, { score: newScore });
+
+	console.log('Added +10 points.');
 }
 
 async function runCardBattle(cardBattle: CardBattle[], matchSetId: string): Promise<CardBattle[]> {

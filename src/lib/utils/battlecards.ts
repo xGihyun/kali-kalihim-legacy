@@ -1,18 +1,13 @@
 import { db } from '$lib/firebase/firebase';
-import type { BattleCard, BattleCardResults, BattleCardTurns } from '$lib/types';
-import { collection, getDocs } from 'firebase/firestore';
+import type { BattleCard, BattleCardResults, BattleCardTurns, UserData } from '$lib/types';
+import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { card_battle } from '$lib/pkg/my_package';
 
-export async function battle(player1: string, player2: string): Promise<BattleCardResults[]> {
+export async function battle(player1: UserData, player2: UserData): Promise<BattleCardResults[]> {
 	const [player1Cards, player2Cards] = await Promise.all([
-		getPlayerCards(player1),
-		getPlayerCards(player2)
+		getPlayerCards(player1.auth_data.uid),
+		getPlayerCards(player2.auth_data.uid)
 	]);
-
-	console.log('Player 1:');
-	console.log(player1Cards);
-	console.log('Player 2:');
-	console.log(player2Cards);
 
 	const player1CardsStr = JSON.stringify(player1Cards);
 	const player2CardsStr = JSON.stringify(player2Cards);
@@ -25,13 +20,13 @@ export async function battle(player1: string, player2: string): Promise<BattleCa
 
 		battleResults.player_1.forEach((result) => {
 			if (!result.is_cancelled) {
-				player1TotalDamage! += result.damage;
+				player1TotalDamage! += Math.round(result.damage * 100) / 100;
 			}
 		});
 
 		battleResults.player_2.forEach((result) => {
 			if (!result.is_cancelled) {
-				player2TotalDamage! += result.damage;
+				player2TotalDamage! += Math.round(result.damage * 100) / 100;
 			}
 		});
 	}
@@ -39,11 +34,11 @@ export async function battle(player1: string, player2: string): Promise<BattleCa
 	let results: BattleCardResults[] = [
 		{
 			totalDamage: player1TotalDamage,
-			uid: player1
+			uid: player1.auth_data.uid
 		},
 		{
 			totalDamage: player2TotalDamage,
-			uid: player2
+			uid: player2.auth_data.uid
 		}
 	];
 

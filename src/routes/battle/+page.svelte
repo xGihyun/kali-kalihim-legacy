@@ -1,29 +1,40 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { BattleCard } from '$lib/types';
+	import type { BattleCard, LoadState } from '$lib/types';
 	import { blockCards, strikeCards } from '$lib/data';
+	import { Toast, toastStore } from '@skeletonlabs/skeleton';
+	import type { ToastSettings } from '@skeletonlabs/skeleton';
 
 	$: cardsInQueue = [] as BattleCard[];
 	$: selected = [] as string[];
 
+	let submitState: LoadState = 'done';
+
 	function addToQueue(card: BattleCard) {
 		if (cardsInQueue.length > 5) return;
 
-		console.log('Adding: ' + card.name);
-
 		cardsInQueue = [...cardsInQueue, card];
 		selected = [...selected, card.name];
-
-		console.log(selected);
 	}
 
 	function removeInQueue(index: number, card: string) {
-		console.log('Removing');
-
 		cardsInQueue = cardsInQueue.filter((_, i) => i !== index);
 		selected = selected.filter((name) => name !== card);
 	}
+
+	const submitting: ToastSettings = {
+		message: 'Submitting battle cards...',
+		background: 'variant-filled-primary'
+	};
+
+	const submitted: ToastSettings = {
+		message: 'Battle cards have been submitted!',
+		background: 'variant-filled-primary',
+		autohide: false
+	};
 </script>
+
+<Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
 	<div>
@@ -59,7 +70,7 @@
 		</div>
 	</div>
 
-	{#if cardsInQueue.length > 0}
+	{#if cardsInQueue.length > 0 && submitState === 'done'}
 		<div class="fixed bottom-10">
 			<div class="relative z-10 grid grid-cols-3 place-items-center gap-2 md:grid-cols-6 lg:gap-4">
 				{#each cardsInQueue as card, idx (idx)}
@@ -74,8 +85,19 @@
 			<form
 				method="post"
 				action="?/battle"
-				use:enhance={(e) => {
-					e.formData.append('battle_cards', JSON.stringify(cardsInQueue));
+				use:enhance={({ formData }) => {
+					submitState = 'loading';
+
+					toastStore.trigger(submitting);
+					formData.append('battle_cards', JSON.stringify(cardsInQueue));
+
+					return async ({ result }) => {
+						if (result.type === 'success') {
+							submitState = 'done';
+							cardsInQueue = [];
+							toastStore.trigger(submitted);
+						}
+					};
 				}}
 			>
 				<button class="btn variant-filled-primary" disabled={cardsInQueue.length < 6} type="submit">
