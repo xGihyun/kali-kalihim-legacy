@@ -20,7 +20,7 @@
 	on:click={() => (matchCategory = 'card_battle')}>Card Battle</button
 >
 
-{#if matchSets && matchSets.length > 0}
+{#if matchSets}
 	<div class="hidden lg:block space-x-2">
 		{#each matchSets as matchSet, idx (idx)}
 			<a

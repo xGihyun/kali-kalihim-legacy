@@ -20,12 +20,20 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const arnisMatches = await getArnisMatches(match_id);
 	const cardBattleMatches = await getCardBattleMatches(match_id);
 
+	if (!arnisMatches || !cardBattleMatches) {
+		return {
+			arnisMatches: undefined,
+			cardBattleMatches: undefined,
+			matchSetId: match_id
+		};
+	}
+
 	const serializedArnisMatches = dataToObject(arnisMatches) as Match[];
 	const serializedCardBattleMatches = dataToObject(cardBattleMatches) as CardBattle[];
 
 	console.log(serializedArnisMatches);
 
-	// setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		arnisMatches: serializedArnisMatches,
@@ -34,10 +42,14 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	};
 };
 
-async function getArnisMatches(matchSetId: string): Promise<Match[]> {
+async function getArnisMatches(matchSetId: string): Promise<Match[] | undefined> {
 	try {
 		const matchSetCollection = collection(db, `match_sets/${matchSetId}/matches`);
 		const matchesDocs = await getDocs(matchSetCollection);
+
+		if (matchesDocs.empty) {
+			return;
+		}
 
 		const matches: Match[] = matchesDocs.docs.map((match) => match.data() as Match);
 
@@ -48,10 +60,14 @@ async function getArnisMatches(matchSetId: string): Promise<Match[]> {
 	}
 }
 
-async function getCardBattleMatches(matchSetId: string): Promise<CardBattle[]> {
+async function getCardBattleMatches(matchSetId: string): Promise<CardBattle[] | undefined> {
 	try {
 		const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
 		const cardBattleDocs = await getDocs(cardBattleCollection);
+
+		if (cardBattleDocs.empty) {
+			return;
+		}
 
 		const matches: CardBattle[] = cardBattleDocs.docs.map((match) => match.data() as CardBattle);
 

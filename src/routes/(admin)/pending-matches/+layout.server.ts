@@ -24,7 +24,7 @@ export const load: LayoutServerLoad = async ({ setHeaders }) => {
 
 	const sections = getSections.docs.map((section) => section.data() as Section);
 
-	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+	// setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		sections

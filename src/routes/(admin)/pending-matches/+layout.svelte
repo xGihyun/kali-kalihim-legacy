@@ -32,23 +32,23 @@
 		placement: 'bottom'
 	};
 
-	onMount(() => {
-		matchSetsResult = getMatchSets(selectedSection);
-	});
+	// onMount(() => {
+	// 	matchSetsResult = getMatchSets(selectedSection);
+	// });
 
-	afterUpdate(() => {
-		matchSetsResult = getMatchSets(selectedSection);
-	});
+	// afterUpdate(() => {
+	// 	matchSetsResult = getMatchSets(selectedSection);
+	// });
 </script>
 
 <div class="flex h-full w-full flex-col items-center justify-center py-10">
-	<div class="flex gap-4 w-full max-w-5xl relative">
-		<button class="btn variant-filled w-full justify-between" use:popup={sectionPopup}>
-			<span class="capitalize">{selectedSection}</span>
-			<span>↓</span>
-		</button>
+	{#if sections}
+		<div class="flex gap-4 w-full max-w-5xl relative">
+			<button class="btn variant-filled w-full justify-between" use:popup={sectionPopup}>
+				<span class="capitalize">{selectedSection}</span>
+				<span>↓</span>
+			</button>
 
-		{#if sections && sections.length > 0}
 			<div class="card w-3/4 max-w-5xl py-2 shadow-xl" data-popup="sections">
 				<ul>
 					{#each sections as section, idx (idx)}
@@ -75,18 +75,17 @@
 				</ul>
 				<div class="arrow bg-surface-100-800-token" />
 			</div>
-		{/if}
-		<button class="btn variant-filled w-1/4 justify-between" use:popup={matchCategoryPopup}>
+			<!-- <button class="btn variant-filled w-1/4 justify-between" use:popup={matchCategoryPopup}>
 			<span class="capitalize">{matchCategory}</span>
 			<span>↓</span>
-		</button>
+		</button> -->
 
-		<!-- <button class="btn variant-filled w-1/4 justify-between" use:popup={matchSetPopup}>
+			<!-- <button class="btn variant-filled w-1/4 justify-between" use:popup={matchSetPopup}>
 			<span class="capitalize">{matchset}</span>
 			<span>↓</span>
 		</button> -->
-	</div>
-
+		</div>
+	{/if}
 	<!-- <div class="card w-48 py-2 shadow-xl" data-popup="match_category">
 		<ul>
 			{#each matchCategories as category (category)}
