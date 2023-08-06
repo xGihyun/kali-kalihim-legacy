@@ -59,6 +59,8 @@ function addToMatchHistory(users: PlayerWithDamage[]) {
 		players: [...users]
 	};
 
+	console.log(users);
+
 	users.forEach(async (user) => {
 		const matchHistoryCollection = collection(
 			db,
@@ -81,22 +83,23 @@ async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: st
 
 	const result = await battle(player1, player2);
 
-	console.log('Result in updateCardBattle');
-	console.log(result);
-
 	const player1TotalDamage = result[0].totalDamage;
 	const player2TotalDamage = result[1].totalDamage;
+	const player1Turns = result[0].turns;
+	const player2Turns = result[1].turns;
 
 	const cardBattleRef = doc(db, `match_sets/${matchSetId}/card_battle/${idx + 1}`);
 
 	if (player1TotalDamage !== null) {
 		player1.total_damage = player1TotalDamage;
+		player1.turns = player1Turns;
 	} else {
 		player1.total_damage = null;
 	}
 
 	if (player2TotalDamage !== null) {
 		player2.total_damage = player2TotalDamage;
+		player2.turns = player2Turns;
 	} else {
 		player2.total_damage = null;
 	}

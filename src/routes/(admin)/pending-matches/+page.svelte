@@ -5,9 +5,6 @@
 	import { type PopupSettings, popup } from '@skeletonlabs/skeleton';
 	import { afterUpdate, onMount } from 'svelte';
 
-	// export let data;
-
-	// $: ({ sections } = data);
 	let sections: Section[] = [];
 
 	type BattleTab = 'arnis' | 'card_battle';

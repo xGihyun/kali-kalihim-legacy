@@ -1,6 +1,12 @@
 import { db } from '$lib/firebase/firebase';
-import type { BattleCard, BattleCardResults, BattleCardTurns, UserData } from '$lib/types';
-import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
+import type {
+	BattleCard,
+	BattleCardResults,
+	BattleCardTurn,
+	BattleCardTurns,
+	UserData
+} from '$lib/types';
+import { collection, getDocs } from 'firebase/firestore';
 import { card_battle } from '$lib/pkg/my_package';
 
 export async function battle(player1: UserData, player2: UserData): Promise<BattleCardResults[]> {
@@ -14,9 +20,14 @@ export async function battle(player1: UserData, player2: UserData): Promise<Batt
 
 	let player1TotalDamage: number | null = player1Cards.length > 0 ? 0 : null;
 	let player2TotalDamage: number | null = player2Cards.length > 0 ? 0 : null;
+	let player1Turns: BattleCardTurn[] = [];
+	let player2Turns: BattleCardTurn[] = [];
 
 	if (player1TotalDamage !== null && player2TotalDamage !== null) {
 		const battleResults: BattleCardTurns = card_battle(player1CardsStr, player2CardsStr);
+
+		player1Turns = battleResults.player_1;
+		player2Turns = battleResults.player_2;
 
 		battleResults.player_1.forEach((result) => {
 			if (!result.is_cancelled) {
@@ -34,11 +45,13 @@ export async function battle(player1: UserData, player2: UserData): Promise<Batt
 	let results: BattleCardResults[] = [
 		{
 			totalDamage: player1TotalDamage,
-			uid: player1.auth_data.uid
+			uid: player1.auth_data.uid,
+			turns: player1Turns
 		},
 		{
 			totalDamage: player2TotalDamage,
-			uid: player2.auth_data.uid
+			uid: player2.auth_data.uid,
+			turns: player2Turns
 		}
 	];
 

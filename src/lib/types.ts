@@ -143,18 +143,6 @@ export type Damage = {
 	player2: number;
 };
 
-// export type BattleCardInteraction = Map<
-// 	Skill,
-// 	{
-// 		[key in Skill]: (
-// 			card1: BattleCard,
-// 			card2: BattleCard,
-// 			prevCard1?: BattleCard,
-// 			prevCard2?: BattleCard
-// 		) => Damage;
-// 	}
-// >;
-
 export type BattleCardTurn = {
 	damage: number;
 	is_cancelled: boolean;
@@ -168,10 +156,12 @@ export type BattleCardTurns = {
 export type BattleCardResults = {
 	uid: string;
 	totalDamage: number | null;
+	turns: BattleCardTurn[];
 };
 
 export interface PlayerWithDamage extends UserData {
 	total_damage: number | null;
+	turns: BattleCardTurn[];
 }
 
 export type CardBattle = {
