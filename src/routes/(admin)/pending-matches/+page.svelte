@@ -48,9 +48,10 @@
 			<span>↓</span>
 		</button>
 
-		<div class="card w-3/4 max-w-5xl py-2 shadow-xl" data-popup="sections">
-			<ul>
-				<!-- {#await getSections()}
+		{#if sections && sections.length > 0}
+			<div class="card w-3/4 max-w-5xl py-2 shadow-xl" data-popup="sections">
+				<ul>
+					<!-- {#await getSections()}
 					<span>Loading sections...</span>
 				{:then sections}
 					{#each sections as [key, value], idx (idx)}
@@ -64,7 +65,6 @@
 						</li>
 					{/each}
 				{/await} -->
-				{#if sections}
 					{#each sections as section, idx (idx)}
 						<li class="flex">
 							<button
@@ -77,11 +77,10 @@
 							>
 						</li>
 					{/each}
-				{/if}
-			</ul>
-			<div class="arrow bg-surface-100-800-token" />
-		</div>
-
+				</ul>
+				<div class="arrow bg-surface-100-800-token" />
+			</div>
+		{/if}
 		<button class="btn variant-filled w-1/4 justify-between" use:popup={matchCategoryPopup}>
 			<span class="capitalize">{matchCategory}</span>
 			<span>↓</span>
