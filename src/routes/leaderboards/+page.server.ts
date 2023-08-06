@@ -1,5 +1,5 @@
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import type { PageServerLoad } from '../$types';
+import type { PageServerLoad } from './$types';
 import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
 import { CACHE_DURATION } from '$lib/constants';

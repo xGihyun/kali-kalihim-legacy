@@ -64,18 +64,20 @@
 						</li>
 					{/each}
 				{/await} -->
-				{#each sections as section, idx (idx)}
-					<li class="flex">
-						<button
-							class={`flex-1 px-4 py-2 ${
-								selectedSection === section.id
-									? 'variant-filled'
-									: 'bg-surface-100-800-token hover:variant-soft'
-							}`}
-							on:click={() => (selectedSection = section.id)}>{section.name}</button
-						>
-					</li>
-				{/each}
+				{#if sections}
+					{#each sections as section, idx (idx)}
+						<li class="flex">
+							<button
+								class={`flex-1 px-4 py-2 ${
+									selectedSection === section.id
+										? 'variant-filled'
+										: 'bg-surface-100-800-token hover:variant-soft'
+								}`}
+								on:click={() => (selectedSection = section.id)}>{section.name}</button
+							>
+						</li>
+					{/each}
+				{/if}
 			</ul>
 			<div class="arrow bg-surface-100-800-token" />
 		</div>
