@@ -3,14 +3,16 @@
 	import type { UserData } from '$lib/types';
 	import { formatSection } from '$lib/utils/functions.js';
 	import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-	import { onDestroy } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	export let data;
 
-	$: currentUser = data.user;
-	$: users = data.users;
+	$: ({ users } = data);
 
-	if (data.user?.auth_data.uid) {
+	const currentUser = getContext<Writable<UserData>>('user');
+
+	$: {
 		const usersCollection = collection(db, 'users');
 		const q = query(usersCollection, orderBy('score', 'desc'));
 		const unsubRank = onSnapshot(q, async (snapshot) => {
@@ -32,32 +34,36 @@
 		</thead>
 		<tbody>
 			{#each users as user, idx (idx)}
+				{@const name = `${user.personal_data.name.first} ${user.personal_data.name.last}`}
+				{@const section = `St. ${formatSection(user.personal_data.section)}`}
+				{@const { score } = user}
+				{@const rank = `#${idx + 1}`}
+
 				<tr
 					class={`${
-						user.auth_data.uid === currentUser?.auth_data.uid
+						user.auth_data.uid === $currentUser.auth_data.uid
 							? 'text-tertiary-600-300-token'
 							: 'text-secondary-700-200-token'
 					}`}
 				>
 					<td>
 						<p class="text-xs md:text-sm">
-							<span class="text-token font-bold">#{idx + 1}</span>
+							<span class="text-token font-bold">{rank}</span>
 							<a class="hover:underline" href={`/users/${user.auth_data.uid}`}>
 								<span>
-									{user.personal_data.name.first}
-									{user.personal_data.name.last}
+									{name}
 								</span>
 							</a>
 						</p>
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm">
-							St. {formatSection(user.personal_data.section)}
+							{section}
 						</p>
 					</td>
 					<td class="w-1/4">
 						<p class="text-xs md:text-sm text-center">
-							{user.score}
+							{score}
 						</p>
 					</td>
 				</tr>

@@ -60,6 +60,13 @@ export type Match = {
 	uids?: string[];
 };
 
+export type ArnisMatchHistory = {
+	players: UserData[];
+	skill: string;
+	footwork: string;
+	timestamp: Timestamp;
+};
+
 export type MatchSet = {
 	section: string;
 	set: number;

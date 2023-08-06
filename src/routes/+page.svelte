@@ -15,12 +15,14 @@
 		PowerCards
 	} from '$lib/components/user';
 	import { Register, Login } from '$lib/components/auth';
+	import { ArnisHistory, CardBattleHistory } from '$lib/components/user/match-history';
 
 	export let data;
 
 	const user = getContext<Writable<UserData>>('user');
 
 	$: pendingMatch = data?.latestPendingMatch;
+	$: ({ matchHistory, cardBattleHistory } = data);
 
 	$: {
 		if (data.user) {
@@ -95,6 +97,12 @@
 					<UpcomingMatch {pendingMatch} />
 					<PowerCards user={$user} />
 				</div>
+				{#if matchHistory && cardBattleHistory}
+					<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
+						<ArnisHistory history={matchHistory} />
+						<CardBattleHistory history={cardBattleHistory} />
+					</div>
+				{/if}
 			</div>
 
 			{#if $selectedPowerCard}

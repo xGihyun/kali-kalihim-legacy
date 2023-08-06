@@ -1,25 +1,34 @@
 <script lang="ts">
 	import { CircleCheckFilled, ClockPause } from '$lib/assets/icons';
 	import { db } from '$lib/firebase/firebase';
-	import type { Match, MatchSets, UserData } from '$lib/types';
+	import type { ArnisMatchHistory, Match, MatchSets, UserData } from '$lib/types';
 	import { Timestamp, addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
 	import { onMount } from 'svelte';
 	import { Table as PlaceholderTable } from '../placeholders';
+	import { skills } from '$lib/data';
 
 	export let matchSets: MatchSets[];
 
-	type LoadState = 'loading' | 'done';
+	type LoadState = 'loading' | 'done' | 'nothing';
 
 	let matchSetId: string;
 	let clickedRow: number | null = null;
 	let matches: Match[] = [];
 	let state: LoadState = 'loading';
+	let submitScore: LoadState = 'nothing';
 
 	function toggleRow(idx: number) {
 		clickedRow = clickedRow === idx ? null : idx;
 	}
 
-	async function handleSubmit(event: SubmitEvent, users: UserData[], matchSetId: string) {
+	async function handleSubmit(
+		event: SubmitEvent,
+		users: UserData[],
+		matchSetId: string,
+		skill: string,
+		footwork: string
+	) {
+		submitScore = 'loading';
 		const form = event?.target as HTMLFormElement;
 		const formData = new FormData(form);
 
@@ -36,16 +45,21 @@
 		}
 
 		console.log('Scores submitted successfully!');
+
 		form.reset();
-		addToMatchHistory(users);
+		addToMatchHistory(users, skill, footwork);
+
+		submitScore = 'done';
 	}
 
-	function addToMatchHistory(users: UserData[]) {
+	function addToMatchHistory(users: UserData[], skill: string, footwork: string) {
 		const currentDate = new Date();
 
-		const matchHistoryData = {
+		const matchHistoryData: ArnisMatchHistory = {
 			players: [...users],
-			timestamp: Timestamp.fromDate(currentDate)
+			timestamp: Timestamp.fromDate(currentDate),
+			skill,
+			footwork
 		};
 
 		users.forEach(async (user) => {
@@ -113,9 +127,7 @@
 						{@const players = match.players}
 
 						<tr
-							class={`${
-								match.status === 'finished' ? 'pointer-events-none opacity-50' : 'opacity-100'
-							}`}
+							class={`${match.status === 'finished' ? 'opacity-50' : 'opacity-100'}`}
 							on:click={() => toggleRow(idx)}
 						>
 							{#each players as player, idx (player.auth_data.uid)}
@@ -175,30 +187,40 @@
 									>
 										<form
 											class="space-y-4"
-											on:submit|preventDefault={(e) => handleSubmit(e, match.players, matchSetId)}
+											on:submit|preventDefault={(e) =>
+												handleSubmit(e, match.players, matchSetId, match.skill, match.footwork)}
 										>
-											{#each match.players as user (user.auth_data.uid)}
-												<label class="label">
-													<span>
-														Score for
-														{user.personal_data.name.first}
-														{user.personal_data.name.last}
-													</span>
-													<input
-														class="input text-token"
-														type="text"
-														name={`score-${user.auth_data.uid}`}
-														required
-													/>
-												</label>
-											{/each}
+											{#if submitScore === 'nothing'}
+												{#each match.players as user (user.auth_data.uid)}
+													<label class="label">
+														<span>
+															Score for
+															{user.personal_data.name.first}
+															{user.personal_data.name.last}
+														</span>
+														<input
+															class="input text-token"
+															type="text"
+															name={`score-${user.auth_data.uid}`}
+															required
+														/>
+													</label>
+												{/each}
+											{:else if submitScore === 'loading'}
+												<div>Submitting score...</div>
+											{:else}
+												<div>Score has been submitted!</div>
+											{/if}
+
 											<div class="flex justify-end gap-4">
 												<button
 													class="btn variant-ghost-surface text-token"
 													type="button"
 													on:click={() => (clickedRow = null)}>Cancel</button
 												>
-												<button class="btn variant-filled-primary" type="submit">Submit</button>
+												{#if submitScore === 'nothing'}
+													<button class="btn variant-filled-primary" type="submit">Submit</button>
+												{/if}
 											</div>
 										</form>
 									</div>

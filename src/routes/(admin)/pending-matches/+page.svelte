@@ -5,11 +5,15 @@
 	import { type PopupSettings, popup } from '@skeletonlabs/skeleton';
 	import { afterUpdate, onMount } from 'svelte';
 
+	export let data;
+
+	$: ({ sections } = data);
+
 	type BattleTab = 'arnis' | 'card_battle';
 
 	let matchSetsResult: Promise<MatchSets[]>;
 	let matchCategory: BattleTab = 'arnis';
-	let section = 'agatha';
+	let selectedSection = 'agatha';
 	let matchCategories: BattleTab[] = ['arnis', 'card_battle'];
 
 	const sectionPopup: PopupSettings = {
@@ -29,24 +33,24 @@
 	};
 
 	onMount(() => {
-		matchSetsResult = getMatchSets(section);
+		matchSetsResult = getMatchSets(selectedSection);
 	});
 
 	afterUpdate(() => {
-		matchSetsResult = getMatchSets(section);
+		matchSetsResult = getMatchSets(selectedSection);
 	});
 </script>
 
 <div class="flex h-full w-full flex-col items-center justify-center py-10">
 	<div class="flex gap-4 w-full max-w-5xl relative">
 		<button class="btn variant-filled w-full justify-between" use:popup={sectionPopup}>
-			<span class="capitalize">{section}</span>
+			<span class="capitalize">{selectedSection}</span>
 			<span>↓</span>
 		</button>
 
 		<div class="card w-3/4 max-w-5xl py-2 shadow-xl" data-popup="sections">
 			<ul>
-				{#await getSections()}
+				<!-- {#await getSections()}
 					<span>Loading sections...</span>
 				{:then sections}
 					{#each sections as [key, value], idx (idx)}
@@ -59,7 +63,19 @@
 							>
 						</li>
 					{/each}
-				{/await}
+				{/await} -->
+				{#each sections as section, idx (idx)}
+					<li class="flex">
+						<button
+							class={`flex-1 px-4 py-2 ${
+								selectedSection === section.id
+									? 'variant-filled'
+									: 'bg-surface-100-800-token hover:variant-soft'
+							}`}
+							on:click={() => (selectedSection = section.id)}>{section.name}</button
+						>
+					</li>
+				{/each}
 			</ul>
 			<div class="arrow bg-surface-100-800-token" />
 		</div>

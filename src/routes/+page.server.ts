@@ -20,7 +20,15 @@ import {
 	createUserWithEmailAndPassword,
 	fetchSignInMethodsForEmail
 } from 'firebase/auth';
-import type { Match, UserData, UserPersonalData, UserPowerCard, UserRankingData } from '$lib/types';
+import type {
+	Match,
+	ArnisMatchHistory,
+	UserData,
+	UserPersonalData,
+	UserPowerCard,
+	UserRankingData,
+	CardBattle
+} from '$lib/types';
 import type { PageServerLoad } from './$types';
 import { CACHE_DURATION } from '$lib/constants';
 import { powerCardsMap } from '$lib/data';
@@ -30,10 +38,9 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 		return;
 	}
 
-	const pendingMatchesCollection = collection(
-		db,
-		`users/${locals.userData.auth_data.uid}/pending_matches`
-	);
+	const userUID = locals.userData.auth_data.uid;
+
+	const pendingMatchesCollection = collection(db, `users/${userUID}/pending_matches`);
 	const pendingMatchesQuery = query(
 		pendingMatchesCollection,
 		orderBy('timestamp', 'desc'),
@@ -41,32 +48,49 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	);
 	const getPendingMatchesDocs = await getDocs(pendingMatchesQuery);
 
-	if (getPendingMatchesDocs.empty) {
-		console.log('No pending matches.');
+	let latestPendingMatch: Match | undefined = undefined;
+	let latestOpponent: UserData | undefined = undefined;
 
-		return {
-			latestPendingMatch: undefined,
-			latestOpponent: undefined
-		};
+	if (!getPendingMatchesDocs.empty) {
+		latestPendingMatch = JSON.parse(
+			JSON.stringify(getPendingMatchesDocs.docs.shift()?.data())
+		) as Match;
+
+		latestOpponent = JSON.parse(
+			JSON.stringify(latestPendingMatch.players.find((player) => player.auth_data.uid !== userUID))
+		) as UserData;
 	}
 
-	const latestPendingMatch = JSON.parse(
-		JSON.stringify(getPendingMatchesDocs.docs.shift()?.data())
-	) as Match;
+	let matchHistory: ArnisMatchHistory[] = [];
 
-	const latestOpponent = JSON.parse(
-		JSON.stringify(
-			latestPendingMatch.players.find(
-				(player) => player.auth_data.uid !== locals.userData.auth_data.uid
-			)
-		)
-	) as UserData;
+	const matchHistoryCollection = collection(db, `users/${userUID}/match_history`);
+	const matchHistoryQuery = query(matchHistoryCollection, orderBy('timestamp', 'desc'));
+	const getMatchHistory = await getDocs(matchHistoryQuery);
+
+	if (!getMatchHistory.empty) {
+		matchHistory = getMatchHistory.docs.map(
+			(match) => JSON.parse(JSON.stringify(match.data())) as ArnisMatchHistory
+		);
+	}
+
+	let cardBattleHistory: CardBattle[] = [];
+
+	const cardBattleCollection = collection(db, `users/${userUID}/card_battle_history`);
+	const getCardBattle = await getDocs(cardBattleCollection);
+
+	if (!getCardBattle.empty) {
+		cardBattleHistory = getCardBattle.docs.map(
+			(match) => JSON.parse(JSON.stringify(match.data())) as CardBattle
+		);
+	}
 
 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		latestPendingMatch,
-		latestOpponent
+		latestOpponent,
+		matchHistory,
+		cardBattleHistory
 	};
 };
 

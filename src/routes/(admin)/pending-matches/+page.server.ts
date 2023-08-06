@@ -1,8 +1,39 @@
-import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
+import {
+	addDoc,
+	collection,
+	doc,
+	getCountFromServer,
+	getDocs,
+	setDoc,
+	updateDoc
+} from 'firebase/firestore';
 import { db } from '$lib/firebase/firebase';
-import type { CardBattle } from '$lib/types';
+import type { CardBattle, PlayerWithDamage, Section } from '$lib/types';
 import { battle } from '$lib/utils/battlecards';
 import type { Actions } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { CACHE_DURATION } from '$lib/constants';
+
+export const load: PageServerLoad = async ({ setHeaders }) => {
+	const sectionsCollection = collection(db, 'sections');
+	const getSections = await getDocs(sectionsCollection);
+
+	if (getSections.empty) {
+		console.error('No sections yet');
+	}
+
+	const sections = getSections.docs.map((section) => {
+		const sectionData = section.data() as Section;
+
+		return sectionData;
+	});
+
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+
+	return {
+		sections
+	};
+};
 
 export const actions: Actions = {
 	card_battle: async ({ request }) => {
@@ -24,6 +55,26 @@ export const actions: Actions = {
 		return { cardBattleResults };
 	}
 };
+
+function addToMatchHistory(users: PlayerWithDamage[]) {
+	const cardBattleHistoryData: CardBattle = {
+		players: [...users]
+	};
+
+	users.forEach(async (user) => {
+		const matchHistoryCollection = collection(
+			db,
+			`users/${user.auth_data.uid}/card_battle_history`
+		);
+		const serverCount = await getCountFromServer(matchHistoryCollection);
+		const newMatchEntry = doc(
+			db,
+			`users/${user.auth_data.uid}/card_battle_history/${serverCount.data().count + 1}`
+		);
+
+		await setDoc(newMatchEntry, cardBattleHistoryData);
+	});
+}
 
 async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: string, idx: number) {
 	const match = cardBattle[idx];
@@ -54,6 +105,8 @@ async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: st
 
 	console.log('Updating doc');
 	await updateDoc(cardBattleRef, { players: [player1, player2] });
+
+	addToMatchHistory(match.players);
 }
 
 async function runCardBattle(cardBattle: CardBattle[], matchSetId: string): Promise<CardBattle[]> {

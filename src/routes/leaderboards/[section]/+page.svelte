@@ -9,6 +9,7 @@
 	export let data;
 
 	$: ({ users, section } = data);
+
 	const currentUser = getContext<Writable<UserData>>('user');
 
 	$: {
@@ -19,7 +20,6 @@
 				.map((user) => user.data() as UserData)
 				.sort((a, b) => b.score - a.score);
 		});
-		console.log('asd');
 
 		onDestroy(() => unsubRank());
 	}
@@ -35,7 +35,12 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each users as user, idx (idx)}
+			{#each users as user, idx (user.auth_data.uid)}
+				{@const name = `${user.personal_data.name.first} ${user.personal_data.name.last}`}
+				{@const section = `St. ${formatSection(user.personal_data.section)}`}
+				{@const { score } = user}
+				{@const rank = `#${idx + 1}`}
+
 				<tr
 					class={`${
 						user.auth_data.uid === $currentUser.auth_data.uid
@@ -45,24 +50,23 @@
 				>
 					<td>
 						<p class="text-xs md:text-sm">
-							<span class="text-token font-bold">#{idx + 1}</span>
+							<span class="text-token font-bold">{rank}</span>
 							<a class="hover:underline" href={`/users/${user.auth_data.uid}`}>
 								<span>
-									{user.personal_data.name.first}
-									{user.personal_data.name.last}
+									{name}
 								</span>
 							</a>
 						</p>
 					</td>
 					<td class="w-1/4">
-						<p class="text-xs md:text-sm">
-							St. {formatSection(user.personal_data.section)}
-						</p>
+						<span class="text-xs md:text-sm">
+							{section}
+						</span>
 					</td>
 					<td class="w-1/4">
-						<p class="text-xs md:text-sm text-center">
-							{user.score}
-						</p>
+						<span class="text-xs md:text-sm text-center">
+							{score}
+						</span>
 					</td>
 				</tr>
 			{/each}
