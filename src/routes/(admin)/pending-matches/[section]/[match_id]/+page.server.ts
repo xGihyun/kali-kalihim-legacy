@@ -1,5 +1,5 @@
+import type { CardBattle, Match, PlayerWithDamage } from '$lib/types';
 import {
-	addDoc,
 	collection,
 	doc,
 	getCountFromServer,
@@ -7,29 +7,60 @@ import {
 	setDoc,
 	updateDoc
 } from 'firebase/firestore';
-import { db } from '$lib/firebase/firebase';
-import type { CardBattle, PlayerWithDamage, Section } from '$lib/types';
-import { battle } from '$lib/utils/battlecards';
-import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { db } from '$lib/firebase/firebase';
 import { CACHE_DURATION } from '$lib/constants';
+import type { Actions } from '@sveltejs/kit';
+import { battle } from '$lib/utils/battlecards';
+import { dataToObject } from '$lib/utils/functions';
 
-export const load: PageServerLoad = async ({ setHeaders }) => {
-	const sectionsCollection = collection(db, 'sections');
-	const getSections = await getDocs(sectionsCollection);
+export const load: PageServerLoad = async ({ params, setHeaders }) => {
+	const { match_id } = params;
 
-	if (getSections.empty) {
-		return;
-	}
+	const arnisMatches = await getArnisMatches(match_id);
+	const cardBattleMatches = await getCardBattleMatches(match_id);
 
-	const sections = getSections.docs.map((section) => section.data() as Section);
+	const serializedArnisMatches = dataToObject(arnisMatches) as Match[];
+	const serializedCardBattleMatches = dataToObject(cardBattleMatches) as CardBattle[];
 
-	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+	console.log(serializedArnisMatches);
+
+	// setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
-		sections
+		arnisMatches: serializedArnisMatches,
+		cardBattleMatches: serializedCardBattleMatches,
+		matchSetId: match_id
 	};
 };
+
+async function getArnisMatches(matchSetId: string): Promise<Match[]> {
+	try {
+		const matchSetCollection = collection(db, `match_sets/${matchSetId}/matches`);
+		const matchesDocs = await getDocs(matchSetCollection);
+
+		const matches: Match[] = matchesDocs.docs.map((match) => match.data() as Match);
+
+		return matches;
+	} catch (error) {
+		// Handle any potential errors during data fetching
+		throw new Error('Failed to fetch matches: ' + error);
+	}
+}
+
+async function getCardBattleMatches(matchSetId: string): Promise<CardBattle[]> {
+	try {
+		const cardBattleCollection = collection(db, `match_sets/${matchSetId}/card_battle`);
+		const cardBattleDocs = await getDocs(cardBattleCollection);
+
+		const matches: CardBattle[] = cardBattleDocs.docs.map((match) => match.data() as CardBattle);
+
+		return matches;
+	} catch (error) {
+		// Handle any potential errors during data fetching
+		throw new Error('Failed to fetch card battle matches: ' + error);
+	}
+}
 
 export const actions: Actions = {
 	card_battle: async ({ request }) => {
@@ -117,6 +148,7 @@ async function runCardBattle(cardBattle: CardBattle[], matchSetId: string): Prom
 	if (snapshot.empty) {
 		throw new Error('Card battle collection is empty.');
 	}
+
 	cardBattle = snapshot.docs.map((doc) => doc.data() as CardBattle);
 
 	return cardBattle;

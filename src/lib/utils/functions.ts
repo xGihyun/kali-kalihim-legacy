@@ -133,3 +133,7 @@ export async function getMatchSets(section: string) {
 
 	return matchSets;
 }
+
+export function dataToObject<T>(data: T): T {
+	return JSON.parse(JSON.stringify(data));
+}
