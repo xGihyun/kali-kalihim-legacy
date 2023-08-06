@@ -18,11 +18,11 @@ export const load: PageServerLoad = async ({ setHeaders }) => {
 	const sectionsCollection = collection(db, 'sections');
 	const getSections = await getDocs(sectionsCollection);
 
-	if (getSections.empty) {
-		return;
-	}
+	let sections: Section[] = [];
 
-	const sections = getSections.docs.map((section) => section.data() as Section);
+	if (!getSections.empty) {
+		sections = getSections.docs.map((section) => section.data() as Section);
+	}
 
 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
