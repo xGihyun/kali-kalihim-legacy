@@ -2,10 +2,9 @@
 	import { CircleCheckFilled, ClockPause } from '$lib/assets/icons';
 	import { db } from '$lib/firebase/firebase';
 	import type { ArnisMatchHistory, Match, MatchSets, UserData } from '$lib/types';
-	import { Timestamp, addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
+	import { Timestamp, collection, doc, getCountFromServer, setDoc } from 'firebase/firestore';
 	import { onMount } from 'svelte';
 	import { Table as PlaceholderTable } from '../placeholders';
-	import { skills } from '$lib/data';
 
 	export let matchSets: MatchSets[];
 
@@ -64,8 +63,13 @@
 
 		users.forEach(async (user) => {
 			const matchHistoryCollection = collection(db, `users/${user.auth_data.uid}/match_history`);
+			const serverCount = await getCountFromServer(matchHistoryCollection);
+			const newMatchEntry = doc(
+				db,
+				`users/${user.auth_data.uid}/match_history/match_${serverCount.data().count + 1}`
+			);
 
-			await addDoc(matchHistoryCollection, matchHistoryData);
+			await setDoc(newMatchEntry, matchHistoryData);
 		});
 	}
 
@@ -216,7 +220,7 @@
 												<button
 													class="btn variant-ghost-surface text-token"
 													type="button"
-													on:click={() => (clickedRow = null)}>Cancel</button
+													on:click={() => toggleRow(idx)}>Cancel</button
 												>
 												{#if submitScore === 'nothing'}
 													<button class="btn variant-filled-primary" type="submit">Submit</button>

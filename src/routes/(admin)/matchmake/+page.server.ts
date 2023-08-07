@@ -1,6 +1,6 @@
 import type { Actions } from '@sveltejs/kit';
 import { db } from '$lib/firebase/firebase';
-import type { BattleCardResults, CardBattle, Match, UserData } from '$lib/types';
+import type { BattleCardResults, CardBattle, Match, MatchSet, UserData } from '$lib/types';
 import { getRandomArnisSkill } from '$lib/utils/functions';
 import { error } from '@sveltejs/kit';
 import {
@@ -78,12 +78,18 @@ export const actions: Actions = {
 
 		const matchesCollection = collection(db, 'match_sets');
 		const matchQuery = query(matchesCollection, where('section', '==', section));
-		const matchDocs = await getCountFromServer(matchQuery);
-		const matchSet = await addDoc(matchesCollection, {
+		const getMatchServerCount = await getCountFromServer(matchQuery);
+		const matchServerCount = getMatchServerCount.data().count;
+		const currentDate = Timestamp.fromDate(new Date());
+		const matchSetData: MatchSet = {
 			section,
-			set: matchDocs.data().count + 1,
-			status: 'pending'
-		});
+			set: matchServerCount + 1,
+			status: 'pending',
+			timestamp: currentDate,
+			timer_expired: false
+		};
+
+		const matchSet = await addDoc(matchesCollection, { ...matchSetData });
 
 		for (let i = 0; i < pendingMatches.length; i++) {
 			const users = pendingMatches[i];
@@ -191,29 +197,32 @@ async function addPendingMatch(users: Match, section: string, id: string) {
 	const matchesCollection = collection(db, `match_sets/${id}/matches`);
 	const getMatchesCollectionCount = await getCountFromServer(matchesCollection);
 	const matchesCollectionCount = getMatchesCollectionCount.data().count;
-	const matchDoc = doc(db, `match_sets/${id}/matches/${matchesCollectionCount + 1}`);
+	const matchDoc = doc(db, `match_sets/${id}/matches/match_${matchesCollectionCount + 1}`);
 	// const docRef = await addDoc(matchesCollection, { ...matchData, uids: playerUids });
 	await setDoc(matchDoc, { ...matchData, uids: playerUids });
 
 	// Do it this way to make sure they all have the same ID for an easier life
 	const defaultMatchesCollection = doc(
 		db,
-		`match_sets/${id}/default_matches/${matchesCollectionCount + 1}`
+		`match_sets/${id}/default_matches/match_${matchesCollectionCount + 1}`
 	);
 	await setDoc(defaultMatchesCollection, { ...matchData, uids: playerUids });
 
 	const cardBattleData: CardBattle = {
 		players: users.players.map((player) => ({
 			...player,
-			total_damage: null
+			total_damage: null,
+			turns: [],
+			battle_cards: []
 		}))
 	};
 
 	// Add card battle
 	const cardBattleCollection = doc(
 		db,
-		`match_sets/${id}/card_battle/${matchesCollectionCount + 1}`
+		`match_sets/${id}/card_battle/match_${matchesCollectionCount + 1}`
 	);
+
 	await setDoc(cardBattleCollection, { ...cardBattleData });
 
 	users.players.forEach(async (user) => {

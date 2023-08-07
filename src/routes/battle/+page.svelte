@@ -4,6 +4,13 @@
 	import { blockCards, strikeCards } from '$lib/data';
 	import { Toast, toastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
+	import { onDestroy } from 'svelte';
+	import { db } from '$lib/firebase/firebase.js';
+	import { doc, updateDoc } from 'firebase/firestore';
+
+	export let data;
+
+	$: ({ matchSet } = data);
 
 	$: cardsInQueue = [] as BattleCard[];
 	$: selected = [] as string[];
@@ -32,11 +39,58 @@
 		background: 'variant-filled-primary',
 		autohide: false
 	};
+
+	// 6 hours in ms
+
+	const timeLimit = 300 * 1000;
+
+	let remainingHours = 0;
+	let remainingMinutes = 0;
+	let remainingSeconds = 0;
+	let timeRemaining = 0;
+
+	$: {
+		async function updateTimer() {
+			if (!matchSet) return;
+
+			const currentTime = new Date().getTime();
+			const timestamp = matchSet.timestamp.seconds * 1000;
+
+			timeRemaining = timeLimit - (currentTime - timestamp);
+
+			if (timeRemaining <= 0) {
+				const matchSetRef = doc(db, 'match_sets', matchSet.id);
+
+				await updateDoc(matchSetRef, { timer_expired: true });
+
+				clearInterval(timerInterval);
+
+				remainingHours = 0;
+				remainingMinutes = 0;
+				remainingSeconds = 0;
+			} else {
+				remainingHours = Math.floor(timeRemaining / (1000 * 60 * 60));
+				remainingMinutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+				remainingSeconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+			}
+		}
+
+		updateTimer();
+
+		const timerInterval = setInterval(updateTimer, 1000);
+
+		onDestroy(() => clearInterval(timerInterval));
+	}
 </script>
 
 <Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
+	{#if timeRemaining > 0}
+		<div>Timer: {remainingHours}:{remainingMinutes}:{remainingSeconds}</div>
+	{:else}
+		<div>6 hour timer has now expired. You can no longer submit battle cards.</div>
+	{/if}
 	<div>
 		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Strikes</h2>
 		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">

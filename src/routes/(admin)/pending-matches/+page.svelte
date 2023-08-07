@@ -53,7 +53,7 @@
 			<span>↓</span>
 		</button>
 
-		<div class="card w-3/4 max-w-5xl py-2 shadow-xl" data-popup="sections">
+		<div class="card w-3/4 max-w-5xl py-2 shadow-xl z-50" data-popup="sections">
 			<ul>
 				{#each sections as section, idx (idx)}
 					<li class="flex">

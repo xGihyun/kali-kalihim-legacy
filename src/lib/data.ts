@@ -148,7 +148,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 			effect: {
 				type: 'increase',
 				amount: 0.1,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'self'
 			}
 		}
 	],
@@ -161,7 +162,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.1,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'opponent'
 			}
 		}
 	],
@@ -174,7 +176,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.1,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'opponent'
 			}
 		}
 	],
@@ -187,7 +190,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.1,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'opponent'
 			}
 		}
 	],
@@ -200,7 +204,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 			effect: {
 				type: 'increase',
 				amount: 0.15,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'opponent'
 			}
 		}
 	],
@@ -213,7 +218,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 			effect: {
 				type: 'increase',
 				amount: 0.5,
-				stat: 'damage'
+				stat: 'damage',
+				target: 'self'
 			}
 		}
 	],
@@ -226,7 +232,8 @@ export const strikeCards: Map<string, Strike> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.15,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'opponent'
 			}
 		}
 	]
@@ -242,7 +249,8 @@ export const blockCards: Map<string, Block> = new Map([
 			effect: {
 				type: 'increase',
 				amount: 0.1,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'self'
 			}
 		}
 	],
@@ -255,7 +263,8 @@ export const blockCards: Map<string, Block> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.1,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'opponent'
 			}
 		}
 	],
@@ -268,7 +277,8 @@ export const blockCards: Map<string, Block> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.1,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'opponent'
 			}
 		}
 	],
@@ -281,7 +291,8 @@ export const blockCards: Map<string, Block> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.1,
-				stat: 'accuracy'
+				stat: 'accuracy',
+				target: 'opponent'
 			}
 		}
 	],
@@ -294,7 +305,8 @@ export const blockCards: Map<string, Block> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.1,
-				stat: 'damage'
+				stat: 'damage',
+				target: 'opponent'
 			}
 		}
 	],
@@ -307,7 +319,8 @@ export const blockCards: Map<string, Block> = new Map([
 			effect: {
 				type: 'increase',
 				amount: 0.5,
-				stat: 'damage'
+				stat: 'damage',
+				target: 'self'
 			}
 		}
 	],
@@ -320,7 +333,8 @@ export const blockCards: Map<string, Block> = new Map([
 			effect: {
 				type: 'decrease',
 				amount: 0.2,
-				stat: 'damage'
+				stat: 'damage',
+				target: 'opponent'
 			}
 		}
 	]

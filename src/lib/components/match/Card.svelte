@@ -7,9 +7,9 @@
 	export let matchSets: MatchSets[];
 	let matchSetId: string;
 	let cardBattle: CardBattle[] = [];
+
 	type LoadState = 'loading' | 'done';
 
-	let clickedRow: number | null = null;
 	let state: LoadState = 'loading';
 
 	function refreshCardBattle(data: unknown) {

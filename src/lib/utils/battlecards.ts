@@ -46,12 +46,14 @@ export async function battle(player1: UserData, player2: UserData): Promise<Batt
 		{
 			totalDamage: player1TotalDamage,
 			uid: player1.auth_data.uid,
-			turns: player1Turns
+			turns: player1Turns,
+			battle_cards: player1Cards || []
 		},
 		{
 			totalDamage: player2TotalDamage,
 			uid: player2.auth_data.uid,
-			turns: player2Turns
+			turns: player2Turns,
+			battle_cards: player2Cards || []
 		}
 	];
 

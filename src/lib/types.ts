@@ -71,6 +71,8 @@ export type MatchSet = {
 	section: string;
 	set: number;
 	status: string;
+	timestamp: Timestamp;
+	timer_expired: boolean;
 };
 
 export type Section = {
@@ -110,6 +112,7 @@ export type Effect = {
 	type: 'increase' | 'decrease';
 	amount: number;
 	stat: 'accuracy' | 'damage';
+	target: 'self' | 'opponent';
 };
 
 export type Block = {
@@ -157,11 +160,13 @@ export type BattleCardResults = {
 	uid: string;
 	totalDamage: number | null;
 	turns: BattleCardTurn[];
+	battle_cards: BattleCard[];
 };
 
 export interface PlayerWithDamage extends UserData {
 	total_damage: number | null;
 	turns: BattleCardTurn[];
+	battle_cards: BattleCard[];
 }
 
 export type CardBattle = {

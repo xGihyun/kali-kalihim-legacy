@@ -69,7 +69,7 @@ function addToMatchHistory(users: PlayerWithDamage[]) {
 		const serverCount = await getCountFromServer(matchHistoryCollection);
 		const newMatchEntry = doc(
 			db,
-			`users/${user.auth_data.uid}/card_battle_history/${serverCount.data().count + 1}`
+			`users/${user.auth_data.uid}/card_battle_history/match_${serverCount.data().count + 1}`
 		);
 
 		await setDoc(newMatchEntry, cardBattleHistoryData);
@@ -87,12 +87,15 @@ async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: st
 	const player2TotalDamage = result[1].totalDamage;
 	const player1Turns = result[0].turns;
 	const player2Turns = result[1].turns;
+	const player1Cards = result[0].battle_cards;
+	const player2Cards = result[1].battle_cards;
 
-	const cardBattleRef = doc(db, `match_sets/${matchSetId}/card_battle/${idx + 1}`);
+	const cardBattleRef = doc(db, `match_sets/${matchSetId}/card_battle/match_${idx + 1}`);
 
 	if (player1TotalDamage !== null) {
 		player1.total_damage = player1TotalDamage;
 		player1.turns = player1Turns;
+		player1.battle_cards = player1Cards;
 	} else {
 		player1.total_damage = null;
 	}
@@ -100,6 +103,7 @@ async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: st
 	if (player2TotalDamage !== null) {
 		player2.total_damage = player2TotalDamage;
 		player2.turns = player2Turns;
+		player2.battle_cards = player2Cards;
 	} else {
 		player2.total_damage = null;
 	}
