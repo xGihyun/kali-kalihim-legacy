@@ -22,7 +22,7 @@
 	const user = getContext<Writable<UserData>>('user');
 
 	$: pendingMatch = data?.latestPendingMatch;
-	$: ({ matchHistory, cardBattleHistory } = data);
+	$: ({ matchHistory, cardBattleHistory, matchSet } = data);
 
 	$: {
 		if (data.user) {
@@ -95,7 +95,19 @@
 				<Rank user={$user} />
 				<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
 					<UpcomingMatch {pendingMatch} />
-					<PowerCards user={$user} />
+					{#if matchSet}
+						{#if matchSet.timer_expired}
+							<PowerCards user={$user} />
+						{:else}
+							<div
+								class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
+							>
+								<div class="flex justify-center items-center h-full">
+									You can't use power cards yet, proceed to Battle page for card battle
+								</div>
+							</div>
+						{/if}
+					{/if}
 				</div>
 				{#if matchHistory && cardBattleHistory}
 					<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">

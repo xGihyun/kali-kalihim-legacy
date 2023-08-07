@@ -42,7 +42,7 @@
 
 	// 6 hours in ms
 
-	const timeLimit = 300 * 1000;
+	const timeLimit = 6 * 60 * 60 * 1000;
 
 	let remainingHours = 0;
 	let remainingMinutes = 0;
@@ -86,78 +86,84 @@
 <Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
-	{#if timeRemaining > 0}
+	{#if !matchSet?.timer_expired}
 		<div>Timer: {remainingHours}:{remainingMinutes}:{remainingSeconds}</div>
-	{:else}
-		<div>6 hour timer has now expired. You can no longer submit battle cards.</div>
-	{/if}
-	<div>
-		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Strikes</h2>
-		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">
-			{#each strikeCards as [_, value], idx (idx)}
-				<button
-					class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
-					on:click={(e) => {
-						addToQueue({ name: value.name, skill: 'strike' });
-					}}
-					disabled={selected.includes(value.name)}
-				>
-					<span>{value.name}</span>
-				</button>
-			{/each}
-		</div>
-	</div>
-	<div>
-		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Blocks</h2>
-		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">
-			{#each blockCards as [_, value], idx (idx)}
-				<button
-					class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
-					on:click={(e) => {
-						addToQueue({ name: value.name, skill: 'block' });
-					}}
-					disabled={selected.includes(value.name)}
-				>
-					<span>{value.name}</span>
-				</button>
-			{/each}
-		</div>
-	</div>
-
-	{#if cardsInQueue.length > 0 && submitState === 'done'}
-		<div class="fixed bottom-10">
-			<div class="relative z-10 grid grid-cols-3 place-items-center gap-2 md:grid-cols-6 lg:gap-4">
-				{#each cardsInQueue as card, idx (idx)}
+		<div>
+			<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Strikes</h2>
+			<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+				{#each strikeCards as [_, value], idx (idx)}
 					<button
-						class="bg-surface-500-400-token flex aspect-[1/1.3] w-20 flex-col rounded-md lg:w-32 lg:gap-1"
-						on:click={() => removeInQueue(idx, card.name)}
+						class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
+						on:click={(e) => {
+							addToQueue({ name: value.name, skill: 'strike' });
+						}}
+						disabled={selected.includes(value.name)}
 					>
-						<span>{card.name}</span>
+						<span>{value.name}</span>
 					</button>
 				{/each}
 			</div>
-			<form
-				method="post"
-				action="?/battle"
-				use:enhance={({ formData }) => {
-					submitState = 'loading';
-
-					toastStore.trigger(submitting);
-					formData.append('battle_cards', JSON.stringify(cardsInQueue));
-
-					return async ({ result }) => {
-						if (result.type === 'success') {
-							submitState = 'done';
-							cardsInQueue = [];
-							toastStore.trigger(submitted);
-						}
-					};
-				}}
-			>
-				<button class="btn variant-filled-primary" disabled={cardsInQueue.length < 6} type="submit">
-					Submit
-				</button>
-			</form>
 		</div>
+		<div>
+			<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Blocks</h2>
+			<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+				{#each blockCards as [_, value], idx (idx)}
+					<button
+						class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
+						on:click={(e) => {
+							addToQueue({ name: value.name, skill: 'block' });
+						}}
+						disabled={selected.includes(value.name)}
+					>
+						<span>{value.name}</span>
+					</button>
+				{/each}
+			</div>
+		</div>
+
+		{#if cardsInQueue.length > 0 && submitState === 'done'}
+			<div class="fixed bottom-10">
+				<div
+					class="relative z-10 grid grid-cols-3 place-items-center gap-2 md:grid-cols-6 lg:gap-4"
+				>
+					{#each cardsInQueue as card, idx (idx)}
+						<button
+							class="bg-surface-500-400-token flex aspect-[1/1.3] w-20 flex-col rounded-md lg:w-32 lg:gap-1"
+							on:click={() => removeInQueue(idx, card.name)}
+						>
+							<span>{card.name}</span>
+						</button>
+					{/each}
+				</div>
+				<form
+					method="post"
+					action="?/battle"
+					use:enhance={({ formData }) => {
+						submitState = 'loading';
+
+						toastStore.trigger(submitting);
+						formData.append('battle_cards', JSON.stringify(cardsInQueue));
+
+						return async ({ result }) => {
+							if (result.type === 'success') {
+								submitState = 'done';
+								cardsInQueue = [];
+								toastStore.trigger(submitted);
+							}
+						};
+					}}
+				>
+					<button
+						class="btn variant-filled-primary"
+						disabled={cardsInQueue.length < 6}
+						type="submit"
+					>
+						Submit
+					</button>
+				</form>
+			</div>
+		{/if}
+	{:else}
+		<div>6 hour timer has now expired. You can no longer submit battle cards.</div>
 	{/if}
 </div>
