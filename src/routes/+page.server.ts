@@ -35,9 +35,9 @@ import { powerCardsMap } from '$lib/data';
 import { dataToObject } from '$lib/utils/functions';
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
-	// if (!locals.userData) {
-	// 	return;
-	// }
+	if (!locals.userData) {
+		return;
+	}
 
 	const userUID = locals.userData.auth_data.uid;
 

@@ -9,6 +9,10 @@ interface MatchSetWithId extends MatchSet {
 }
 
 export const load: LayoutServerLoad = async ({ locals }) => {
+	if (!locals.userData || !locals.userData.auth_data || !locals.userData.auth_data.uid) {
+		return;
+	}
+
 	const { section } = locals.userData.personal_data;
 
 	const matchesCollection = collection(db, 'match_sets');
