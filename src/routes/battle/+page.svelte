@@ -86,6 +86,7 @@
 <Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
+	{matchSet?.timer_expired}
 	{#if !matchSet?.timer_expired}
 		<div>Timer: {remainingHours}:{remainingMinutes}:{remainingSeconds}</div>
 		<div>

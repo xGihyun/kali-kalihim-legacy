@@ -10,16 +10,25 @@ import { getSections } from '$lib/utils/functions';
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const uid = params.uid;
 
-	const userRef = doc(db, 'users', uid);
-	const userDoc = await getDoc(userRef);
-	const user = userDoc.data() as UserData;
-	const sections = await getSections();
+	const fetchUser = async () => {
+		const userRef = doc(db, 'users', uid);
+		const userDoc = await getDoc(userRef);
+		const user = userDoc.data() as UserData;
+
+		return user;
+	};
+
+	const fetchSections = async () => {
+		const sections = await getSections();
+
+		return sections;
+	};
 
 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
-		user,
-		sections
+		user: fetchUser(),
+		sections: fetchSections()
 	};
 };
 

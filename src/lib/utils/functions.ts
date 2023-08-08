@@ -1,16 +1,7 @@
-import { blockCards, footworks, skills, strikeCards } from '$lib/data';
+import { footworks, skills } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
-import type {
-	BattleCard,
-	BattleCards,
-	CardBattle,
-	Match,
-	MatchSet,
-	MatchSets,
-	Section,
-	Skill
-} from '$lib/types';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import type { MatchSet, MatchSets, Section } from '$lib/types';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 export function getRandomArnisSkill() {
 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
@@ -25,37 +16,37 @@ export function getRandomArnisSkill() {
 	};
 }
 
-export function getRandomBattleCards(): BattleCards {
-	let battlecards: BattleCards = {
-		strikes: [],
-		blocks: []
-	};
+// export function getRandomBattleCards(): BattleCards {
+// 	let battlecards: BattleCards = {
+// 		strikes: [],
+// 		blocks: []
+// 	};
 
-	const strikes = [...strikeCards.keys()];
-	const blocks = [...blockCards.keys()];
+// 	const strikes = [...strikeCards.keys()];
+// 	const blocks = [...blockCards.keys()];
 
-	for (let i = 0; i < 5; i++) {
-		const randomStrike = getRandomBattleCard(strikes, 'strike');
-		const randomBlock = getRandomBattleCard(blocks, 'block');
+// 	for (let i = 0; i < 5; i++) {
+// 		const randomStrike = getRandomBattleCard(strikes, 'strike');
+// 		const randomBlock = getRandomBattleCard(blocks, 'block');
 
-		battlecards.strikes.push(randomStrike);
-		battlecards.blocks.push(randomBlock);
-	}
+// 		battlecards.strikes.push(randomStrike);
+// 		battlecards.blocks.push(randomBlock);
+// 	}
 
-	return battlecards;
-}
+// 	return battlecards;
+// }
 
-function getRandomBattleCard(skills: string[], skill: Skill) {
-	const randomSkillIndex = Math.floor(Math.random() * skills.length);
-	const randomSkills = skills[randomSkillIndex];
+// function getRandomBattleCard(skills: string[], skill: Skill) {
+// 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
+// 	const randomSkills = skills[randomSkillIndex];
 
-	const battlecard: BattleCard = {
-		name: randomSkills,
-		skill
-	};
+// 	const battlecard: BattleCard = {
+// 		name: randomSkills,
+// 		skill
+// 	};
 
-	return battlecard;
-}
+// 	return battlecard;
+// }
 
 // function getRandomStrikeCard(strikes: string[]): BattleCard {
 // 	const randomStrikeIndex = Math.floor(Math.random() * strikes.length);
@@ -83,25 +74,11 @@ function getRandomBattleCard(skills: string[], skill: Skill) {
 // 	return battlecard;
 // }
 
-export async function getSections(): Promise<Map<string, string>> {
-	const sectionsCollection = collection(db, 'sections');
-	const getSections = await getDocs(sectionsCollection);
+export async function getSections() {
+	const response = await fetch('/api/section', { method: 'GET' });
+	const result = await response.json();
 
-	if (getSections.empty) {
-		console.error('No sections yet');
-	}
-
-	const sections: Map<string, string> = getSections.docs.reduce((result, section) => {
-		const sectionData = section.data() as Section;
-		const value = sectionData.name;
-		const key = section.id;
-
-		result.set(key, value);
-
-		return result;
-	}, new Map());
-
-	return sections;
+	return result as Section[];
 }
 
 export function formatSection(section: string): string {
@@ -110,6 +87,7 @@ export function formatSection(section: string): string {
 	return formatted;
 }
 
+// Move to server side
 export async function getMatchSets(section: string) {
 	const matchesCollection = collection(db, 'match_sets');
 	const matchQuery = query(matchesCollection, where('section', '==', section));

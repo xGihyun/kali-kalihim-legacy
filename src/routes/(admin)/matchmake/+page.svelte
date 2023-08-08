@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { Match } from '$lib/types';
-	import { formatSection, getSections } from '$lib/utils/functions';
+	import type { Match, Section } from '$lib/types';
+	import { formatSection } from '$lib/utils/functions';
 
 	let newMatches: Match[] = [];
 	let sectionValue: string = 'Agatha';
@@ -26,6 +26,13 @@
 		} catch (error) {
 			console.error('Error in match making: ' + error);
 		}
+	}
+
+	async function getSections() {
+		const response = await fetch('/api/section', { method: 'GET' });
+		const result = await response.json();
+
+		return result as Section[];
 	}
 </script>
 
@@ -107,18 +114,18 @@
 				};
 			}}
 		>
-			<label class="label">
-				<span>Section</span>
-				<select class="select" name="section" required bind:value={sectionValue}>
-					{#await getSections()}
-						<span>Loading sections...</span>
-					{:then sections}
-						{#each sections as [key, value], idx (idx)}
-							<option value={key}>{value}</option>
+			{#await getSections()}
+				<div>Loading sections...</div>
+			{:then sections}
+				<label class="label">
+					<span>Section</span>
+					<select class="select" name="section" required bind:value={sectionValue}>
+						{#each sections as section, idx (idx)}
+							<option value={section.id}>{section.name}</option>
 						{/each}
-					{/await}
-				</select>
-			</label>
+					</select>
+				</label>
+			{/await}
 			<button class="btn variant-filled-primary" type="submit">Matchmake</button>
 		</form>
 	</div>

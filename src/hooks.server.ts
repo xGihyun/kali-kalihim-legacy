@@ -21,13 +21,14 @@ export async function handle({ event, resolve }) {
 	const docSnap = await getDoc(userRef);
 
 	if (!docSnap.exists()) {
-		console.log("Document snapshot doesn't exist");
+		console.log("Document snapshot for current user doesn't exist.");
 		return await resolve(event);
 	}
 
 	console.log('User exists.');
 
 	// I might not need to set the locals as the whole user data, will probably set to the uid only
+	// But I don't want to make a request just to get the rest of the user data, so setting it to locals should be better
 	const data = docSnap.data() as UserData;
 	event.locals.userData = data;
 

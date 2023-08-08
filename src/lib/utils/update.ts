@@ -14,6 +14,7 @@ import {
 	where
 } from 'firebase/firestore';
 
+// Move to server-side
 export async function updateRankTitle(userRef: DocumentReference<DocumentData>) {
 	const updatedUserDoc = await getDoc(userRef);
 	const updatedUserData = updatedUserDoc.data() as UserData;

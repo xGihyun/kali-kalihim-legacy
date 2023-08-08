@@ -1,9 +1,5 @@
 <script lang="ts">
-	import { db } from '$lib/firebase/firebase';
-	import type { UserData } from '$lib/types.js';
 	import { formatSection } from '$lib/utils/functions.js';
-	import { collection, onSnapshot, query, where } from 'firebase/firestore';
-	import { onDestroy } from 'svelte';
 
 	export let data;
 

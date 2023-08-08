@@ -161,8 +161,8 @@
 							name="section"
 							required
 						>
-							{#each sections as [key, value], idx (idx)}
-								<option value={key}>{value}</option>
+							{#each sections as section, idx (idx)}
+								<option value={section.id}>{section.name}</option>
 							{/each}
 						</select>
 					</label>

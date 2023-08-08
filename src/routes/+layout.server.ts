@@ -1,4 +1,4 @@
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import type { LayoutServerLoad } from './$types';
 import { db } from '$lib/firebase/firebase';
 import type { MatchSet } from '$lib/types';
@@ -9,28 +9,31 @@ interface MatchSetWithId extends MatchSet {
 }
 
 export const load: LayoutServerLoad = async ({ locals }) => {
-	// if (!locals.userData || !locals.userData.auth_data || !locals.userData.auth_data.uid) {
-	// 	return;
-	// }
-	const section = locals.userData.personal_data.section;
+	const { section } = locals.userData.personal_data;
 
 	const matchesCollection = collection(db, 'match_sets');
 	const matchQuery = query(matchesCollection, where('section', '==', section));
-	const getMatchDocs = await getDocs(matchQuery);
-	const latestMatchSet: MatchSetWithId | undefined = getMatchDocs.docs
-		.map((match) => {
-			const matchData = match.data() as MatchSet;
-			const matchId = match.id;
+	const matchSnapshot = await getDocs(matchQuery);
 
-			return {
-				...matchData,
-				id: matchId
-			};
-		})
-		.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)
-		.shift();
+	let latestMatchSet: MatchSetWithId | undefined;
+	let serializedMatchSet: MatchSetWithId | undefined;
 
-	const serializedMatchSet = dataToObject(latestMatchSet) as MatchSetWithId | undefined;
+	if (!matchSnapshot.empty) {
+		matchSnapshot.docChanges().forEach((change) => {
+			if (change.type === 'added') {
+				const matchData = change.doc.data() as MatchSet;
+				const matchId = change.doc.id;
+				latestMatchSet = {
+					...matchData,
+					id: matchId
+				};
+			}
+		});
+	}
+
+	if (latestMatchSet) {
+		serializedMatchSet = dataToObject(latestMatchSet) as MatchSetWithId;
+	}
 
 	return {
 		user: locals.userData,

@@ -1,4 +1,4 @@
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/firebase/firebase';
 import type { UserData } from '$lib/types';
@@ -7,7 +7,7 @@ import { CACHE_DURATION } from '$lib/constants';
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const section = params.section;
 
-	console.log(section)
+	console.log(section);
 
 	const usersCollection = collection(db, 'users');
 	const q = query(usersCollection, where('personal_data.section', '==', section));

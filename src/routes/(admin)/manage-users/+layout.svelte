@@ -1,12 +1,8 @@
 <script lang="ts">
-	import { db } from '$lib/firebase/firebase';
-	import type { Section } from '$lib/types';
 	import { getSections } from '$lib/utils/functions';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import { collection, onSnapshot } from 'firebase/firestore';
-	import { onDestroy } from 'svelte';
 
-	$: section = 'Select a section';
+	$: selectedSection = 'Select a section';
 
 	const sectionPopup: PopupSettings = {
 		event: 'click',
@@ -15,7 +11,7 @@
 	};
 
 	// NOTE: Make it reactive, maybe store sections in a writable
-	
+
 	// const sectionsCollection = collection(db, 'sections');
 
 	// const unsubSections = onSnapshot(sectionsCollection, (snapshot) => {
@@ -33,7 +29,7 @@
 
 <div class="flex h-full w-full flex-col items-center justify-center py-10">
 	<button class="btn variant-filled w-48 justify-between" use:popup={sectionPopup}>
-		<span class="capitalize">{section}</span>
+		<span class="capitalize">{selectedSection}</span>
 		<span>↓</span>
 	</button>
 
@@ -42,14 +38,16 @@
 			{#await getSections()}
 				<span>Loading sections...</span>
 			{:then sections}
-				{#each sections as [key, value], idx (idx)}
+				{#each sections as section, idx (idx)}
 					<li class="flex">
 						<a
 							class={`flex-1 px-4 py-2 ${
-								section === key ? 'variant-filled' : 'bg-surface-100-800-token hover:variant-soft'
+								selectedSection === section.id
+									? 'variant-filled'
+									: 'bg-surface-100-800-token hover:variant-soft'
 							}`}
-							href={`/manage-users/${key}`}
-							on:click={() => (section = value)}>{value}</a
+							href={`/manage-users/${section.id}`}
+							on:click={() => (selectedSection = section.id)}>{section.id}</a
 						>
 					</li>
 				{/each}

@@ -1,6 +1,6 @@
 import type { Actions } from '@sveltejs/kit';
 import { db } from '$lib/firebase/firebase';
-import type { BattleCardResults, CardBattle, Match, MatchSet, UserData } from '$lib/types';
+import type { CardBattle, Match, MatchSet, UserData } from '$lib/types';
 import { getRandomArnisSkill } from '$lib/utils/functions';
 import { error } from '@sveltejs/kit';
 import {
@@ -128,8 +128,6 @@ async function shuffleArray(users: UserData[], scoreThreshold: number) {
 	}
 
 	let updatedUsers: UserData[] = [...users];
-
-	console.log(persisted);
 
 	for (const pairs of persisted) {
 		for (const userInPair of pairs) {
