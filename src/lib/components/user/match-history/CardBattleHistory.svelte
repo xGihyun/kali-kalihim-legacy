@@ -55,28 +55,34 @@
 
 						{#if clickedRow === idx}
 							<div class="fixed left-0 top-0 z-[999] h-full w-full bg-surface-backdrop-token">
-								<div class="flex h-full w-full items-center justify-center">
+								<div class="flex h-full w-full items-center justify-center p-2">
 									<div
-										class="w-modal space-y-4 p-4 shadow-xl bg-surface-100-800-token rounded-container-token max-h-96 overflow-auto"
+										class="w-full sm:w-3/4 space-y-16 p-4 relative shadow-xl bg-surface-100-800-token rounded-container-token h-1/2 overflow-auto"
 									>
-										<div class="flex gap-4 sm:flex-row flex-col">
-											{#each players as player (player.auth_data.uid)}
-												{@const name = `${player.personal_data.name.first} ${player.personal_data.name.last}`}
-
-												<div class="flex flex-col gap-2">
-													<span
-														class={`font-gt-walsheim-pro-medium text-lg ${
-															player.auth_data.uid === $currentUser.auth_data.uid
-																? 'text-tertiary-300'
-																: 'text-white'
-														}`}
-													>
-														{name}
-													</span>
-													{#each player.turns as turn, idx (idx)}
-														{@const battleCard = player.battle_cards[idx]}
-
-														<div class="flex flex-col h-60 gap-2">
+										{#each players as player (player.auth_data.uid)}
+											{@const name = `${player.personal_data.name.first} ${player.personal_data.name.last}`}
+											<div
+												class="grid grid-cols-1 lg:grid-cols-7 lg:grid-rows-1 grid-rows-7 gap-4 lg:overflow-auto"
+											>
+												<span
+													class={`font-gt-walsheim-pro-medium text-base sm:text-lg ${
+														player.auth_data.uid === $currentUser.auth_data.uid
+															? 'text-tertiary-300'
+															: 'text-white'
+													}`}
+												>
+													{name}
+												</span>
+												{#each player.turns as turn, idx (idx)}
+													{@const battleCard = player.battle_cards[idx]}
+													<div class="flex gap-2">
+														<div class="sm:text-base text-sm">
+															<span>
+																{idx + 1}.
+															</span>
+															<!-- <span class="text-primary-500">.</span> -->
+														</div>
+														<div class="flex flex-col w-full gap-2 flex-1 sm:text-base text-sm">
 															{#if battleCard.skill === 'strike'}
 																{@const strikeCard = strikeCards.get(battleCard.name)}
 
@@ -84,22 +90,26 @@
 																	{@const { accuracy, damage, effect, name } = strikeCard}
 
 																	<div class="flex flex-col">
-																		<span class="font-gt-walsheim-pro-medium">{name}</span>
+																		<span class="font-gt-walsheim-pro-medium text-secondary-300"
+																			>{name}</span
+																		>
 																	</div>
 
 																	{#if turn.is_cancelled}
 																		<span>Blocked!</span>
 																	{:else if damage > 0}
-																		<span>Damage: {damage}</span>
-																		<span>Accuracy: {accuracy * 100}%</span>
+																		<div class="flex flex-col">
+																			<span>Damage: {damage}</span>
+																			<span>Accuracy: {accuracy * 100}%</span>
+																		</div>
 																		<span>Hit!</span>
 																		<div>
-																			<p>
-																				Damage dealt:
-																				<span class="text-primary-400">
-																					{turn.damage}
-																				</span>
-																			</p>
+																			<!-- <p>
+																			Damage dealt:
+																			<span class="text-primary-400">
+																				{turn.damage}
+																			</span>
+																		</p> -->
 																			<div>
 																				<span>Bonus effect:</span>
 																				<p>
@@ -130,16 +140,22 @@
 																{#if blockCard}
 																	{@const { effect, name, reduction } = blockCard}
 
-																	<span class="font-gt-walsheim-pro-medium">{name}</span>
+																	<span class="font-gt-walsheim-pro-medium text-secondary-300"
+																		>{name}</span
+																	>
 																	<span>Damage Reduction: {reduction * 100}%</span>
 																{/if}
 															{/if}
 														</div>
-													{/each}
-												</div>
-											{/each}
+													</div>
+												{/each}
+											</div>
+										{/each}
+										<div class="flex justify-end">
+											<button class="btn variant-filled-primary" on:click={() => toggleRow(idx)}
+												>Close</button
+											>
 										</div>
-										<button on:click={() => toggleRow(idx)}>X</button>
 									</div>
 								</div>
 							</div>
