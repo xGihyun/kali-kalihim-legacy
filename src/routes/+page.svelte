@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ActivatePowerCard } from '$lib/components';
 	import { db } from '$lib/firebase/firebase';
-	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
+	import { currentUser, latestOpponent, selectedPowerCard, timerExpired } from '$lib/store';
 	import type { Match, UserData } from '$lib/types';
 	import { collection, doc, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
@@ -77,6 +77,20 @@
 
 			onDestroy(() => unsubOpponent());
 		}
+
+		if (matchSet) {
+			const matchSetRef = doc(db, 'match_sets', matchSet.id);
+
+			const unsubTimer = onSnapshot(matchSetRef, (snapshot) => {
+				if (!snapshot.exists()) return;
+
+				const expired = snapshot.data().timer_expired as boolean;
+
+				timerExpired.update((val) => (val = expired));
+			});
+
+			onDestroy(() => unsubTimer());
+		}
 	}
 </script>
 
@@ -97,18 +111,16 @@
 				<Rank user={$currentUserCtx} />
 				<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
 					<UpcomingMatch {pendingMatch} />
-					{#if matchSet}
-						{#if matchSet.timer_expired}
-							<PowerCards user={$currentUserCtx} />
-						{:else}
-							<div
-								class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
-							>
-								<div class="flex justify-center items-center h-full">
-									You can't use power cards yet, proceed to Battle page for card battle
-								</div>
+					{#if $timerExpired}
+						<PowerCards user={$currentUserCtx} />
+					{:else}
+						<div
+							class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
+						>
+							<div class="flex justify-center items-center h-full">
+								You can't use power cards yet, proceed to Battle page for card battle
 							</div>
-						{/if}
+						</div>
 					{/if}
 				</div>
 				{#if matchHistory && cardBattleHistory}

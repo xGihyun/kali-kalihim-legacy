@@ -138,7 +138,7 @@
 																{@const blockCard = blockCards.get(battleCard.name)}
 
 																{#if blockCard}
-																	{@const { effect, name, reduction } = blockCard}
+																	{@const { name, reduction } = blockCard}
 
 																	<span class="font-gt-walsheim-pro-medium text-secondary-300"
 																		>{name}</span

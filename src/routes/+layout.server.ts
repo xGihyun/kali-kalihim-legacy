@@ -9,35 +9,24 @@ interface MatchSetWithId extends MatchSet {
 }
 
 export const load: LayoutServerLoad = async ({ locals }) => {
-	if (!locals.userData || !locals.userData.auth_data || !locals.userData.auth_data.uid) {
-		return;
-	}
-
 	const { section } = locals.userData.personal_data;
 
 	const matchesCollection = collection(db, 'match_sets');
 	const matchQuery = query(matchesCollection, where('section', '==', section));
-	const matchSnapshot = await getDocs(matchQuery);
+	const getMatchDocs = await getDocs(matchQuery);
+	const latestMatchSet: MatchSetWithId | undefined = getMatchDocs.docs
+		.map((match) => {
+			const matchData = match.data() as MatchSet;
+			const matchId = match.id;
 
-	let latestMatchSet: MatchSetWithId | undefined;
-	let serializedMatchSet: MatchSetWithId | undefined;
+			return {
+				...matchData,
+				id: matchId
+			};
+		})
+		.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
 
-	if (!matchSnapshot.empty) {
-		matchSnapshot.docChanges().forEach((change) => {
-			if (change.type === 'added') {
-				const matchData = change.doc.data() as MatchSet;
-				const matchId = change.doc.id;
-				latestMatchSet = {
-					...matchData,
-					id: matchId
-				};
-			}
-		});
-	}
-
-	if (latestMatchSet) {
-		serializedMatchSet = dataToObject(latestMatchSet) as MatchSetWithId;
-	}
+	const serializedMatchSet = dataToObject(latestMatchSet) as MatchSetWithId | undefined;
 
 	return {
 		user: locals.userData,

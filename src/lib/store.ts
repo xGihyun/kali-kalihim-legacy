@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { defaultUserData } from './default';
-import type { Match, UserData } from './types';
+import type { UserData } from './types';
 
 export const currentUser = writable<UserData>({
 	...defaultUserData
@@ -14,3 +14,4 @@ export const allUsersInSection = writable<UserData[]>([]);
 // export const matchResults = writable<Promise<Match[]>>();
 // export const matchSetId = writable<string>();
 export const section = writable<string>();
+export const timerExpired = writable<boolean>(false);

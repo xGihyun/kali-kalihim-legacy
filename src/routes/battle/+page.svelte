@@ -6,7 +6,8 @@
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	import { onDestroy } from 'svelte';
 	import { db } from '$lib/firebase/firebase.js';
-	import { doc, updateDoc } from 'firebase/firestore';
+	import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
+	import { timerExpired } from '$lib/store.js';
 
 	export let data;
 
@@ -47,34 +48,50 @@
 	let remainingHours = 0;
 	let remainingMinutes = 0;
 	let remainingSeconds = 0;
-	let timeRemaining = 0;
+
+	async function updateTimerExpiration(timeRemaining: number) {
+		if (!matchSet) return;
+
+		if (timeRemaining <= 0) {
+			const matchSetRef = doc(db, 'match_sets', matchSet.id);
+
+			await updateDoc(matchSetRef, { timer_expired: true });
+
+			remainingHours = 0;
+			remainingMinutes = 0;
+			remainingSeconds = 0;
+		} else {
+			remainingHours = Math.floor(timeRemaining / (1000 * 60 * 60));
+			remainingMinutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+			remainingSeconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+		}
+	}
+
+	async function updateTimer() {
+		if (!matchSet) return;
+
+		const currentTime = new Date().getTime();
+		const timestamp = matchSet.timestamp.seconds * 1000;
+
+		const timeRemaining = timeLimit - (currentTime - timestamp);
+
+		await updateTimerExpiration(timeRemaining);
+	}
 
 	$: {
-		async function updateTimer() {
-			if (!matchSet) return;
+		if (matchSet) {
+			const matchSetRef = doc(db, 'match_sets', matchSet.id);
 
-			const currentTime = new Date().getTime();
-			const timestamp = matchSet.timestamp.seconds * 1000;
+			const unsubTimer = onSnapshot(matchSetRef, (snapshot) => {
+				if (!snapshot.exists()) return;
 
-			timeRemaining = timeLimit - (currentTime - timestamp);
+				const expired = snapshot.data().timer_expired as boolean;
 
-			if (timeRemaining <= 0) {
-				const matchSetRef = doc(db, 'match_sets', matchSet.id);
+				timerExpired.update((val) => (val = expired));
+			});
 
-				await updateDoc(matchSetRef, { timer_expired: true });
-
-				clearInterval(timerInterval);
-
-				remainingHours = 0;
-				remainingMinutes = 0;
-				remainingSeconds = 0;
-			} else {
-				remainingHours = Math.floor(timeRemaining / (1000 * 60 * 60));
-				remainingMinutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-				remainingSeconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-			}
+			onDestroy(() => unsubTimer());
 		}
-
 		updateTimer();
 
 		const timerInterval = setInterval(updateTimer, 1000);
@@ -86,8 +103,8 @@
 <Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
-	{matchSet?.timer_expired}
-	{#if !matchSet?.timer_expired}
+	{$timerExpired}
+	{#if !$timerExpired}
 		<div>Timer: {remainingHours}:{remainingMinutes}:{remainingSeconds}</div>
 		<div>
 			<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Strikes</h2>
@@ -95,7 +112,7 @@
 				{#each strikeCards as [_, value], idx (idx)}
 					<button
 						class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
-						on:click={(e) => {
+						on:click={() => {
 							addToQueue({ name: value.name, skill: 'strike' });
 						}}
 						disabled={selected.includes(value.name)}
@@ -111,7 +128,7 @@
 				{#each blockCards as [_, value], idx (idx)}
 					<button
 						class="bg-surface-400-500-token flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
-						on:click={(e) => {
+						on:click={() => {
 							addToQueue({ name: value.name, skill: 'block' });
 						}}
 						disabled={selected.includes(value.name)}
