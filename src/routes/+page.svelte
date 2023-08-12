@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ActivatePowerCard } from '$lib/components';
 	import { db } from '$lib/firebase/firebase';
-	import { currentUser, latestOpponent, selectedPowerCard, timerExpired } from '$lib/store';
+	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
 	import type { Match, UserData } from '$lib/types';
 	import { collection, doc, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
@@ -86,7 +86,10 @@
 
 				const expired = snapshot.data().timer_expired as boolean;
 
-				timerExpired.update((val) => (val = expired));
+				// timerExpired.update((val) => (val = expired));
+				if (matchSet) {
+					matchSet.timer_expired = expired;
+				}
 			});
 
 			onDestroy(() => unsubTimer());
@@ -111,7 +114,7 @@
 				<Rank user={$currentUserCtx} />
 				<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
 					<UpcomingMatch {pendingMatch} />
-					{#if $timerExpired}
+					{#if matchSet && matchSet.timer_expired}
 						<PowerCards user={$currentUserCtx} />
 					{:else}
 						<div

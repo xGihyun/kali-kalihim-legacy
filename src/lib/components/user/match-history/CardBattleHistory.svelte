@@ -57,7 +57,7 @@
 							<div class="fixed left-0 top-0 z-[999] h-full w-full bg-surface-backdrop-token">
 								<div class="flex h-full w-full items-center justify-center p-2">
 									<div
-										class="w-full sm:w-3/4 space-y-16 p-4 relative shadow-xl bg-surface-100-800-token rounded-container-token h-1/2 overflow-auto"
+										class="w-full sm:w-3/4 space-y-16 p-4 relative shadow-xl bg-surface-100-800-token rounded-container-token h-3/4 overflow-auto"
 									>
 										{#each players as player (player.auth_data.uid)}
 											{@const name = `${player.personal_data.name.first} ${player.personal_data.name.last}`}
@@ -124,7 +124,7 @@
 																					{/if}
 
 																					{effect.stat}
-
+																					on
 																					{effect.target === 'self' ? "user's" : "opponent's"}
 																					next turn
 																				</p>
@@ -143,7 +143,7 @@
 																	<span class="font-gt-walsheim-pro-medium text-secondary-300"
 																		>{name}</span
 																	>
-																	<span>Damage Reduction: {reduction * 100}%</span>
+																	<span>DMG Reduction: {reduction * 100}%</span>
 																{/if}
 															{/if}
 														</div>

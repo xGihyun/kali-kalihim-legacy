@@ -1,4 +1,5 @@
 import type { Timestamp } from 'firebase/firestore';
+import type { ComponentType, SvelteComponent } from 'svelte';
 
 // USER
 
@@ -65,6 +66,7 @@ export type ArnisMatchHistory = {
 	skill: string;
 	footwork: string;
 	timestamp: Timestamp;
+	// winner: UserData;
 };
 
 export type MatchSet = {
@@ -84,7 +86,7 @@ export type Section = {
 
 export type PowerCard = {
 	components: {
-		ability: ConstructorOfATypedSvelteComponent;
+		ability: ComponentType<SvelteComponent>;
 	};
 	name: string;
 	function: (...T: any) => Promise<typeof T>;
@@ -98,7 +100,7 @@ export type PowerCard = {
 export type Navigation = {
 	name: string;
 	path: string;
-	icon?: ConstructorOfATypedSvelteComponent;
+	icon?: ComponentType<SvelteComponent>;
 }[];
 
 export type Video = {

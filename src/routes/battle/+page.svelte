@@ -7,7 +7,7 @@
 	import { onDestroy } from 'svelte';
 	import { db } from '$lib/firebase/firebase.js';
 	import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
-	import { timerExpired } from '$lib/store.js';
+	// import { timerExpired } from '$lib/store.js';
 
 	export let data;
 
@@ -87,11 +87,16 @@
 
 				const expired = snapshot.data().timer_expired as boolean;
 
-				timerExpired.update((val) => (val = expired));
+				// timerExpired.update((val) => (val = expired));
+
+				if (matchSet) {
+					matchSet.timer_expired = expired;
+				}
 			});
 
 			onDestroy(() => unsubTimer());
 		}
+
 		updateTimer();
 
 		const timerInterval = setInterval(updateTimer, 1000);
@@ -103,8 +108,8 @@
 <Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
-	{$timerExpired}
-	{#if !$timerExpired}
+	{matchSet?.timer_expired}
+	{#if !matchSet?.timer_expired}
 		<div>Timer: {remainingHours}:{remainingMinutes}:{remainingSeconds}</div>
 		<div>
 			<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Strikes</h2>
