@@ -17,6 +17,22 @@ export async function handle({ event, resolve }) {
 		return await resolve(event);
 	}
 
+	// Possible helper function
+	// const getUserData = async () => {
+	// 	const userRef = doc(db, 'users', session);
+	// 	const docSnap = await getDoc(userRef);
+	//
+	// 	if (!docSnap.exists()) {
+	// 		return null;
+	// 	}
+	//
+	// 	const data = docSnap.data() as UserData;
+	//
+	// 	return data;
+	// };
+
+	// event.locals.getUserData = getUserData();
+
 	const userRef = doc(db, 'users', session);
 	const docSnap = await getDoc(userRef);
 

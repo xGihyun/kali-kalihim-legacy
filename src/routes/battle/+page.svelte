@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { BattleCard, LoadState } from '$lib/types';
+	import type { BattleCard, LoadState, MatchSet } from '$lib/types';
 	import { blockCards, strikeCards } from '$lib/data';
 	import { Toast, toastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	import { onDestroy } from 'svelte';
 	import { db } from '$lib/firebase/firebase.js';
-	import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
-	// import { timerExpired } from '$lib/store.js';
+	import { collection, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 
 	export let data;
 
-	$: ({ matchSet } = data);
+	$: ({ matchSet, matchSetId, user } = data);
 
 	$: cardsInQueue = [] as BattleCard[];
 	$: selected = [] as string[];
@@ -43,19 +42,27 @@
 
 	// 6 hours in ms
 
-	const timeLimit = 6 * 60 * 60 * 1000;
+	const timeLimit = 60 * 1000;
 
 	let remainingHours = 0;
 	let remainingMinutes = 0;
 	let remainingSeconds = 0;
 
-	async function updateTimerExpiration(timeRemaining: number) {
-		if (!matchSet) return;
+	async function updateTimerExpiration(timeRemaining: number, timer: number) {
+		if (!matchSetId) return;
 
 		if (timeRemaining <= 0) {
-			const matchSetRef = doc(db, 'match_sets', matchSet.id);
+			const matchSetRef = doc(db, 'match_sets', matchSetId);
+
+			console.log(matchSetId);
+
+			console.log('Time is up');
 
 			await updateDoc(matchSetRef, { timer_expired: true });
+
+			console.log('Match set timer is expired');
+
+			clearInterval(timer);
 
 			remainingHours = 0;
 			remainingMinutes = 0;
@@ -67,7 +74,7 @@
 		}
 	}
 
-	async function updateTimer() {
+	async function updateTimer(timer: number) {
 		if (!matchSet) return;
 
 		const currentTime = new Date().getTime();
@@ -75,31 +82,46 @@
 
 		const timeRemaining = timeLimit - (currentTime - timestamp);
 
-		await updateTimerExpiration(timeRemaining);
+		console.log(timeRemaining);
+
+		await updateTimerExpiration(timeRemaining, timer);
 	}
 
 	$: {
-		if (matchSet) {
-			const matchSetRef = doc(db, 'match_sets', matchSet.id);
+		const matchesCollection = collection(db, 'match_sets');
+		const matchQuery = query(
+			matchesCollection,
+			where('section', '==', user?.personal_data.section)
+		);
+
+		onSnapshot(matchQuery, async (snapshot) => {
+			if (!snapshot.empty) {
+				console.log('Match set assigned');
+				matchSet = snapshot.docs
+					.map((match) => match.data() as MatchSet)
+					.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
+			}
+		});
+
+		if (matchSetId) {
+			const matchSetRef = doc(db, 'match_sets', matchSetId);
 
 			const unsubTimer = onSnapshot(matchSetRef, (snapshot) => {
-				if (!snapshot.exists()) return;
+				if (snapshot.exists()) {
+					const newMatchSet = snapshot.data() as MatchSet;
 
-				const expired = snapshot.data().timer_expired as boolean;
+					console.log('Match set snapshot');
 
-				// timerExpired.update((val) => (val = expired));
-
-				if (matchSet) {
-					matchSet.timer_expired = expired;
+					matchSet = newMatchSet;
 				}
 			});
 
 			onDestroy(() => unsubTimer());
 		}
 
-		updateTimer();
-
 		const timerInterval = setInterval(updateTimer, 1000);
+
+		updateTimer(timerInterval);
 
 		onDestroy(() => clearInterval(timerInterval));
 	}
@@ -108,8 +130,14 @@
 <Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
-	{matchSet?.timer_expired}
-	{#if !matchSet?.timer_expired}
+	<div>
+		<span>Server timer: {matchSet?.timer_expired}</span>
+	</div>
+	{#if !matchSet}
+		<div>No match available, please wait for admin to queue.</div>
+	{:else if matchSet.timer_expired}
+		<div>6 hour timer has now expired. You can no longer submit battle cards.</div>
+	{:else}
 		<div>Timer: {remainingHours}:{remainingMinutes}:{remainingSeconds}</div>
 		<div>
 			<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Strikes</h2>
@@ -186,7 +214,5 @@
 				</form>
 			</div>
 		{/if}
-	{:else}
-		<div>6 hour timer has now expired. You can no longer submit battle cards.</div>
 	{/if}
 </div>

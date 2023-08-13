@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { UserAuthData, UserData, UserPersonalData } from '$lib/types';
+import type { UserData } from '$lib/types';
 
 // for information about these interfaces
 declare global {
@@ -8,6 +8,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			userData: UserData;
+			getUserData: Promise<UserData | null>;
 		}
 		// interface PageData {}
 		// interface Platform {}

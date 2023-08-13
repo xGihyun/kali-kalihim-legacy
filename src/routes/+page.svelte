@@ -2,8 +2,18 @@
 	import { ActivatePowerCard } from '$lib/components';
 	import { db } from '$lib/firebase/firebase';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
-	import type { Match, UserData } from '$lib/types';
-	import { collection, doc, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
+	import type { Match, MatchSet, UserData } from '$lib/types';
+	import {
+		collection,
+		collectionGroup,
+		doc,
+		getDocs,
+		limit,
+		onSnapshot,
+		orderBy,
+		query,
+		where
+	} from 'firebase/firestore';
 	import { getContext, onDestroy } from 'svelte';
 	import {
 		Banner,
@@ -23,22 +33,22 @@
 
 	$: pendingMatch = data?.latestPendingMatch?.match;
 	$: opponent = data.latestPendingMatch?.opponent;
-	$: ({ user, matchHistory, cardBattleHistory, matchSet } = data);
+	$: ({ user, matchHistory, cardBattleHistory, matchSet, matchSetId } = data);
 
 	$: {
 		if (user) {
-			const userData = user;
-
-			const userRef = doc(db, 'users', userData.auth_data.uid);
+			const userRef = doc(db, 'users', user.auth_data.uid);
 			const pendingMatchesCollection = collection(
 				db,
-				`users/${userData.auth_data.uid}/pending_matches`
+				`users/${user.auth_data.uid}/pending_matches`
 			);
 			const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'), limit(1));
 
 			const unsubUser = onSnapshot(userRef, (snapshot) => {
 				if (snapshot.exists()) {
 					const updatedUserData = snapshot.data() as UserData;
+
+					console.log('User snapshot');
 
 					currentUser.update((val) => ({ ...val, ...updatedUserData }));
 				}
@@ -48,8 +58,10 @@
 				if (!snapshot.empty) {
 					const newMatch = snapshot.docs[0]?.data() as Match;
 					const newOpponent = newMatch.players.find(
-						(player) => player.auth_data.uid !== userData.auth_data.uid
+						(player) => player.auth_data.uid !== user?.auth_data.uid
 					) as UserData;
+
+					console.log('Pending match snapshot');
 
 					pendingMatch = newMatch;
 					latestOpponent.set(newOpponent);
@@ -63,32 +75,46 @@
 		}
 
 		if (opponent) {
-			const latestOpponentData = opponent;
-
-			const opponentRef = doc(db, 'users', latestOpponentData.auth_data.uid);
+			const opponentRef = doc(db, 'users', opponent.auth_data.uid);
 
 			const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
 				if (snapshot.exists()) {
-					const updatedOpponentData = snapshot.data() as UserData;
+					const updatedOpponent = snapshot.data() as UserData;
 
-					latestOpponent.update((val) => ({ ...val, ...updatedOpponentData }));
+					console.log('Opponent snapshot');
+
+					latestOpponent.set(updatedOpponent);
 				}
 			});
 
 			onDestroy(() => unsubOpponent());
 		}
 
-		if (matchSet) {
-			const matchSetRef = doc(db, 'match_sets', matchSet.id);
+		const matchesCollection = collection(db, 'match_sets');
+		const matchQuery = query(
+			matchesCollection,
+			where('section', '==', user?.personal_data.section)
+		);
+
+		onSnapshot(matchQuery, async (snapshot) => {
+			if (!snapshot.empty) {
+				console.log('Match set assigned');
+				matchSet = snapshot.docs
+					.map((match) => match.data() as MatchSet)
+					.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
+			}
+		});
+
+		if (matchSetId) {
+			const matchSetRef = doc(db, 'match_sets', matchSetId);
 
 			const unsubTimer = onSnapshot(matchSetRef, (snapshot) => {
-				if (!snapshot.exists()) return;
+				if (snapshot.exists()) {
+					const newMatchSet = snapshot.data() as MatchSet;
 
-				const expired = snapshot.data().timer_expired as boolean;
+					console.log('Match set snapshot');
 
-				// timerExpired.update((val) => (val = expired));
-				if (matchSet) {
-					matchSet.timer_expired = expired;
+					matchSet = newMatchSet;
 				}
 			});
 
@@ -114,7 +140,16 @@
 				<Rank user={$currentUserCtx} />
 				<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
 					<UpcomingMatch {pendingMatch} />
-					{#if matchSet && matchSet.timer_expired}
+
+					{#if !matchSet}
+						<div
+							class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
+						>
+							<div class="flex justify-center items-center h-full">
+								No match available, please wait for admin to queue.
+							</div>
+						</div>
+					{:else if matchSet.timer_expired}
 						<PowerCards user={$currentUserCtx} />
 					{:else}
 						<div

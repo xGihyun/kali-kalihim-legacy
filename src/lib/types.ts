@@ -77,6 +77,11 @@ export type MatchSet = {
 	timer_expired: boolean;
 };
 
+export type MatchSetWithId = {
+	match: MatchSet;
+	id: string;
+};
+
 export type Section = {
 	name: string;
 	id: string;

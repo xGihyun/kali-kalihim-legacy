@@ -3,6 +3,10 @@
 	import type { Match, Section } from '$lib/types';
 	import { formatSection } from '$lib/utils/functions';
 
+	export let data;
+
+	$: ({ matchSet } = data);
+
 	let newMatches: Match[] = [];
 	let sectionValue: string = 'Agatha';
 
@@ -23,6 +27,10 @@
 			const matches = JSON.parse(values) as Match[];
 
 			newMatches = matches;
+
+			if (matchSet) {
+				matchSet = { ...matchSet, timer_expired: false };
+			}
 		} catch (error) {
 			console.error('Error in match making: ' + error);
 		}
