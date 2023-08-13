@@ -88,20 +88,24 @@
 	}
 
 	$: {
-		const matchesCollection = collection(db, 'match_sets');
-		const matchQuery = query(
-			matchesCollection,
-			where('section', '==', user?.personal_data.section)
-		);
+		if (user) {
+			const matchesCollection = collection(db, 'match_sets');
+			const matchQuery = query(
+				matchesCollection,
+				where('section', '==', user.personal_data.section)
+			);
 
-		onSnapshot(matchQuery, async (snapshot) => {
-			if (!snapshot.empty) {
-				console.log('Match set assigned');
-				matchSet = snapshot.docs
-					.map((match) => match.data() as MatchSet)
-					.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
-			}
-		});
+			const unsubLatestMatchSet = onSnapshot(matchQuery, async (snapshot) => {
+				if (!snapshot.empty) {
+					console.log('Match set assigned');
+					matchSet = snapshot.docs
+						.map((match) => match.data() as MatchSet)
+						.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
+				}
+			});
+
+			onDestroy(() => unsubLatestMatchSet());
+		}
 
 		if (matchSetId) {
 			const matchSetRef = doc(db, 'match_sets', matchSetId);
