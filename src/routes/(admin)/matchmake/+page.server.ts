@@ -1,6 +1,6 @@
 import type { Actions } from '@sveltejs/kit';
 import { db } from '$lib/firebase/firebase';
-import type { CardBattle, Match, MatchSet, UserData } from '$lib/types';
+import type { CardBattle, Match, MatchSet, Section, UserData } from '$lib/types';
 import { getRandomArnisSkill } from '$lib/utils/functions';
 import { error } from '@sveltejs/kit';
 import {
@@ -15,6 +15,22 @@ import {
 	setDoc,
 	where
 } from 'firebase/firestore';
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ fetch }) => {
+	const fetchSections = async () => {
+		const response = await fetch('/api/section', { method: 'GET' });
+		const result = await response.json();
+
+		const sections = result as Section[];
+
+		return sections;
+	};
+
+	return {
+		sections: fetchSections()
+	};
+};
 
 export const actions: Actions = {
 	default: async ({ request }) => {

@@ -4,9 +4,10 @@
 	import { blockCards, strikeCards } from '$lib/data';
 	import { Toast, toastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { db } from '$lib/firebase/firebase.js';
 	import { collection, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+	import type { Unsubscribe } from 'firebase/auth';
 
 	export let data;
 
@@ -48,7 +49,7 @@
 	let remainingMinutes = 0;
 	let remainingSeconds = 0;
 
-	async function updateTimerExpiration(timeRemaining: number, timer: number) {
+	async function updateTimerExpiration(timeRemaining: number, timer: NodeJS.Timeout | undefined) {
 		if (!matchSetId) return;
 
 		if (timeRemaining <= 0) {
@@ -56,13 +57,12 @@
 
 			console.log(matchSetId);
 
-			console.log('Time is up');
-
 			await updateDoc(matchSetRef, { timer_expired: true });
 
-			console.log('Match set timer is expired');
-
 			clearInterval(timer);
+
+			console.log('Match set timer is expired');
+			console.log('Cleared timer interval');
 
 			remainingHours = 0;
 			remainingMinutes = 0;
@@ -74,7 +74,14 @@
 		}
 	}
 
-	async function updateTimer(timer: number) {
+	let timerInterval: NodeJS.Timeout | undefined;
+
+	function startTimer() {
+		timerInterval = setInterval(updateTimer, 1000);
+		updateTimer();
+	}
+
+	async function updateTimer() {
 		if (!matchSet) return;
 
 		const currentTime = new Date().getTime();
@@ -84,10 +91,15 @@
 
 		console.log(timeRemaining);
 
-		await updateTimerExpiration(timeRemaining, timer);
+		await updateTimerExpiration(timeRemaining, timerInterval);
 	}
 
-	$: {
+	let unsubLatestMatchSet: Unsubscribe;
+	let unsubTimer: Unsubscribe;
+
+	onMount(() => {
+		console.log('Mounting...');
+
 		if (user) {
 			const matchesCollection = collection(db, 'match_sets');
 			const matchQuery = query(
@@ -95,52 +107,57 @@
 				where('section', '==', user.personal_data.section)
 			);
 
-			const unsubLatestMatchSet = onSnapshot(matchQuery, async (snapshot) => {
+			unsubLatestMatchSet = onSnapshot(matchQuery, (snapshot) => {
 				if (!snapshot.empty) {
-					console.log('Match set assigned');
 					matchSet = snapshot.docs
 						.map((match) => match.data() as MatchSet)
 						.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
+
+					console.log('Match set assigned');
+					console.log(matchSet);
+
+					startTimer();
 				}
 			});
-
-			onDestroy(() => unsubLatestMatchSet());
 		}
 
 		if (matchSetId) {
 			const matchSetRef = doc(db, 'match_sets', matchSetId);
 
-			const unsubTimer = onSnapshot(matchSetRef, (snapshot) => {
+			unsubTimer = onSnapshot(matchSetRef, (snapshot) => {
 				if (snapshot.exists()) {
 					const newMatchSet = snapshot.data() as MatchSet;
 
-					console.log('Match set snapshot');
+					console.log('Match set updated');
 
 					matchSet = newMatchSet;
 				}
 			});
-
-			onDestroy(() => unsubTimer());
 		}
+	});
 
-		const timerInterval = setInterval(updateTimer, 1000);
-
-		updateTimer(timerInterval);
-
-		onDestroy(() => clearInterval(timerInterval));
-	}
+	onDestroy(() => {
+		if (unsubTimer && unsubLatestMatchSet) {
+			unsubTimer();
+			unsubLatestMatchSet();
+		}
+		clearInterval(timerInterval);
+	});
 </script>
 
 <Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
 	<div>
-		<span>Server timer: {matchSet?.timer_expired}</span>
+		<span>Timer expired: {matchSet?.timer_expired}</span>
 	</div>
 	{#if !matchSet}
 		<div>No match available, please wait for admin to queue.</div>
 	{:else if matchSet.timer_expired}
-		<div>6 hour timer has now expired. You can no longer submit battle cards.</div>
+		<div>
+			<p>6 hour timer has now expired. You can no longer submit battle cards.</p>
+			<p>If a match has already been queued, refresh to get the latest updated state.</p>
+		</div>
 	{:else}
 		<div>Timer: {remainingHours}:{remainingMinutes}:{remainingSeconds}</div>
 		<div>

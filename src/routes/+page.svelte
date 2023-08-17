@@ -3,18 +3,8 @@
 	import { db } from '$lib/firebase/firebase';
 	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
 	import type { Match, MatchSet, UserData } from '$lib/types';
-	import {
-		collection,
-		collectionGroup,
-		doc,
-		getDocs,
-		limit,
-		onSnapshot,
-		orderBy,
-		query,
-		where
-	} from 'firebase/firestore';
-	import { getContext, onDestroy } from 'svelte';
+	import { collection, doc, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+	import { getContext, onDestroy, onMount } from 'svelte';
 	import {
 		Banner,
 		SelectPowerCards,
@@ -26,6 +16,7 @@
 	import { Register, Login } from '$lib/components/auth';
 	import { ArnisHistory, CardBattleHistory } from '$lib/components/user/match-history';
 	import type { Writable } from 'svelte/store';
+	import type { Unsubscribe } from 'firebase/auth';
 
 	export let data;
 
@@ -35,7 +26,15 @@
 	$: opponent = data.latestPendingMatch?.opponent;
 	$: ({ user, matchHistory, cardBattleHistory, matchSet, matchSetId } = data);
 
-	$: {
+	let unsubPendingMatch: Unsubscribe;
+	let unsubUser: Unsubscribe;
+	let unsubLatestMatchSet: Unsubscribe;
+	let unsubOpponent: Unsubscribe;
+	let unsubTimer: Unsubscribe;
+
+	onMount(() => {
+		console.log('Mounting...');
+
 		if (user) {
 			const userRef = doc(db, 'users', user.auth_data.uid);
 			const pendingMatchesCollection = collection(
@@ -44,19 +43,19 @@
 			);
 			const q = query(pendingMatchesCollection, orderBy('timestamp', 'desc'), limit(1));
 
-			const unsubUser = onSnapshot(userRef, (snapshot) => {
+			unsubUser = onSnapshot(userRef, (snapshot) => {
 				if (snapshot.exists()) {
 					const updatedUserData = snapshot.data() as UserData;
 
-					console.log('User snapshot');
+					console.log('User updated');
 
 					currentUser.update((val) => ({ ...val, ...updatedUserData }));
 				}
 			});
 
-			const unsubPendingMatch = onSnapshot(q, (snapshot) => {
+			unsubPendingMatch = onSnapshot(q, (snapshot) => {
 				if (!snapshot.empty) {
-					const newMatch = snapshot.docs[0]?.data() as Match;
+					const newMatch = snapshot.docs[0].data() as Match;
 					const newOpponent = newMatch.players.find(
 						(player) => player.auth_data.uid !== user?.auth_data.uid
 					) as UserData;
@@ -74,54 +73,56 @@
 				where('section', '==', user.personal_data.section)
 			);
 
-			const unsubLatestMatchSet = onSnapshot(matchQuery, async (snapshot) => {
+			unsubLatestMatchSet = onSnapshot(matchQuery, (snapshot) => {
 				if (!snapshot.empty) {
-					console.log('Match set assigned');
 					matchSet = snapshot.docs
 						.map((match) => match.data() as MatchSet)
 						.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
-				}
-			});
 
-			onDestroy(() => {
-				unsubUser();
-				unsubPendingMatch();
-				unsubLatestMatchSet();
+					console.log('Match set assigned');
+					console.log(matchSet);
+				}
 			});
 		}
 
 		if (opponent) {
 			const opponentRef = doc(db, 'users', opponent.auth_data.uid);
 
-			const unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
+			unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
 				if (snapshot.exists()) {
 					const updatedOpponent = snapshot.data() as UserData;
 
-					console.log('Opponent snapshot');
+					console.log('Opponent updated');
 
-					latestOpponent.set(updatedOpponent);
+					latestOpponent.update((val) => ({ ...val, ...updatedOpponent }));
 				}
 			});
-
-			onDestroy(() => unsubOpponent());
 		}
 
 		if (matchSetId) {
 			const matchSetRef = doc(db, 'match_sets', matchSetId);
 
-			const unsubTimer = onSnapshot(matchSetRef, (snapshot) => {
+			unsubTimer = onSnapshot(matchSetRef, (snapshot) => {
 				if (snapshot.exists()) {
 					const newMatchSet = snapshot.data() as MatchSet;
 
-					console.log('Match set snapshot');
+					console.log('Match set updated');
 
 					matchSet = newMatchSet;
 				}
 			});
-
-			onDestroy(() => unsubTimer());
 		}
-	}
+	});
+
+	onDestroy(() => {
+		if (unsubTimer && unsubOpponent && unsubLatestMatchSet && unsubUser && unsubPendingMatch) {
+			unsubTimer();
+			unsubOpponent();
+			unsubLatestMatchSet();
+			unsubUser();
+			unsubPendingMatch();
+		}
+	});
 </script>
 
 <!-- TODO: -->

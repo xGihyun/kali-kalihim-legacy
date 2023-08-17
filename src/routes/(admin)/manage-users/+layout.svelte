@@ -47,7 +47,7 @@
 									: 'bg-surface-100-800-token hover:variant-soft'
 							}`}
 							href={`/manage-users/${section.id}`}
-							on:click={() => (selectedSection = section.id)}>{section.id}</a
+							on:click={() => (selectedSection = section.id)}>{section.name}</a
 						>
 					</li>
 				{/each}

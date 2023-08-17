@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { Match, Section } from '$lib/types';
-	import { formatSection } from '$lib/utils/functions';
+	import { formatSection, getSections } from '$lib/utils/functions';
 
 	export let data;
 
-	$: ({ matchSet } = data);
+	$: ({ matchSet, sections } = data);
 
 	let newMatches: Match[] = [];
-	let sectionValue: string = 'Agatha';
+	let sectionValue: string;
 
 	// Stored in a new variable to avoid bind's reactive nature
 	let selectedSection: string;
@@ -34,13 +34,6 @@
 		} catch (error) {
 			console.error('Error in match making: ' + error);
 		}
-	}
-
-	async function getSections() {
-		const response = await fetch('/api/section', { method: 'GET' });
-		const result = await response.json();
-
-		return result as Section[];
 	}
 </script>
 
@@ -117,23 +110,21 @@
 						dataFetched = true;
 					} else {
 						loading = false;
-						throw new Error("Something went wrong, check if there's enough number of participants");
+						throw new Error(
+							"Something went wrong, check if there's enough number of participants."
+						);
 					}
 				};
 			}}
 		>
-			{#await getSections()}
-				<div>Loading sections...</div>
-			{:then sections}
-				<label class="label">
-					<span>Section</span>
-					<select class="select" name="section" required bind:value={sectionValue}>
-						{#each sections as section, idx (idx)}
-							<option value={section.id}>{section.name}</option>
-						{/each}
-					</select>
-				</label>
-			{/await}
+			<label class="label">
+				<span>Section</span>
+				<select class="select" name="section" required bind:value={sectionValue}>
+					{#each sections as section, idx (idx)}
+						<option value={section.id}>{section.name}</option>
+					{/each}
+				</select>
+			</label>
 			<button class="btn variant-filled-primary" type="submit">Matchmake</button>
 		</form>
 	</div>

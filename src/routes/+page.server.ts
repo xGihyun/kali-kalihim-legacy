@@ -56,6 +56,8 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 				latestPendingMatch.players.find((player) => player.auth_data.uid !== userUID)
 			) as UserData;
 
+			console.log(latestOpponent);
+
 			return {
 				match: latestPendingMatch,
 				opponent: latestOpponent
