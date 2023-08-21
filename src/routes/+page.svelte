@@ -5,15 +5,8 @@
 	import type { Match, MatchSet, UserData } from '$lib/types';
 	import { collection, doc, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 	import { getContext, onDestroy, onMount } from 'svelte';
-	import {
-		Banner,
-		SelectPowerCards,
-		UpcomingMatch,
-		UserAvatar,
-		Rank,
-		PowerCards
-	} from '$lib/components/user';
-	import { Register, Login } from '$lib/components/auth';
+	import { Banner, UpcomingMatch, UserAvatar, Rank, PowerCards } from '$lib/components/user';
+	import { Login } from '$lib/components/auth';
 	import { ArnisHistory, CardBattleHistory } from '$lib/components/user/match-history';
 	import type { Writable } from 'svelte/store';
 	import type { Unsubscribe } from 'firebase/auth';
@@ -24,7 +17,7 @@
 
 	$: pendingMatch = data?.latestPendingMatch?.match;
 	$: opponent = data.latestPendingMatch?.opponent;
-	$: ({ user, matchHistory, cardBattleHistory, matchSet, matchSetId } = data);
+	$: ({ user, matchHistory, cardBattleHistory, matchSet, matchSetId, sections } = data);
 
 	let unsubPendingMatch: Unsubscribe;
 	let unsubUser: Unsubscribe;
@@ -128,56 +121,48 @@
 <!-- TODO: -->
 <!-- Make things look better -->
 <!-- Improve auth state management -->
-<div class="h-full flex flex-col w-full"></div>
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $currentUserCtx.auth_data.is_logged_in && $currentUserCtx.auth_data.is_registered}
-		<!-- Randomize power cards instead of choosing 3 -->
-		{#if $currentUserCtx.power_cards.length < 3}
-			<SelectPowerCards />
-		{:else}
-			{@const initials = `${$currentUserCtx.personal_data.name.first[0]}${$currentUserCtx.personal_data.name.last[0]}`}
-			<Banner />
-			<UserAvatar user={$currentUserCtx} {initials} />
-			<div class="w-full space-y-6">
-				<Rank user={$currentUserCtx} />
-				<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
-					<UpcomingMatch {pendingMatch} />
+		{@const initials = `${$currentUserCtx.personal_data.name.first[0]}${$currentUserCtx.personal_data.name.last[0]}`}
+		<Banner />
+		<UserAvatar user={$currentUserCtx} {initials} />
+		<div class="w-full space-y-6">
+			<Rank user={$currentUserCtx} />
+			<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
+				<UpcomingMatch {pendingMatch} />
 
-					{#if !matchSet}
-						<div
-							class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
-						>
-							<div class="flex justify-center items-center h-full">
-								No match available, please wait for admin to queue.
-							</div>
+				{#if !matchSet}
+					<div
+						class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
+					>
+						<div class="flex justify-center items-center h-full">
+							No match available, please wait for admin to queue.
 						</div>
-					{:else if matchSet.timer_expired}
-						<PowerCards user={$currentUserCtx} />
-					{:else}
-						<div
-							class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
-						>
-							<div class="flex justify-center items-center h-full">
-								You can't use power cards yet, proceed to Battle page for card battle
-							</div>
+					</div>
+				{:else if matchSet.timer_expired}
+					<PowerCards user={$currentUserCtx} />
+				{:else}
+					<div
+						class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
+					>
+						<div class="flex justify-center items-center h-full">
+							You can't use power cards yet, proceed to Battle page for card battle
 						</div>
-					{/if}
-				</div>
-				{#if matchHistory && cardBattleHistory}
-					<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
-						<ArnisHistory history={matchHistory} />
-						<CardBattleHistory history={cardBattleHistory} />
 					</div>
 				{/if}
 			</div>
-
-			{#if $selectedPowerCard}
-				<ActivatePowerCard />
+			{#if matchHistory && cardBattleHistory}
+				<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
+					<ArnisHistory history={matchHistory} />
+					<CardBattleHistory history={cardBattleHistory} />
+				</div>
 			{/if}
+		</div>
+
+		{#if $selectedPowerCard}
+			<ActivatePowerCard />
 		{/if}
-	{:else if $currentUserCtx.auth_data.is_logged_in && !$currentUserCtx.auth_data.is_registered}
-		<Register />
-	{:else if !$currentUserCtx.auth_data.is_logged_in && !$currentUserCtx.auth_data.is_registered}
-		<Login />
+	{:else}
+		<Login {sections} />
 	{/if}
 </div>

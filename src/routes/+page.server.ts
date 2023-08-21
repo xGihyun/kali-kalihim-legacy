@@ -27,7 +27,8 @@ import type {
 	UserPersonalData,
 	UserPowerCard,
 	UserRankingData,
-	CardBattle
+	CardBattle,
+	Section
 } from '$lib/types';
 import type { PageServerLoad } from './$types';
 import { CACHE_DURATION } from '$lib/constants';
@@ -35,8 +36,19 @@ import { powerCardsMap } from '$lib/data';
 import { dataToObject } from '$lib/utils/functions';
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
+	const sectionsCollection = collection(db, 'sections');
+	const getSections = await getDocs(sectionsCollection);
+
+	let sections: Section[] = [];
+
+	if (!getSections.empty) {
+		sections = getSections.docs.map((section) => section.data() as Section);
+	}
+
 	if (!locals.userData) {
-		return;
+		return {
+			sections
+		};
 	}
 
 	const userUID = locals.userData.auth_data.uid;
@@ -104,14 +116,6 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 // TODO: Use Zod
 export const actions: Actions = {
 	register: async ({ request, locals }) => {
-		const userUid = locals.userData.auth_data.uid;
-
-		if (!userUid) {
-			return;
-		}
-
-		const userRef = doc(db, 'users', userUid);
-
 		const data = await request.formData();
 		const firstName = data.get('first-name')?.toString().trim();
 		const lastName = data.get('last-name')?.toString().trim();
@@ -119,6 +123,8 @@ export const actions: Actions = {
 		const sex = data.get('sex')?.toString();
 		const section = data.get('section')?.toString();
 		const contactNumber = Number(data.get('contact-number')?.toString().trim());
+		const email = data.get('email')?.toString().trim() || '';
+		const password = data.get('password')?.toString().trim() || '';
 
 		const newPersonalData: UserPersonalData = {
 			age: age,
@@ -130,6 +136,46 @@ export const actions: Actions = {
 			section: section || '',
 			sex: sex || ''
 		};
+
+		const result = await createUserWithEmailAndPassword(auth, email, password);
+		const { user } = result;
+
+		const userRef = doc(db, 'users', user.uid);
+
+		const newUserData: UserData = {
+			...defaultUserData,
+			auth_data: {
+				email: user.email || '',
+				is_logged_in: true,
+				is_registered: false,
+				photo_url: user.photoURL,
+				role: 'user',
+				uid: user.uid,
+				username: user.displayName
+			}
+		};
+
+		await setDoc(userRef, newUserData);
+
+		const userDoc = await getDoc(userRef);
+		const userData = userDoc.data() as UserData;
+
+		locals.userData = userData;
+
+		console.log('\nRegistered.');
+
+		currentUser.update(
+			(val) =>
+				(val = {
+					...val,
+					auth_data: {
+						...userData.auth_data
+					},
+					personal_data: {
+						...userData.personal_data
+					}
+				})
+		);
 
 		const usersCollection = collection(db, 'users');
 		const usersInSectionCollection = query(
@@ -150,7 +196,14 @@ export const actions: Actions = {
 			title: ''
 		};
 
-		// I think this is bad
+		const powerCards: UserPowerCard[] = [];
+
+		for (let i = 0; i < 3; i++) {
+			const newCard = getRandomPowerCard();
+			powerCards.push(newCard);
+		}
+
+		// I think this is bad? Maybe not
 		currentUser.update(
 			(val) =>
 				(val = {
@@ -166,7 +219,8 @@ export const actions: Actions = {
 					rank: {
 						...val.rank,
 						...newRankingData
-					}
+					},
+					power_cards: powerCards
 				})
 		);
 
@@ -175,7 +229,8 @@ export const actions: Actions = {
 			personal_data: newPersonalData,
 			rank: {
 				...newRankingData
-			}
+			},
+			power_cards: powerCards
 		});
 
 		console.log('Now registered!');
@@ -194,109 +249,76 @@ export const actions: Actions = {
 
 		console.log('Logging in!');
 
-		const signInMethodsForEmail = await fetchSignInMethodsForEmail(auth, email);
-		const isEmailAvailable = signInMethodsForEmail.length !== 0;
+		const result = await signInWithEmailAndPassword(auth, email, password);
+		const user = result.user;
 
-		if (!isEmailAvailable) {
-			const result = await createUserWithEmailAndPassword(auth, email, password);
-			const user = result.user;
+		const userRef = doc(db, 'users', user.uid);
 
-			const userRef = doc(db, 'users', user.uid);
+		await updateDoc(userRef, { 'auth_data.is_logged_in': true });
 
-			const newUserData: UserData = {
-				...defaultUserData,
-				auth_data: {
-					email: user.email || '',
-					is_logged_in: true,
-					is_registered: false,
-					photo_url: user.photoURL,
-					role: 'user',
-					uid: user.uid,
-					username: user.displayName
-				}
-			};
+		const userDoc = await getDoc(userRef);
+		const userData = userDoc.data() as UserData;
 
-			await setDoc(userRef, newUserData);
+		locals.userData = userData;
 
-			const userDoc = await getDoc(userRef);
-			const userData = userDoc.data() as UserData;
+		console.log('\nLogged in.');
 
-			locals.userData = userData;
+		currentUser.update(
+			(val) =>
+				(val = {
+					...val,
+					auth_data: {
+						...userData.auth_data
+					},
+					personal_data: {
+						...userData.personal_data
+					}
+				})
+		);
 
-			console.log('\nRegistered.');
-
-			currentUser.update(
-				(val) =>
-					(val = {
-						...val,
-						auth_data: {
-							...userData.auth_data
-						},
-						personal_data: {
-							...userData.personal_data
-						}
-					})
-			);
-
-			cookies.set('session', user.uid, { maxAge: 60 * 60 * 24 * 7 });
-		} else {
-			const result = await signInWithEmailAndPassword(auth, email, password);
-			const user = result.user;
-
-			const userRef = doc(db, 'users', user.uid);
-
-			await updateDoc(userRef, { 'auth_data.is_logged_in': true });
-
-			// Get the updated user data
-			const userDoc = await getDoc(userRef);
-			const userData = userDoc.data() as UserData;
-
-			locals.userData = userData;
-
-			console.log('\nLogged in.');
-
-			currentUser.update(
-				(val) =>
-					(val = {
-						...val,
-						auth_data: {
-							...userData.auth_data
-						},
-						personal_data: {
-							...userData.personal_data
-						}
-					})
-			);
-
-			cookies.set('session', user.uid, { maxAge: 60 * 60 * 24 * 7 });
-		}
+		cookies.set('session', user.uid, { maxAge: 60 * 60 * 24 * 7 });
 
 		throw redirect(302, '/');
-	},
-	powercards: async ({ request, locals }) => {
-		const userUID = locals.userData.auth_data.uid;
-		const data = await request.formData();
-		const cards = data.get('cards')?.toString();
-
-		if (!cards) return;
-
-		const cardKeys: string[] = JSON.parse(cards);
-
-		if (cardKeys.length < 3) return;
-
-		const powercards: UserPowerCard[] = cardKeys.map((card) => {
-			const newCard: UserPowerCard = {
-				activated: false,
-				key: card,
-				name: powerCardsMap.get(card)?.name || '',
-				used: false
-			};
-
-			return newCard;
-		});
-
-		const userRef = doc(db, 'users', userUID);
-
-		await updateDoc(userRef, { power_cards: powercards });
 	}
+	// powercards: async ({ request, locals }) => {
+	// 	const userUID = locals.userData.auth_data.uid;
+	// 	const data = await request.formData();
+	// 	const cards = data.get('cards')?.toString();
+	//
+	// 	if (!cards) return;
+	//
+	// 	const cardKeys: string[] = JSON.parse(cards);
+	//
+	// 	if (cardKeys.length < 3) return;
+	//
+	// 	const powercards: UserPowerCard[] = cardKeys.map((card) => {
+	// 		const newCard: UserPowerCard = {
+	// 			activated: false,
+	// 			key: card,
+	// 			name: powerCardsMap.get(card)?.name || '',
+	// 			used: false
+	// 		};
+	//
+	// 		return newCard;
+	// 	});
+	//
+	// 	const userRef = doc(db, 'users', userUID);
+	//
+	// 	await updateDoc(userRef, { power_cards: powercards });
+	// }
 };
+
+function getRandomPowerCard(): UserPowerCard {
+	const mapArray = Array.from(powerCardsMap.keys());
+	const randomIndex = Math.floor(Math.random() * mapArray.length);
+	const randomPowerCard = mapArray[randomIndex];
+
+	const newCard: UserPowerCard = {
+		activated: false,
+		key: randomPowerCard,
+		name: powerCardsMap.get(randomPowerCard)?.name || '',
+		used: false
+	};
+
+	return newCard;
+}

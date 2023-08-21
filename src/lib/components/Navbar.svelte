@@ -41,7 +41,7 @@
 			</button>
 			<div class="card fixed w-72 p-4 shadow-xl transition-none duration-0" data-popup="profile">
 				<form class="block" method="post" action="/logout">
-					<button class="btn variant-filled-primary w-full">Log Out</button>
+					<button class="btn variant-filled-primary w-full" type="submit">Log Out</button>
 				</form>
 				<div class="arrow bg-surface-100-800-token" />
 			</div>

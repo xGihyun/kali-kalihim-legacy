@@ -1,7 +1,3 @@
-import Login from "./Login.svelte";
-import Register from "./Register.svelte";
+import Login from './Login.svelte';
 
-export {
-  Register,
-  Login,
-}
+export { Login };
