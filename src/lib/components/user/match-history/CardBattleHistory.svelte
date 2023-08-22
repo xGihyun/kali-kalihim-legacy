@@ -41,7 +41,7 @@
 						{@const opponentInitials = `${opponent.personal_data.name.first[0]} ${opponent.personal_data.name.last[0]}`}
 
 						<tr
-							class="[&>td]:py-2 [&>td]:px-main text-sm lg:text-base"
+							class="[&>td]:py-2 [&>td]:px-main text-sm lg:text-base cursor-pointer hover:brightness-125 transition-[filter] duration-200"
 							on:click={() => {
 								toggleRow(idx);
 							}}

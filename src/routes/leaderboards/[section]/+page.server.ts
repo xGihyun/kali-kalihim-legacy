@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 		.map((user) => user.data() as UserData)
 		.sort((a, b) => b.score - a.score);
 
-	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+	// setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		users,

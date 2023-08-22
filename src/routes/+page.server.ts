@@ -164,19 +164,6 @@ export const actions: Actions = {
 
 		console.log('\nRegistered.');
 
-		currentUser.update(
-			(val) =>
-				(val = {
-					...val,
-					auth_data: {
-						...userData.auth_data
-					},
-					personal_data: {
-						...userData.personal_data
-					}
-				})
-		);
-
 		const usersCollection = collection(db, 'users');
 		const usersInSectionCollection = query(
 			usersCollection,
@@ -203,27 +190,6 @@ export const actions: Actions = {
 			powerCards.push(newCard);
 		}
 
-		// I think this is bad? Maybe not
-		currentUser.update(
-			(val) =>
-				(val = {
-					...val,
-					auth_data: {
-						...val.auth_data,
-						is_registered: true
-					},
-					personal_data: {
-						...val.personal_data,
-						...newPersonalData
-					},
-					rank: {
-						...val.rank,
-						...newRankingData
-					},
-					power_cards: powerCards
-				})
-		);
-
 		await updateDoc(userRef, {
 			'auth_data.is_registered': true,
 			personal_data: newPersonalData,
@@ -247,7 +213,7 @@ export const actions: Actions = {
 			return;
 		}
 
-		console.log('Logging in!');
+		console.log('Logging in...');
 
 		const result = await signInWithEmailAndPassword(auth, email, password);
 		const user = result.user;
@@ -260,8 +226,6 @@ export const actions: Actions = {
 		const userData = userDoc.data() as UserData;
 
 		locals.userData = userData;
-
-		console.log('\nLogged in.');
 
 		currentUser.update(
 			(val) =>
@@ -278,34 +242,10 @@ export const actions: Actions = {
 
 		cookies.set('session', user.uid, { maxAge: 60 * 60 * 24 * 7 });
 
+		console.log('\nLogged in.');
+
 		throw redirect(302, '/');
 	}
-	// powercards: async ({ request, locals }) => {
-	// 	const userUID = locals.userData.auth_data.uid;
-	// 	const data = await request.formData();
-	// 	const cards = data.get('cards')?.toString();
-	//
-	// 	if (!cards) return;
-	//
-	// 	const cardKeys: string[] = JSON.parse(cards);
-	//
-	// 	if (cardKeys.length < 3) return;
-	//
-	// 	const powercards: UserPowerCard[] = cardKeys.map((card) => {
-	// 		const newCard: UserPowerCard = {
-	// 			activated: false,
-	// 			key: card,
-	// 			name: powerCardsMap.get(card)?.name || '',
-	// 			used: false
-	// 		};
-	//
-	// 		return newCard;
-	// 	});
-	//
-	// 	const userRef = doc(db, 'users', userUID);
-	//
-	// 	await updateDoc(userRef, { power_cards: powercards });
-	// }
 };
 
 function getRandomPowerCard(): UserPowerCard {

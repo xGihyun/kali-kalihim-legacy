@@ -1,9 +1,13 @@
 <script lang="ts">
-	import type { Section } from '$lib/types';
+	import type { Section, UserData } from '$lib/types';
+	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	export let sections: Section[] | undefined;
 
 	let willRegister = false;
+
+	const currentUser = getContext<Writable<UserData>>('user');
 </script>
 
 {#if willRegister}

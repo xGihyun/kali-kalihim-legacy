@@ -40,7 +40,6 @@
 			{#each powerCardsMap as [key, value], idx (idx)}
 				<button class="flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1">
 					<PowerCard {key} showName={false} />
-					<!-- <svelte:component this={value.components.card} showName={false} /> -->
 					<span class="flex-auto text-sm lg:text-lg">{value.name}</span>
 				</button>
 			{/each}

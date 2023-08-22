@@ -34,7 +34,10 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { ability: WarlordsDomain },
 			function: warlordsDomain,
 			used: false,
-			description: 'Choose a specific skill to perform'
+			description: {
+				full: 'The player can select a specific skill to perform on their upcoming match. If the opponent uses the same card, the effect will be cancelled.',
+				summarized: 'Choose a specific skill to perform'
+			}
 		}
 	],
 	[
@@ -44,7 +47,10 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { ability: DoubleEdgedSword },
 			function: doubleEdgedSword,
 			used: false,
-			description: 'Double points for a victory, double deduction for a loss'
+			description: {
+				full: 'The player will be rewarded double the points after winning the Arnis match, otherwise, the player will receive double deduction.',
+				summarized: 'Double points for a victory, double deduction for a loss'
+			}
 		}
 	],
 	[
@@ -54,7 +60,10 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { ability: ExtraWind },
 			function: extraWind,
 			used: false,
-			description: 'Get a new power card'
+			description: {
+				full: 'The player can select a new power card, excluding Extra Wind.',
+				summarized: 'Get a new power card'
+			}
 		}
 	],
 	[
@@ -64,7 +73,10 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { ability: AncientsProtection },
 			function: ancientsProtection,
 			used: false,
-			description: 'Deduction immunity'
+			description: {
+				full: "The player won't receive deduction if they lose the Arnis match.",
+				summarized: 'Deduction immunity'
+			}
 		}
 	],
 	[
@@ -74,7 +86,10 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { ability: ViralxRival },
 			function: viralxRival,
 			used: false,
-			description: 'Repeat current opponent for the next match'
+			description: {
+				full: "The player's current opponent will also be their opponent for the next match.",
+				summarized: 'Repeat current opponent for the next match'
+			}
 		}
 	],
 	[
@@ -84,7 +99,10 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			components: { ability: TwistOfFate },
 			function: twistOfFate,
 			used: false,
-			description: 'Switch opponent for the current match'
+			description: {
+				full: 'The player can change their opponent on the upcoming Arnis match.',
+				summarized: 'Switch opponent for the current match'
+			}
 		}
 	]
 ]);

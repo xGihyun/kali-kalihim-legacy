@@ -33,7 +33,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each users as user, idx (idx)}
+			{#each users as user, idx (user.auth_data.uid)}
 				{@const name = `${user.personal_data.name.first} ${user.personal_data.name.last}`}
 				{@const section = `St. ${formatSection(user.personal_data.section)}`}
 				{@const { score } = user}

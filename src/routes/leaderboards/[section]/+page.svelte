@@ -59,14 +59,14 @@
 						</p>
 					</td>
 					<td class="w-1/4">
-						<span class="text-xs md:text-sm">
+						<p class="text-xs md:text-sm">
 							{section}
-						</span>
+						</p>
 					</td>
 					<td class="w-1/4">
-						<span class="text-xs md:text-sm text-center">
+						<p class="text-xs md:text-sm text-center">
 							{score}
-						</span>
+						</p>
 					</td>
 				</tr>
 			{/each}

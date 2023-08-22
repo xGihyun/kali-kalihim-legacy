@@ -16,19 +16,22 @@ import {
 	where
 } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
+import { CACHE_DURATION } from '$lib/constants';
 
-export const load: PageServerLoad = async ({ fetch }) => {
-	const fetchSections = async () => {
-		const response = await fetch('/api/section', { method: 'GET' });
-		const result = await response.json();
+export const load: PageServerLoad = async ({ setHeaders }) => {
+	const sectionsCollection = collection(db, 'sections');
+	const getSections = await getDocs(sectionsCollection);
 
-		const sections = result as Section[];
+	let sections: Section[] = [];
 
-		return sections;
-	};
+	if (!getSections.empty) {
+		sections = getSections.docs.map((section) => section.data() as Section);
+	}
+
+	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
-		sections: fetchSections()
+		sections
 	};
 };
 
