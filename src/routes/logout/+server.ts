@@ -1,17 +1,12 @@
 import { defaultUserData } from '$lib/default';
-import { auth, db } from '$lib/firebase/firebase';
+import { auth } from '$lib/firebase/firebase';
 import { currentUser } from '$lib/store';
 import { redirect, type RequestHandler } from '@sveltejs/kit';
 import { signOut } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 
 export const POST: RequestHandler = async ({ locals, cookies }) => {
-	const userRef = doc(db, 'users', locals.userData.auth_data.uid);
-
-	// Set login to false in the database
-	await setDoc(userRef, { auth_data: { is_logged_in: false } }, { merge: true });
-
 	console.log('Resetting writable...');
+
 	currentUser.set({
 		...defaultUserData
 	});
@@ -20,12 +15,11 @@ export const POST: RequestHandler = async ({ locals, cookies }) => {
 		...defaultUserData
 	};
 
-	// Log out user
 	await signOut(auth);
 
-	console.log("The user has been logged out, now redirecting to '/'");
-
 	console.log('Deleting cookies...');
+
 	cookies.delete('session');
+
 	throw redirect(302, '/');
 };
