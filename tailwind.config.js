@@ -13,8 +13,7 @@ module.exports = {
 				'gt-walsheim-pro-medium': ['gt-walsheim-pro-medium', 'sans-serif'],
 				'gt-walsheim-pro-light': ['gt-walsheim-pro-light', 'sans-serif'],
 				'gt-walsheim-pro-thin': ['gt-walsheim-pro-thin', 'sans-serif'],
-				inter: ['inter', 'sans-serif'],
-				'inter-bold': ['inter-bold', 'sans-serif']
+				'jetbrainsmono-nerd': ['jetbrainsmono-nerd']
 			},
 			boxShadow: {
 				nav: 'rgba(0, 0, 0, 0.6) 0px 5px 10px',

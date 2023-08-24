@@ -23,6 +23,11 @@ export const ADMIN_ROUTES: Navigation = [
 
 export const USER_ROUTES: Navigation = [
 	{
+		name: 'Home',
+		path: '/',
+		icon: Trophy
+	},
+	{
 		name: 'Rankings',
 		path: '/leaderboards',
 		icon: Trophy
@@ -35,6 +40,6 @@ export const USER_ROUTES: Navigation = [
 	{
 		name: 'Battle',
 		path: '/battle',
-		icon: Sword,
+		icon: Sword
 	}
 ];

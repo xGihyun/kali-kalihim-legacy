@@ -88,9 +88,7 @@
 								class="flex gap-1 py-4 lg:gap-2 [&>*:first-child]:rounded-l-md [&>*:last-child]:rounded-r-md"
 							>
 								{#each stats as stat, idx (idx)}
-									<div
-										class="bg-surface-300-600-token flex w-40 flex-col justify-center p-2"
-									>
+									<div class="bg-surface-300-600-token flex w-40 flex-col justify-center p-2">
 										<span class="text-sm lg:text-base">{stat.name}</span>
 										<span
 											class="text-secondary-700-200-token font-gt-walsheim-pro-medium text-lg lg:text-xl"

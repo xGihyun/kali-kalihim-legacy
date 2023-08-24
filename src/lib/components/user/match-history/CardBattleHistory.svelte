@@ -24,8 +24,8 @@
 				<thead>
 					<tr class="text-left text-xs lg:text-sm opacity-75 [&>th]:pb-2 [&>th]:px-main">
 						<th class="w-1/2">Opponent</th>
-						<th>Damage Given</th>
-						<th>Damage Received</th>
+						<th>DMG Given</th>
+						<th>DMG Received</th>
 					</tr>
 				</thead>
 				<tbody class="[&>tr:nth-child(even)]:bg-surface-700 [&>tr:nth-child(odd)]:bg-surface-800">

@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 			return nameA.localeCompare(nameB);
 		});
 
-	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+	// setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
 
 	return {
 		section,

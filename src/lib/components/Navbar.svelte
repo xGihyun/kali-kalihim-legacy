@@ -16,7 +16,7 @@
 
 	const popupProfile: PopupSettings = {
 		event: 'click',
-		target: 'profile',
+		target: 'profile-nav',
 		placement: 'bottom'
 	};
 
@@ -26,7 +26,7 @@
 </script>
 
 <nav
-	class="bg-surface-400-500-token shadow-nav z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-main py-5"
+	class="bg-surface-400-500-token shadow-nav z-50 flex h-20 w-full shrink-0 items-center justify-between gap-5 px-main py-5 lg:hidden"
 >
 	<div class="flex items-center gap-2">
 		<button class="block lg:hidden" on:click={() => drawerStore.open(settings)}>
@@ -39,9 +39,14 @@
 			<button use:popup={popupProfile}>
 				<Avatar src={$user.auth_data.photo_url || ''} width="w-10" {initials} />
 			</button>
-			<div class="card fixed w-72 p-4 shadow-xl transition-none duration-0" data-popup="profile">
+			<div
+				class="card fixed w-72 py-2 shadow-xl transition-none duration-0"
+				data-popup="profile-nav"
+			>
 				<form class="block" method="post" action="/logout">
-					<button class="btn variant-filled-primary w-full" type="submit">Log Out</button>
+					<button class="hover:bg-surface-400-500-token px-2 py-1 w-full" type="submit"
+						>Log Out</button
+					>
 				</form>
 				<div class="arrow bg-surface-100-800-token" />
 			</div>

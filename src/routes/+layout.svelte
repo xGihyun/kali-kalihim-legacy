@@ -2,13 +2,7 @@
 	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
-	import {
-		allUsersInSection,
-		currentUser,
-		latestOpponent,
-		section,
-		timerExpired
-	} from '$lib/store';
+	import { allUsersInSection, currentUser, latestOpponent, section } from '$lib/store';
 	import { getContext, setContext } from 'svelte';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -63,34 +57,28 @@
 	const user = getContext<Writable<UserData>>('user');
 </script>
 
-<div class="flex h-screen w-full flex-col overflow-hidden">
-	{#if $user.power_cards.length < 3}
-		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-			<div class="flex flex-1 flex-col items-center justify-center">
+<div
+	class="flex h-screen w-full flex-col overflow-hidden bg-gradient-to-bl from-surface-500 to-surface-800"
+>
+	{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
+		<Navbar />
+	{/if}
+
+	<Drawer zIndex="z-[51]">
+		<Sidebar />
+	</Drawer>
+
+	<div class="flex h-full w-full flex-auto overflow-hidden">
+		{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
+			<aside class="hidden lg:block">
+				<Sidebar />
+			</aside>
+		{/if}
+
+		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden lg:m-4 lg:rounded-lg">
+			<div class="flex-1 bg-surface-900 lg:p-10">
 				<slot />
 			</div>
 		</main>
-	{:else}
-		{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-			<Navbar />
-		{/if}
-
-		<Drawer zIndex="z-[51]">
-			<Sidebar />
-		</Drawer>
-
-		<div class="flex h-full w-full flex-auto overflow-hidden">
-			{#if $user.auth_data.is_logged_in && $user.auth_data.is_registered}
-				<aside class="hidden lg:block">
-					<Sidebar />
-				</aside>
-			{/if}
-
-			<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-				<div class="flex flex-1 flex-col items-center justify-center pb-20">
-					<slot />
-				</div>
-			</main>
-		</div>
-	{/if}
+	</div>
 </div>

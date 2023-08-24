@@ -115,8 +115,6 @@
 
 					console.log('Match set assigned');
 					console.log(matchSet);
-
-					startTimer();
 				}
 			});
 		}
@@ -134,6 +132,21 @@
 				}
 			});
 		}
+
+		// if (matchSet && matchSetId) {
+		// 	const currentDate = new Date();
+		// 	const currentTimestamp = Timestamp.fromDate(currentDate);
+		// 	const matchTimestamp = matchSet.timestamp;
+		//
+		// 	if (matchTimestamp.seconds > currentTimestamp.seconds) {
+		// 		console.log('Timer not expired yet, starting timer...');
+		// 		startTimer();
+		// 	} else {
+		// 		const matchSetRef = doc(db, 'match_sets', matchSetId);
+		//
+		// 		await updateDoc(matchSetRef, { timer_expired: true });
+		// 	}
+		// }
 	});
 
 	onDestroy(() => {

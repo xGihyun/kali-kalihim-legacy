@@ -10,6 +10,9 @@ import History from './History.svelte';
 import People from './People.svelte';
 import Sword from './Sword.svelte';
 import Trophy from './Trophy.svelte';
+import ThreeDots from './ThreeDots.svelte';
+import ChevronUp from './ChevronUp.svelte';
+import Plus from './Plus.svelte';
 
 export {
 	Bell,
@@ -23,5 +26,8 @@ export {
 	Guide,
 	HamburgerMenu,
 	CircleCheckFilled,
-	ClockPause
+	ClockPause,
+	ThreeDots,
+	ChevronUp,
+	Plus
 };

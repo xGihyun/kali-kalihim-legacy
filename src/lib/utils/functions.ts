@@ -1,7 +1,7 @@
 import { footworks, skills } from '$lib/data';
 import { db } from '$lib/firebase/firebase';
 import type { MatchSet, MatchSets, Section } from '$lib/types';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getCountFromServer, getDocs, query, where } from 'firebase/firestore';
 
 export function getRandomArnisSkill() {
 	const randomSkillIndex = Math.floor(Math.random() * skills.length);
@@ -114,4 +114,13 @@ export async function getMatchSets(section: string) {
 
 export function dataToObject<T>(data: T): T {
 	return JSON.parse(JSON.stringify(data));
+}
+
+export async function getStudentCountInSection(section: Section): Promise<number> {
+	const usersCollection = collection(db, 'users');
+	const q = query(usersCollection, where('personal_data.section', '==', section.id));
+	const countFromServer = await getCountFromServer(q);
+	const studentCount = countFromServer.data().count;
+
+	return studentCount;
 }

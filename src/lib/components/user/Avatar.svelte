@@ -90,9 +90,7 @@
 	}
 </script>
 
-<div
-	class="bg-surface-200-700-token mb-20 flex h-28 w-full items-center gap-4 px-main lg:mb-28 lg:h-32"
->
+<div class="bg-surface-300-600-token flex h-28 w-full items-center gap-4 px-main lg:h-32">
 	<div class="flex h-full w-full items-center gap-4">
 		{#if isCurrentUser()}
 			<button
