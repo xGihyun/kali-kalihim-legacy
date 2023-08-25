@@ -19,15 +19,10 @@ export const POST: RequestHandler = async ({ request, setHeaders }) => {
 };
 
 async function getMatch(matchSetId: string): Promise<Match[]> {
-	try {
-		const matchSetCollection = collection(db, `match_sets/${matchSetId}/matches`);
-		const matchesDocs = await getDocs(matchSetCollection);
+	const matchSetCollection = collection(db, `match_sets/${matchSetId}/matches`);
+	const matchesDocs = await getDocs(matchSetCollection);
 
-		const matches: Match[] = matchesDocs.docs.map((match) => match.data() as Match);
+	const matches: Match[] = matchesDocs.docs.map((match) => match.data() as Match);
 
-		return matches;
-	} catch (error) {
-		// Handle any potential errors during data fetching
-		throw new Error('Failed to fetch matches: ' + error);
-	}
+	return matches;
 }

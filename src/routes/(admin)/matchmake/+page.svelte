@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { Match, Section } from '$lib/types';
-	import { formatSection, getSections } from '$lib/utils/functions';
+	import type { Match } from '$lib/types';
+	import { formatSection } from '$lib/utils/functions';
 
 	export let data;
 
@@ -16,7 +16,7 @@
 	let dataFetched = false;
 	let loading = false;
 
-	function matchmake(data: Record<string, unknown> | undefined) {
+	function matchmake(data: Record<string, unknown> | undefined): void {
 		try {
 			if (!data) {
 				throw new Error('No data in matchmake function.');

@@ -24,7 +24,7 @@
 	}
 </script>
 
-<div class="relative w-full lg:px-main">
+<div class="relative w-full">
 	<div
 		class="bg-surface-300-600-token border-surface-400-500-token relative h-16 rounded-md border-token lg:h-20"
 	/>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { getSections } from '$lib/utils/functions';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 
 	$: selectedSection = 'All';
@@ -34,9 +33,7 @@
 					on:click={() => (selectedSection = 'All')}>All</a
 				>
 			</li>
-			<!-- {#await getSections()} -->
-			<!-- 	<span>Loading sections...</span> -->
-			<!-- {:then sections} -->
+
 			{#each sections as section, idx (idx)}
 				<li class="flex">
 					<a
@@ -50,7 +47,6 @@
 					>
 				</li>
 			{/each}
-			<!-- {/await} -->
 		</ul>
 		<div class="arrow bg-surface-100-800-token" />
 	</div>

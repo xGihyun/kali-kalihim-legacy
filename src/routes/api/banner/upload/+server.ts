@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { storage, db } from '$lib/firebase/firebase';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -34,9 +34,6 @@ async function updateBanner(downloadURL: string, userUID: string) {
 	const userRef = doc(db, 'users', userUID);
 
 	try {
-		// await updateDoc(userRef, {
-		// 	'auth_data.banner_url': downloadURL
-		// });
 		await setDoc(userRef, { auth_data: { banner_url: downloadURL } }, { merge: true });
 
 		console.log('Banner URL updated successfully!');

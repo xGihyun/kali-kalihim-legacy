@@ -22,10 +22,6 @@ async function getMatchSets(section: string) {
 	const matchQuery = query(matchesCollection, where('section', '==', section));
 	const matchSetsDocs = await getDocs(matchQuery);
 
-	// if (matchSetsDocs.empty) {
-	// 	return;
-	// }
-
 	const matchSets: MatchSets[] = matchSetsDocs.docs
 		.map((matchSet) => {
 			const matchSetId = matchSet.id;

@@ -117,10 +117,10 @@
 																				<span>Blocked!</span>
 																			{:else if damage > 0}
 																				<div class="flex flex-col">
-																					<span>Damage: {damage}</span>
-																					<span>Accuracy: {accuracy * 100}%</span>
+																					<span class="font-mono">DMG: {damage}</span>
+																					<span class="font-mono">ACC: {accuracy * 100}%</span>
 																				</div>
-																				<span>Hit!</span>
+																				<span class="font-mono">Hit!</span>
 																				<div>
 																					<!-- <p>
 																			Damage dealt:
@@ -129,14 +129,14 @@
 																			</span>
 																		</p> -->
 																					<div>
-																						<span>Bonus effect:</span>
-																						<p>
+																						<span class="font-mono">Bonus effect:</span>
+																						<p class="font-mono">
 																							{#if effect.type === 'increase'}
-																								<span class="text-success-500">
+																								<span class="font-mono text-success-500">
 																									+{effect.amount * 100}%
 																								</span>
 																							{:else}
-																								<span class="text-error-500">
+																								<span class="font-mono text-error-500">
 																									-{effect.amount * 100}%
 																								</span>
 																							{/if}
@@ -161,7 +161,7 @@
 																			<span class="font-gt-walsheim-pro-medium text-secondary-300"
 																				>{name}</span
 																			>
-																			<span>DMG Reduction: {reduction * 100}%</span>
+																			<span class="font-mono">DMG Reduc.: {reduction * 100}%</span>
 																		{/if}
 																	{/if}
 																</div>

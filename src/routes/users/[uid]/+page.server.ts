@@ -1,11 +1,10 @@
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/firebase/firebase';
 import type { Section, UserData } from '$lib/types';
 import type { Actions } from '@sveltejs/kit';
 import { updateOverallRankings, updateRankTitle, updateSectionRankings } from '$lib/utils/update';
 import { CACHE_DURATION } from '$lib/constants';
-import { getSections } from '$lib/utils/functions';
 
 export const load: PageServerLoad = async ({ params, setHeaders, fetch }) => {
 	const uid = params.uid;
@@ -95,9 +94,16 @@ export const actions: Actions = {
 		console.log('Data has been updated.');
 	},
 	delete: async ({ params }) => {
-		// WIP
 		const userUID = params.uid;
 
-		console.log('Deleting user');
+		if (!userUID) return;
+
+		console.log('Deleting user...');
+
+		const userRef = doc(db, 'users', userUID);
+
+		await deleteDoc(userRef);
+
+		console.log('User has been deleted.');
 	}
 };

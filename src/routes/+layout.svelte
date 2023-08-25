@@ -76,7 +76,7 @@
 		{/if}
 
 		<main class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden lg:m-4 lg:rounded-lg">
-			<div class="flex-1 bg-surface-900 lg:p-10">
+			<div class="flex-1 bg-surface-900 lg:py-10 lg:px-main">
 				<slot />
 			</div>
 		</main>

@@ -13,6 +13,7 @@ import Trophy from './Trophy.svelte';
 import ThreeDots from './ThreeDots.svelte';
 import ChevronUp from './ChevronUp.svelte';
 import Plus from './Plus.svelte';
+import YouTube from './YouTube.svelte';
 
 export {
 	Bell,
@@ -29,5 +30,6 @@ export {
 	ClockPause,
 	ThreeDots,
 	ChevronUp,
-	Plus
+	Plus,
+	YouTube
 };

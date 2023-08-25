@@ -6,7 +6,15 @@
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	import { onDestroy, onMount } from 'svelte';
 	import { db } from '$lib/firebase/firebase.js';
-	import { collection, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+	import {
+		Timestamp,
+		collection,
+		doc,
+		onSnapshot,
+		query,
+		updateDoc,
+		where
+	} from 'firebase/firestore';
 	import type { Unsubscribe } from 'firebase/auth';
 
 	export let data;
@@ -18,14 +26,14 @@
 
 	let submitState: LoadState = 'done';
 
-	function addToQueue(card: BattleCard) {
+	function addToQueue(card: BattleCard): void {
 		if (cardsInQueue.length > 5) return;
 
 		cardsInQueue = [...cardsInQueue, card];
 		selected = [...selected, card.name];
 	}
 
-	function removeInQueue(index: number, card: string) {
+	function removeInQueue(index: number, card: string): void {
 		cardsInQueue = cardsInQueue.filter((_, i) => i !== index);
 		selected = selected.filter((name) => name !== card);
 	}
@@ -41,21 +49,21 @@
 		autohide: false
 	};
 
-	// 6 hours in ms
-
+	// NOTE: 6 hours in ms
 	const timeLimit = 60 * 1000;
 
 	let remainingHours = 0;
 	let remainingMinutes = 0;
 	let remainingSeconds = 0;
 
-	async function updateTimerExpiration(timeRemaining: number, timer: NodeJS.Timeout | undefined) {
+	async function updateTimerExpiration(
+		timeRemaining: number,
+		timer: NodeJS.Timeout | undefined
+	): Promise<void> {
 		if (!matchSetId) return;
 
 		if (timeRemaining <= 0) {
 			const matchSetRef = doc(db, 'match_sets', matchSetId);
-
-			console.log(matchSetId);
 
 			await updateDoc(matchSetRef, { timer_expired: true });
 
@@ -76,12 +84,12 @@
 
 	let timerInterval: NodeJS.Timeout | undefined;
 
-	function startTimer() {
+	function startTimer(): void {
 		timerInterval = setInterval(updateTimer, 1000);
 		updateTimer();
 	}
 
-	async function updateTimer() {
+	async function updateTimer(): Promise<void> {
 		if (!matchSet) return;
 
 		const currentTime = new Date().getTime();
@@ -89,15 +97,13 @@
 
 		const timeRemaining = timeLimit - (currentTime - timestamp);
 
-		console.log(timeRemaining);
-
 		await updateTimerExpiration(timeRemaining, timerInterval);
 	}
 
 	let unsubLatestMatchSet: Unsubscribe;
 	let unsubTimer: Unsubscribe;
 
-	onMount(() => {
+	onMount(async () => {
 		console.log('Mounting...');
 
 		if (user) {
@@ -114,7 +120,6 @@
 						.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
 
 					console.log('Match set assigned');
-					console.log(matchSet);
 				}
 			});
 		}
@@ -133,20 +138,26 @@
 			});
 		}
 
-		// if (matchSet && matchSetId) {
-		// 	const currentDate = new Date();
-		// 	const currentTimestamp = Timestamp.fromDate(currentDate);
-		// 	const matchTimestamp = matchSet.timestamp;
-		//
-		// 	if (matchTimestamp.seconds > currentTimestamp.seconds) {
-		// 		console.log('Timer not expired yet, starting timer...');
-		// 		startTimer();
-		// 	} else {
-		// 		const matchSetRef = doc(db, 'match_sets', matchSetId);
-		//
-		// 		await updateDoc(matchSetRef, { timer_expired: true });
-		// 	}
-		// }
+		if (matchSet && matchSetId) {
+			const currentDate = new Date();
+			const currentTimestamp = Timestamp.fromDate(currentDate);
+			const matchTimestamp = matchSet.timestamp;
+
+			if (matchTimestamp.seconds > currentTimestamp.seconds) {
+				console.log('Timer not expired yet, starting timer...');
+				startTimer();
+			} else {
+				console.log('Timer is already expired.');
+
+				// If for some reason timer_expired is still false
+				if (!matchSet.timer_expired) {
+					console.log('Updating timer expiration...');
+					const matchSetRef = doc(db, 'match_sets', matchSetId);
+
+					await updateDoc(matchSetRef, { timer_expired: true });
+				}
+			}
+		}
 	});
 
 	onDestroy(() => {
@@ -161,9 +172,6 @@
 <Toast />
 
 <div class="relative flex h-full w-full flex-col items-center gap-10 px-main py-10">
-	<div>
-		<span>Timer expired: {matchSet?.timer_expired}</span>
-	</div>
 	{#if !matchSet}
 		<div>No match available, please wait for admin to queue.</div>
 	{:else if matchSet.timer_expired}

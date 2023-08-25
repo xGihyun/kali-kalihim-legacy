@@ -20,9 +20,9 @@
 	let editModal: HTMLDialogElement;
 	let deleteModal: HTMLDialogElement;
 
-	if (data.user) {
-		initials = `${data.user.personal_data.name.first[0]}${data.user.personal_data.name.last[0]}`;
-		const userRef = doc(db, 'users', data.user.auth_data.uid);
+	if (user) {
+		initials = `${user.personal_data.name.first[0]}${user.personal_data.name.last[0]}`;
+		const userRef = doc(db, 'users', user.auth_data.uid);
 
 		const unsubUser = onSnapshot(userRef, (snapshot) => {
 			user = snapshot.data() as UserData;

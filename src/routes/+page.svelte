@@ -73,7 +73,6 @@
 						.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
 
 					console.log('Match set assigned');
-					console.log(matchSet);
 				}
 			});
 		}
@@ -124,13 +123,14 @@
 <div class="flex h-full w-full flex-col items-center justify-center">
 	{#if $currentUserCtx.auth_data.is_logged_in && $currentUserCtx.auth_data.is_registered}
 		{@const initials = `${$currentUserCtx.personal_data.name.first[0]}${$currentUserCtx.personal_data.name.last[0]}`}
+
 		<div class="w-full rounded-md overflow-hidden">
 			<Banner />
 			<UserAvatar user={$currentUserCtx} {initials} />
 		</div>
 		<div class="w-full space-y-6 mt-20 lg:mt-28">
 			<Rank user={$currentUserCtx} />
-			<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
+			<div class="flex w-full flex-col gap-6 lg:flex-row">
 				<UpcomingMatch {pendingMatch} />
 
 				{#if !matchSet}
@@ -154,7 +154,7 @@
 				{/if}
 			</div>
 			{#if matchHistory && cardBattleHistory}
-				<div class="flex w-full flex-col gap-6 lg:flex-row lg:px-main">
+				<div class="flex w-full flex-col gap-6 lg:flex-row">
 					<ArnisHistory history={matchHistory} />
 					<CardBattleHistory history={cardBattleHistory} />
 				</div>

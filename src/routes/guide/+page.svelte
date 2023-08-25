@@ -1,4 +1,5 @@
 <script>
+	import { YouTube } from '$lib/assets/icons';
 	import { PowerCard } from '$lib/components/powercards';
 	import { arnisFootworks, arnisSkills, powerCardsMap } from '$lib/data';
 </script>
@@ -13,8 +14,10 @@
 				<a class="w-40 lg:w-60" href={video.url} target="_blank" rel="noreferrer">
 					<div class="flex aspect-square h-full w-full flex-col rounded-md lg:gap-1">
 						<div
-							class="bg-surface-400-500-token h-full w-full rounded-md p-2 text-center transition-[filter] duration-150 hover:brightness-125"
-						/>
+							class="flex justify-center items-center bg-surface-400-500-token h-full w-full rounded-md p-2 text-center transition-[filter] duration-150 hover:brightness-125"
+						>
+							<YouTube styles="w-10 h-10 lg:w-20 lg:h-20" />
+						</div>
 						<span class="flex-auto text-sm lg:text-lg">{video.title}</span>
 					</div>
 				</a>
@@ -30,8 +33,10 @@
 				<a class="w-40 lg:w-60" href={video.url} target="_blank" rel="noreferrer">
 					<div class="flex aspect-square h-full w-full flex-col rounded-md lg:gap-1">
 						<div
-							class="bg-surface-400-500-token h-full w-full rounded-md p-2 text-center transition-[filter] duration-150 hover:brightness-125"
-						/>
+							class="flex justify-center items-center bg-surface-400-500-token h-full w-full rounded-md p-2 text-center transition-[filter] duration-150 hover:brightness-125"
+						>
+							<YouTube styles="w-10 h-10 lg:w-20 lg:h-20" />
+						</div>
 						<span class="flex-auto text-sm lg:text-lg">{video.title}</span>
 					</div>
 				</a>

@@ -2,7 +2,7 @@
 	import { hamster } from '$lib/assets/images';
 	import { powerCardsMap } from '$lib/data';
 
-  export let key: string;
+	export let key: string;
 	export let showName: boolean = true;
 	export let showDescription: boolean = false;
 
@@ -28,7 +28,7 @@
 		<div
 			class="z-20 flex h-full flex-col justify-end bg-gradient-to-t from-black via-black to-[transparent_50%] p-4"
 		>
-			<p class="text text-token text-xs opacity-75 lg:text-base">{card?.description}</p>
+			<p class="text text-token text-xs opacity-75 lg:text-base">{card?.description?.full}</p>
 		</div>
 	{/if}
 </div>

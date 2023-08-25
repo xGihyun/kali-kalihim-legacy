@@ -18,7 +18,7 @@ import { defaultUserData } from '$lib/default';
 import {
 	signInWithEmailAndPassword,
 	createUserWithEmailAndPassword,
-	fetchSignInMethodsForEmail
+	deleteUser
 } from 'firebase/auth';
 import type {
 	Match,
@@ -216,13 +216,23 @@ export const actions: Actions = {
 		console.log('Logging in...');
 
 		const result = await signInWithEmailAndPassword(auth, email, password);
-		const user = result.user;
+		const { user } = result;
 
 		const userRef = doc(db, 'users', user.uid);
+		const userDoc = await getDoc(userRef);
+
+		// If the document doesn't exist, then it means this user has been deleted by an admin
+		if (!userDoc.exists()) {
+			await deleteUser(user);
+
+			console.log("Document doesn't exist, this user has been deleted.");
+			console.log('Please register again.');
+
+			throw redirect(302, '/');
+		}
 
 		await updateDoc(userRef, { 'auth_data.is_logged_in': true });
 
-		const userDoc = await getDoc(userRef);
 		const userData = userDoc.data() as UserData;
 
 		locals.userData = userData;
