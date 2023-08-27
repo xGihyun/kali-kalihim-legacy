@@ -5,16 +5,8 @@
 	import { Toast, toastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	import { onDestroy, onMount } from 'svelte';
-	import { db } from '$lib/firebase/firebase.js';
-	import {
-		Timestamp,
-		collection,
-		doc,
-		onSnapshot,
-		query,
-		updateDoc,
-		where
-	} from 'firebase/firestore';
+	import { db } from '$lib/firebase/firebase';
+	import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 	import type { Unsubscribe } from 'firebase/auth';
 
 	export let data;
@@ -50,7 +42,7 @@
 	};
 
 	// NOTE: 6 hours in ms
-	const timeLimit = 60 * 1000;
+	const timeLimit = 30 * 1000;
 
 	let remainingHours = 0;
 	let remainingMinutes = 0;
@@ -63,13 +55,22 @@
 		if (!matchSetId) return;
 
 		if (timeRemaining <= 0) {
-			const matchSetRef = doc(db, 'match_sets', matchSetId);
+			console.log('Match set timer is expired, updating db...');
 
-			await updateDoc(matchSetRef, { timer_expired: true });
+			const formData = new FormData();
+			formData.append('match_set_id', matchSetId);
+
+			const response = await fetch('/api/match-sets/timer', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (!response.ok) {
+				throw new Error('Error in updating match set timer expiration.');
+			}
 
 			clearInterval(timer);
 
-			console.log('Match set timer is expired');
 			console.log('Cleared timer interval');
 
 			remainingHours = 0;
@@ -121,8 +122,6 @@
 
 					console.log('Match set assigned');
 					console.log('Starting timer...');
-
-					startTimer();
 				}
 			});
 		}
@@ -141,31 +140,20 @@
 			});
 		}
 
-		// if (matchSet) {
-		// 	console.log('Starting timer...');
-		// 	startTimer();
-		// }
+		if (matchSet && matchSetId) {
+			const currentTime = new Date().getTime();
+			const matchSetTime = matchSet.timestamp.seconds * 1000;
 
-		// if (matchSet && matchSetId) {
-		// 	const currentDate = new Date();
-		// 	const currentTimestamp = Timestamp.fromDate(currentDate);
-		// 	const matchTimestamp = matchSet.timestamp;
-		//
-		// 	if (matchTimestamp.seconds > currentTimestamp.seconds) {
-		// 		console.log('Timer not expired yet, starting timer...');
-		// 		startTimer();
-		// 	} else {
-		// 		console.log('Timer is already expired.');
-		//
-		// 		// If for some reason timer_expired is still false
-		// 		if (!matchSet.timer_expired) {
-		// 			console.log('Updating timer expiration...');
-		// 			const matchSetRef = doc(db, 'match_sets', matchSetId);
-		//
-		// 			await updateDoc(matchSetRef, { timer_expired: true });
-		// 		}
-		// 	}
-		// }
+			const timeRemaining = timeLimit - (currentTime - matchSetTime);
+
+			console.log('Current: ' + currentTime);
+			console.log('Match Set: ' + matchSetTime);
+
+			if (timeRemaining > 0) {
+				console.log('Starting timer...');
+				startTimer();
+			}
+		}
 	});
 
 	onDestroy(() => {

@@ -1,4 +1,5 @@
 import Bell from './Bell.svelte';
+import Arnis from './Arnis.svelte';
 import ArrowClockwise from './ArrowClockwise.svelte';
 import Home from './Home.svelte';
 import Cards from './Cards.svelte';
@@ -37,5 +38,6 @@ export {
 	YouTube,
 	Home,
 	ArrowClockwise,
-	Close
+	Close,
+	Arnis
 };

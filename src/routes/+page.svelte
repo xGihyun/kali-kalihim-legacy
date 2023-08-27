@@ -1,18 +1,9 @@
 <script lang="ts">
 	import { ActivatePowerCard } from '$lib/components';
 	import { db } from '$lib/firebase/firebase';
-	import { currentUser, latestOpponent, selectedPowerCard, timerExpired } from '$lib/store';
+	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
 	import type { Match, MatchSet, UserData } from '$lib/types';
-	import {
-		Timestamp,
-		collection,
-		doc,
-		limit,
-		onSnapshot,
-		orderBy,
-		query,
-		where
-	} from 'firebase/firestore';
+	import { collection, doc, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { Banner, UpcomingMatch, UserAvatar, Rank, PowerCards } from '$lib/components/user';
 	import { Login } from '$lib/components/auth';

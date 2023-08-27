@@ -6,7 +6,7 @@
 	import type { Section } from '$lib/types.js';
 	import { getStudentCountInSection } from '$lib/utils/functions.js';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
+	import { collection, onSnapshot } from 'firebase/firestore';
 	import { onDestroy } from 'svelte';
 
 	export let data;
@@ -52,8 +52,6 @@
 			throw new Error('Failed to add section.');
 		}
 	}
-
-	// NOTE: Make it reactive, maybe store sections in a writable
 
 	const sectionsCollection = collection(db, 'sections');
 

@@ -17,22 +17,18 @@
 	let loading = false;
 
 	function matchmake(data: Record<string, unknown> | undefined): void {
-		try {
-			if (!data) {
-				throw new Error('No data in matchmake function.');
-			}
+		if (!data) {
+			throw new Error('No data in matchmake function.');
+		}
 
-			const response = data as Record<string, string>;
-			const values = Object.values(response)[0];
-			const matches = JSON.parse(values) as Match[];
+		const response = data as Record<string, string>;
+		const values = Object.values(response)[0];
+		const matches = JSON.parse(values) as Match[];
 
-			newMatches = matches;
+		newMatches = matches;
 
-			if (matchSet) {
-				matchSet = { ...matchSet, timer_expired: false };
-			}
-		} catch (error) {
-			console.error('Error in match making: ' + error);
+		if (matchSet) {
+			matchSet = { ...matchSet, timer_expired: false };
 		}
 	}
 </script>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Github, ThreeDots } from '$lib/assets/icons';
+	import { Arnis, Github, ThreeDots } from '$lib/assets/icons';
 	import { ADMIN_ROUTES, USER_ROUTES } from '$lib/constants';
 	import type { UserData } from '$lib/types';
 	import { Avatar, popup, type PopupSettings } from '@skeletonlabs/skeleton';
@@ -29,7 +29,10 @@
 
 <div class="w-64 h-full p-4 justify-between flex flex-col">
 	<div class="flex flex-col">
-		<a href="/" class="font-gt-walsheim-pro-medium text-2xl md:text-3xl p-4 block">Kali Kalihim</a>
+		<a href="/" class="py-4 px-2 flex gap-2 items-center">
+			<Arnis styles="w-10 h-10 text-primary-500" />
+			<h1 class="font-gt-walsheim-pro-medium text-2xl md:text-3xl">Kali Kalihim</h1>
+		</a>
 		{#each USER_ROUTES as route, idx (idx)}
 			<a href={route.path} type="button">
 				<div
