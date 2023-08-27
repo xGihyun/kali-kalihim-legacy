@@ -32,28 +32,24 @@
 	};
 
 	async function addSection(): Promise<void> {
-		try {
-			if (!newSection) {
-				console.error('Invalid input');
-				return;
-			}
+		if (!newSection) {
+			console.error('Invalid input');
+			return;
+		}
 
-			const formData = new FormData();
+		const formData = new FormData();
 
-			formData.append('section', newSection);
+		formData.append('section', newSection);
 
-			const response = await fetch('./api/section', {
-				method: 'POST',
-				body: formData
-			});
+		const response = await fetch('./api/section', {
+			method: 'POST',
+			body: formData
+		});
 
-			newSection = '';
+		newSection = '';
 
-			if (!response.ok) {
-				throw new Error('Failed to add section.');
-			}
-		} catch (err) {
-			throw new Error('Error in adding section: ' + err);
+		if (!response.ok) {
+			throw new Error('Failed to add section.');
 		}
 	}
 

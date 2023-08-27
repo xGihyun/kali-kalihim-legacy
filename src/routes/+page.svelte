@@ -40,7 +40,7 @@
 
 	onMount(() => {
 		console.log('Mounting...');
-		console.log(pendingMatch);
+		// console.log(pendingMatch);
 
 		if (user) {
 			const userRef = doc(db, 'users', user.auth_data.uid);
@@ -68,7 +68,7 @@
 					) as UserData;
 
 					console.log('Pending match snapshot');
-					console.log(newOpponent);
+					// console.log(newOpponent);
 
 					pendingMatch = newMatch;
 					latestOpponent.set(newOpponent);

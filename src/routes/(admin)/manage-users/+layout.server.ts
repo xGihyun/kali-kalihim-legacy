@@ -2,10 +2,10 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '$lib/firebase/firebase';
 import type { Section } from '$lib/types';
 import { CACHE_DURATION } from '$lib/constants';
-import type { LayoutLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 import { getStudentCountInSection } from '$lib/utils/functions';
 
-export const load: LayoutLoad = async ({ setHeaders }) => {
+export const load: LayoutServerLoad = async ({ setHeaders }) => {
 	const sectionsCollection = collection(db, 'sections');
 	const getSections = await getDocs(sectionsCollection);
 

@@ -11,25 +11,26 @@ import { db } from '$lib/firebase/firebase';
 import type { CardBattle, PlayerWithDamage, Section, UserData } from '$lib/types';
 import { battle } from '$lib/utils/battlecards';
 import type { Actions } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { CACHE_DURATION } from '$lib/constants';
+// import type { PageServerLoad } from './$types';
+// import { CACHE_DURATION } from '$lib/constants';
 
-export const load: PageServerLoad = async ({ setHeaders }) => {
-	const sectionsCollection = collection(db, 'sections');
-	const getSections = await getDocs(sectionsCollection);
-
-	let sections: Section[] = [];
-
-	if (!getSections.empty) {
-		sections = getSections.docs.map((section) => section.data() as Section);
-	}
-
-	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
-
-	return {
-		sections
-	};
-};
+// Returns some undefined stuff idk why
+// export const load: PageServerLoad = async ({ setHeaders }) => {
+// 	const sectionsCollection = collection(db, 'sections');
+// 	const getSections = await getDocs(sectionsCollection);
+//
+// 	let sections: Section[] = [];
+//
+// 	if (!getSections.empty) {
+// 		sections = getSections.docs.map((section) => section.data() as Section);
+// 	}
+//
+// 	setHeaders({ 'cache-control': `max-age=${CACHE_DURATION}, must-revalidate` });
+//
+// 	return {
+// 		sections
+// 	};
+// };
 
 export const actions: Actions = {
 	card_battle: async ({ request }) => {
