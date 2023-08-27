@@ -120,6 +120,9 @@
 						.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)[0];
 
 					console.log('Match set assigned');
+					console.log('Starting timer...');
+
+					startTimer();
 				}
 			});
 		}
@@ -138,26 +141,31 @@
 			});
 		}
 
-		if (matchSet && matchSetId) {
-			const currentDate = new Date();
-			const currentTimestamp = Timestamp.fromDate(currentDate);
-			const matchTimestamp = matchSet.timestamp;
+		// if (matchSet) {
+		// 	console.log('Starting timer...');
+		// 	startTimer();
+		// }
 
-			if (matchTimestamp.seconds > currentTimestamp.seconds) {
-				console.log('Timer not expired yet, starting timer...');
-				startTimer();
-			} else {
-				console.log('Timer is already expired.');
-
-				// If for some reason timer_expired is still false
-				if (!matchSet.timer_expired) {
-					console.log('Updating timer expiration...');
-					const matchSetRef = doc(db, 'match_sets', matchSetId);
-
-					await updateDoc(matchSetRef, { timer_expired: true });
-				}
-			}
-		}
+		// if (matchSet && matchSetId) {
+		// 	const currentDate = new Date();
+		// 	const currentTimestamp = Timestamp.fromDate(currentDate);
+		// 	const matchTimestamp = matchSet.timestamp;
+		//
+		// 	if (matchTimestamp.seconds > currentTimestamp.seconds) {
+		// 		console.log('Timer not expired yet, starting timer...');
+		// 		startTimer();
+		// 	} else {
+		// 		console.log('Timer is already expired.');
+		//
+		// 		// If for some reason timer_expired is still false
+		// 		if (!matchSet.timer_expired) {
+		// 			console.log('Updating timer expiration...');
+		// 			const matchSetRef = doc(db, 'match_sets', matchSetId);
+		//
+		// 			await updateDoc(matchSetRef, { timer_expired: true });
+		// 		}
+		// 	}
+		// }
 	});
 
 	onDestroy(() => {

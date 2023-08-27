@@ -5,6 +5,10 @@
 	import { type PopupSettings, popup } from '@skeletonlabs/skeleton';
 	import { afterUpdate, onMount } from 'svelte';
 
+	export let data;
+
+	$: ({ sections } = data);
+
 	type BattleTab = 'arnis' | 'card_battle';
 
 	let matchSetsResult: Promise<MatchSets[]>;
@@ -24,13 +28,6 @@
 		placement: 'bottom'
 	};
 
-	async function getSections() {
-		const response = await fetch('/api/section', { method: 'GET' });
-		const result = await response.json();
-
-		return result as Section[];
-	}
-
 	onMount(() => {
 		matchSetsResult = getMatchSets(selectedSection);
 	});
@@ -49,22 +46,18 @@
 
 		<div class="card w-3/4 max-w-5xl py-2 shadow-xl z-50" data-popup="sections">
 			<ul>
-				{#await getSections()}
-					<div>Loading sections...</div>
-				{:then sections}
-					{#each sections as section, idx (idx)}
-						<li class="flex">
-							<button
-								class={`flex-1 px-4 py-2 ${
-									selectedSection === section.id
-										? 'variant-filled'
-										: 'bg-surface-100-800-token hover:variant-soft'
-								}`}
-								on:click={() => (selectedSection = section.id)}>{section.name}</button
-							>
-						</li>
-					{/each}
-				{/await}
+				{#each sections as section, idx (idx)}
+					<li class="flex">
+						<button
+							class={`flex-1 px-4 py-2 ${
+								selectedSection === section.id
+									? 'variant-filled'
+									: 'bg-surface-100-800-token hover:variant-soft'
+							}`}
+							on:click={() => (selectedSection = section.id)}>{section.name}</button
+						>
+					</li>
+				{/each}
 			</ul>
 			<div class="arrow bg-surface-100-800-token" />
 		</div>

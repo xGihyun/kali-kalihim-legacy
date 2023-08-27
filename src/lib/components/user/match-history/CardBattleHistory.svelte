@@ -6,7 +6,9 @@
 	import type { Writable } from 'svelte/store';
 
 	export let history: CardBattle[];
+
 	let clickedRow: number | null = null;
+
 	function toggleRow(idx: number) {
 		clickedRow = clickedRow === idx ? null : idx;
 	}

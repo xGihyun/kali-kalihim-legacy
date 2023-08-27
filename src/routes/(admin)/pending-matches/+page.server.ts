@@ -52,12 +52,10 @@ export const actions: Actions = {
 	}
 };
 
-function addToMatchHistory(users: PlayerWithDamage[]) {
+function addToMatchHistory(users: PlayerWithDamage[]): void {
 	const cardBattleHistoryData: CardBattle = {
 		players: [...users]
 	};
-
-	console.log(users);
 
 	users.forEach(async (user) => {
 		const matchHistoryCollection = collection(
@@ -74,7 +72,11 @@ function addToMatchHistory(users: PlayerWithDamage[]) {
 	});
 }
 
-async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: string, idx: number) {
+async function updateCardBattleDocument(
+	cardBattle: CardBattle[],
+	matchSetId: string,
+	idx: number
+): Promise<void> {
 	const match = cardBattle[idx];
 	const player1 = match.players[0];
 	const player2 = match.players[1];
@@ -113,6 +115,8 @@ async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: st
 		} else if (player2TotalDamage > player1TotalDamage) {
 			console.log('Player 2 scored higher, adding 10 points.');
 			await addPointsToWinner(player2);
+		} else {
+			console.log('Both scores are equal, no points will be added.');
 		}
 	} else if (player1TotalDamage && !player2TotalDamage) {
 		console.log('Player 2 has no cards, player 1 wins by default.');
@@ -128,7 +132,7 @@ async function updateCardBattleDocument(cardBattle: CardBattle[], matchSetId: st
 	addToMatchHistory(match.players);
 }
 
-async function addPointsToWinner(user: PlayerWithDamage) {
+async function addPointsToWinner(user: PlayerWithDamage): Promise<void> {
 	const userRef = doc(db, 'users', user.auth_data.uid);
 	const userDoc = await getDoc(userRef);
 	const userData = userDoc.data() as UserData;

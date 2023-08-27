@@ -6,9 +6,9 @@
 	import { Sword } from '$lib/assets/icons';
 	import RankLogo from './RankLogo.svelte';
 
-	export let pendingMatch: Match | undefined;
+	export let pendingMatch: Match;
 
-	$: opponent = getContext<Writable<UserData>>('opponent');
+	const opponent = getContext<Writable<UserData>>('opponent');
 
 	let initials: string;
 	let stats: { name: string; value: string }[];
@@ -40,7 +40,7 @@
 			<span class="w-full text-2xl uppercase">upcoming match</span>
 		</div>
 		<div class="flex">
-			{#if pendingMatch && $opponent}
+			{#if $opponent}
 				<div class="flex w-full flex-col gap-4">
 					<div class="flex w-full flex-col">
 						<div class="relative flex w-full items-center gap-4 px-main py-4">

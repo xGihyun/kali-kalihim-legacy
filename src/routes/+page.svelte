@@ -1,9 +1,18 @@
 <script lang="ts">
 	import { ActivatePowerCard } from '$lib/components';
 	import { db } from '$lib/firebase/firebase';
-	import { currentUser, latestOpponent, selectedPowerCard } from '$lib/store';
+	import { currentUser, latestOpponent, selectedPowerCard, timerExpired } from '$lib/store';
 	import type { Match, MatchSet, UserData } from '$lib/types';
-	import { collection, doc, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+	import {
+		Timestamp,
+		collection,
+		doc,
+		limit,
+		onSnapshot,
+		orderBy,
+		query,
+		where
+	} from 'firebase/firestore';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { Banner, UpcomingMatch, UserAvatar, Rank, PowerCards } from '$lib/components/user';
 	import { Login } from '$lib/components/auth';
@@ -15,9 +24,13 @@
 
 	const currentUserCtx = getContext<Writable<UserData>>('user');
 
-	$: pendingMatch = data?.latestPendingMatch?.match;
+	$: pendingMatch = data.latestPendingMatch?.match;
 	$: opponent = data.latestPendingMatch?.opponent;
 	$: ({ user, matchHistory, cardBattleHistory, matchSet, matchSetId, sections } = data);
+
+	$: if (opponent) {
+		latestOpponent.set(opponent);
+	}
 
 	let unsubPendingMatch: Unsubscribe;
 	let unsubUser: Unsubscribe;
@@ -27,6 +40,7 @@
 
 	onMount(() => {
 		console.log('Mounting...');
+		console.log(pendingMatch);
 
 		if (user) {
 			const userRef = doc(db, 'users', user.auth_data.uid);
@@ -54,6 +68,7 @@
 					) as UserData;
 
 					console.log('Pending match snapshot');
+					console.log(newOpponent);
 
 					pendingMatch = newMatch;
 					latestOpponent.set(newOpponent);
@@ -77,19 +92,19 @@
 			});
 		}
 
-		if (opponent) {
-			const opponentRef = doc(db, 'users', opponent.auth_data.uid);
-
-			unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
-				if (snapshot.exists()) {
-					const updatedOpponent = snapshot.data() as UserData;
-
-					console.log('Opponent updated');
-
-					latestOpponent.update((val) => ({ ...val, ...updatedOpponent }));
-				}
-			});
-		}
+		// if (opponent) {
+		// 	const opponentRef = doc(db, 'users', opponent.auth_data.uid);
+		//
+		// 	unsubOpponent = onSnapshot(opponentRef, (snapshot) => {
+		// 		if (snapshot.exists()) {
+		// 			const updatedOpponent = snapshot.data() as UserData;
+		//
+		// 			console.log('Opponent data updated');
+		//
+		// 			latestOpponent.update((val) => ({ ...val, ...updatedOpponent }));
+		// 		}
+		// 	});
+		// }
 
 		if (matchSetId) {
 			const matchSetRef = doc(db, 'match_sets', matchSetId);
@@ -104,6 +119,22 @@
 				}
 			});
 		}
+
+		// const timeLimit = 60 * 1000;
+		//
+		// if (matchSet) {
+		// 	const currentTime = new Date().getTime();
+		// 	const matchSetTimestamp = matchSet.timestamp.seconds * 1000;
+		//
+		// 	const timeRemaining = timeLimit - (currentTime - matchSetTimestamp);
+		//
+		// 	console.log('Current: ' + currentTime);
+		// 	console.log('Match Set: ' + matchSetTimestamp);
+		//
+		// 	if (timeRemaining <= 0) {
+		// 		matchSet.timer_expired = true;
+		// 	}
+		// }
 	});
 
 	onDestroy(() => {
@@ -131,7 +162,9 @@
 		<div class="w-full space-y-6 mt-20 lg:mt-28">
 			<Rank user={$currentUserCtx} />
 			<div class="flex w-full flex-col gap-6 lg:flex-row">
-				<UpcomingMatch {pendingMatch} />
+				{#if pendingMatch}
+					<UpcomingMatch {pendingMatch} />
+				{/if}
 
 				{#if !matchSet}
 					<div

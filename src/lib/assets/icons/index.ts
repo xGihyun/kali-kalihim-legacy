@@ -1,4 +1,6 @@
 import Bell from './Bell.svelte';
+import ArrowClockwise from './ArrowClockwise.svelte';
+import Home from './Home.svelte';
 import Cards from './Cards.svelte';
 import CircleCheckFilled from './CircleCheckFilled.svelte';
 import ClockPause from './ClockPause.svelte';
@@ -14,6 +16,7 @@ import ThreeDots from './ThreeDots.svelte';
 import ChevronUp from './ChevronUp.svelte';
 import Plus from './Plus.svelte';
 import YouTube from './YouTube.svelte';
+import Close from './Close.svelte';
 
 export {
 	Bell,
@@ -31,5 +34,8 @@ export {
 	ThreeDots,
 	ChevronUp,
 	Plus,
-	YouTube
+	YouTube,
+	Home,
+	ArrowClockwise,
+	Close
 };

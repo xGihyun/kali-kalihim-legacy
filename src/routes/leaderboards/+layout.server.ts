@@ -1,9 +1,9 @@
 import { collection, getDocs } from 'firebase/firestore';
-import type { LayoutLoad } from './$types';
 import type { Section } from '$lib/types';
 import { db } from '$lib/firebase/firebase';
+import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutLoad = async () => {
+export const load: LayoutServerLoad = async () => {
 	const sectionsCollection = collection(db, 'sections');
 	const getSections = await getDocs(sectionsCollection);
 

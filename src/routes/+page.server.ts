@@ -68,7 +68,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 				latestPendingMatch.players.find((player) => player.auth_data.uid !== userUID)
 			) as UserData;
 
-			// console.log(latestOpponent);
+			console.log(latestPendingMatch);
 
 			return {
 				match: latestPendingMatch,
@@ -113,7 +113,7 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	};
 };
 
-// TODO: Use Zod
+// TODO: Use Zod (?)
 export const actions: Actions = {
 	register: async ({ request, locals }) => {
 		const data = await request.formData();
@@ -125,6 +125,15 @@ export const actions: Actions = {
 		const contactNumber = Number(data.get('contact-number')?.toString().trim());
 		const email = data.get('email')?.toString().trim() || '';
 		const password = data.get('password')?.toString().trim() || '';
+
+		// TODO: Limit the number of students per section
+		const usersCollection = collection(db, 'users');
+		const usersInSectionCollection = query(
+			usersCollection,
+			where('personal_data.section', '==', section || '')
+		);
+		const usersInSectionSnapshot = await getCountFromServer(usersInSectionCollection);
+		const usersInSectionSnapshotCount = usersInSectionSnapshot.data().count;
 
 		const newPersonalData: UserPersonalData = {
 			age: age,
@@ -164,15 +173,8 @@ export const actions: Actions = {
 
 		console.log('\nRegistered.');
 
-		const usersCollection = collection(db, 'users');
-		const usersInSectionCollection = query(
-			usersCollection,
-			where('personal_data.section', '==', section || '')
-		);
 		const usersSnapshot = await getCountFromServer(usersCollection);
-		const usersInSectionSnapshot = await getCountFromServer(usersInSectionCollection);
 		const usersSnapshotCount = usersSnapshot.data().count;
-		const usersInSectionSnapshotCount = usersInSectionSnapshot.data().count;
 
 		// Add + 1 to usersInSectionSnapshotCount since the user's section is still not set in the db, therefore not counting the user
 		const newRankingData: UserRankingData = {

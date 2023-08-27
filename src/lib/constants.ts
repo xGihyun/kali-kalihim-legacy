@@ -1,4 +1,4 @@
-import { Guide, History, People, Sword, Trophy } from './assets/icons';
+import { ArrowClockwise, Guide, History, Home, People, Sword, Trophy } from './assets/icons';
 import type { Navigation } from './types';
 
 export const CACHE_DURATION = 600;
@@ -7,7 +7,7 @@ export const ADMIN_ROUTES: Navigation = [
 	{
 		name: 'Queue',
 		path: '/matchmake',
-		icon: Sword
+		icon: ArrowClockwise
 	},
 	{
 		name: 'Matches',
@@ -25,7 +25,7 @@ export const USER_ROUTES: Navigation = [
 	{
 		name: 'Home',
 		path: '/',
-		icon: Trophy
+		icon: Home
 	},
 	{
 		name: 'Rankings',
