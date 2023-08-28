@@ -161,7 +161,7 @@
 					<div
 						class="bg-surface-300-600-token border-surface-400-500-token flex w-full flex-col border-token lg:w-1/2 lg:rounded-md"
 					>
-						<div class="flex justify-center items-center h-full">
+						<div class="flex justify-center items-center h-full px-main py-10 text-sm lg:text-base">
 							No match available, please wait for admin to queue.
 						</div>
 					</div>

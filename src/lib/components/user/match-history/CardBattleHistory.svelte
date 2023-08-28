@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { Close } from '$lib/assets/icons';
 	import { blockCards, strikeCards } from '$lib/data';
 	import type { UserData, CardBattle } from '$lib/types';
 	import { Avatar } from '@skeletonlabs/skeleton';
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	export let history: CardBattle[];
@@ -71,112 +72,116 @@
 						{#if clickedRow === idx}
 							<div class="fixed left-0 top-0 z-[999] h-full w-full bg-surface-backdrop-token">
 								<div class="flex h-full w-full items-center justify-center p-2">
+									<!-- Modal -->
 									<div
-										class="w-full items-center justify-center sm:w-3/4 flex flex-col gap-8 relative shadow-xl bg-surface-100-800-token rounded-container-token h-3/4 overflow-auto"
+										class="w-full sm:w-3/4 flex flex-col relative shadow-xl bg-surface-100-800-token overflow-hidden rounded-container-token h-3/4"
 									>
-										<button class="absolute top-0 right-0 p-2" on:click={() => toggleRow(idx)}
-											>X</button
-										>
-										<div
-											class="w-full flex flex-col gap-8 shadow-xl bg-surface-100-800-token rounded-container-token h-full overflow-auto"
-										>
+										<div class="w-full flex justify-between items-center p-4 gap-4 h-16">
+											<h1 class="font-gt-walsheim-pro-medium text-2xl">Card Battle Results</h1>
+											<button class="" on:click={() => toggleRow(idx)}>
+												<Close styles="w-8 h-8" />
+											</button>
+										</div>
+
+										<hr />
+
+										<div class="w-full h-full flex overflow-auto p-4">
 											{#each players as player (player.auth_data.uid)}
-												{@const name = `${player.personal_data.name.first} ${player.personal_data.name.last}`}
-												<div class="flex flex-col gap-2">
-													<span
-														class={`font-gt-walsheim-pro-medium text-base sm:text-lg w-full p-4 flex bg-surface-400-500-token ${
-															player.auth_data.uid === $currentUser.auth_data.uid
-																? 'text-tertiary-300'
-																: 'text-white'
-														}`}
-													>
-														{name}
-													</span>
-													<div class="flex flex-col lg:flex-row gap-4 lg:overflow-auto p-4">
-														{#each player.turns as turn, idx (idx)}
+												{@const { personal_data, turns } = player}
+												{@const playerName = `${personal_data.name.first} ${personal_data.name.last}`}
+												{@const opponent = players.filter(
+													(player) => $currentUser.auth_data.uid !== player.auth_data.uid
+												)[0]}
+
+												<div class="flex flex-col gap-4 w-full">
+													<p class="font-gt-walsheim-pro-medium text-xl">
+														{playerName}
+														{#if player.auth_data.uid === $currentUser.auth_data.uid}
+															<span>(You)</span>
+														{/if}
+													</p>
+
+													<div class="flex flex-col gap-2 py-4">
+														{#each turns as turn, idx (idx)}
 															{@const battleCard = player.battle_cards[idx]}
-															<div class="flex-1 flex gap-2">
-																<div class="sm:text-base text-sm">
-																	<span>
-																		{idx + 1}.
-																	</span>
-																	<!-- <span class="text-primary-500">.</span> -->
-																</div>
-																<div class="flex flex-col w-full gap-2 flex-1 sm:text-base text-sm">
-																	{#if battleCard.skill === 'strike'}
-																		{@const strikeCard = strikeCards.get(battleCard.name)}
+															{@const { name, skill } = battleCard}
+															{@const { damage, is_cancelled } = turn}
 
-																		{#if strikeCard}
-																			{@const { accuracy, damage, effect, name } = strikeCard}
+															{#if skill === 'block'}
+																{@const blockCard = blockCards.get(name)}
 
-																			<div class="flex flex-col">
-																				<span class="font-gt-walsheim-pro-medium text-secondary-300"
-																					>{name}</span
-																				>
-																			</div>
+																{#if blockCard}
+																	{@const { name, effect, reduction, strike_to_cancel } = blockCard}
+																	{@const damageReceived = opponent.turns[idx].damage}
 
-																			{#if turn.is_cancelled}
-																				<span>Blocked!</span>
-																			{:else if damage > 0}
-																				<div class="flex flex-col">
-																					<span class="font-mono">DMG: {damage}</span>
-																					<span class="font-mono">ACC: {accuracy * 100}%</span>
-																				</div>
-																				<span class="font-mono">Hit!</span>
-																				<div>
-																					<!-- <p>
-																			Damage dealt:
+																	<span class="text-tertiary-400">{name}</span>
+
+																	<div class="flex flex-col">
+																		<p>
+																			Damage Reduction:
 																			<span class="text-primary-400">
-																				{turn.damage}
+																				{reduction * 100}%
 																			</span>
-																		</p> -->
-																					<div>
-																						<span class="font-mono">Bonus effect:</span>
-																						<p class="font-mono">
-																							{#if effect.type === 'increase'}
-																								<span class="font-mono text-success-500">
-																									+{effect.amount * 100}%
-																								</span>
-																							{:else}
-																								<span class="font-mono text-error-500">
-																									-{effect.amount * 100}%
-																								</span>
-																							{/if}
+																		</p>
+																		<p>
+																			Damage Recevied:
+																			<span class="text-primary-400">
+																				{damageReceived}
+																			</span>
+																		</p>
+																		<p>
+																			Strike to Cancel:
+																			<span class="text-primary-400">
+																				{strike_to_cancel}
+																			</span>
+																		</p>
+																	</div>
+																{/if}
+															{:else}
+																{@const strikeCard = strikeCards.get(name)}
 
-																							{effect.stat}
-																							on
-																							{effect.target === 'self' ? "user's" : "opponent's"}
-																							next turn
-																						</p>
-																					</div>
-																				</div>
-																			{:else}
-																				<span>Missed!</span>
-																			{/if}
-																		{/if}
-																	{:else}
-																		{@const blockCard = blockCards.get(battleCard.name)}
+																{#if strikeCard}
+																	{@const {
+																		name,
+																		effect,
+																		damage: strikeDamage,
+																		accuracy
+																	} = strikeCard}
+																	<span class="text-tertiary-400">{name}</span>
+																	<div class="flex flex-col">
+																		<p>
+																			Damage:
+																			<span class="text-primary-400">
+																				{damage}
+																			</span>
+																		</p>
 
-																		{#if blockCard}
-																			{@const { name, reduction } = blockCard}
+																		<p>
+																			Accuracy:
+																			<span class="text-primary-400">
+																				{accuracy * 100}%
+																			</span>
+																		</p>
 
-																			<span class="font-gt-walsheim-pro-medium text-secondary-300"
-																				>{name}</span
-																			>
-																			<span class="font-mono">DMG Reduc.: {reduction * 100}%</span>
-																		{/if}
-																	{/if}
-																</div>
-															</div>
+																		<p>
+																			Result:
+																			<span class="text-primary-400">
+																				{#if is_cancelled}
+																					Blocked!
+																				{:else if damage > 0}
+																					Hit!
+																				{:else}
+																					Missed!
+																				{/if}
+																			</span>
+																		</p>
+																	</div>
+																{/if}
+															{/if}
 														{/each}
 													</div>
 												</div>
 											{/each}
-											<!-- <div class="flex justify-end"> -->
-											<!-- 	<button class="btn variant-filled-primary" on:click={() => toggleRow(idx)} -->
-											<!-- 		>Close</button -->
-											<!-- 	> -->
-											<!-- </div> -->
 										</div>
 									</div>
 								</div>
