@@ -11,7 +11,7 @@
 	}
 </script>
 
-<div class="flex h-full w-full flex-col items-center gap-10 px-main py-10">
+<div class="flex h-full w-full flex-col items-center gap-10 md:px-main py-10">
 	<div>
 		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Skills</h2>
 		<div
@@ -58,11 +58,11 @@
 		>
 			{#each powerCardsMap as [key, value], idx (idx)}
 				<button
-					class="flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 lg:gap-1"
+					class="flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 gap-1"
 					on:click={() => toggleCard(idx)}
 				>
 					<PowerCard {key} showName={false} />
-					<span class="flex-auto text-sm lg:text-lg">{value.name}</span>
+					<!-- <span class="flex-auto text-sm lg:text-lg">{value.name}</span> -->
 				</button>
 
 				{#if clickedRow === idx}
@@ -96,48 +96,75 @@
 		</div>
 	</div>
 
-	<div>
-		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Strike Cards</h2>
-		<div
-			class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-2 lg:gap-4"
-		>
-			{#each strikeCards as [_, value], idx (idx)}
-				{@const { damage, accuracy, effect, name } = value}
+	<div class="w-full bg-surface-300-600-token lg:rounded-md">
+		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl px-main py-5">Strike Cards</h2>
+		<table class="w-full">
+			<thead>
+				<tr class="text-left text-xs lg:text-sm opacity-75 [&>th]:pb-2 [&>th]:px-main">
+					<th class="w-1/2">Name</th>
+					<th class="w-1/4">Damage</th>
+					<th class="w-1/4">Accuracy</th>
+				</tr>
+			</thead>
+			<tbody class="[&>tr:nth-child(even)]:bg-surface-700 [&>tr:nth-child(odd)]:bg-surface-800">
+				{#each strikeCards as [_, value], idx (idx)}
+					{@const { damage, accuracy, effect, name } = value}
 
-				<button
-					class="flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 bg-surface-400-500-token p-2"
-				>
-					<span class="text-sm lg:text-lg">{name}</span>
-					<div class="flex flex-col text-left">
-						<span class="text-sm lg:text-lg">Damage: {damage}</span>
-						<span class="text-sm lg:text-lg">Accuracy: {accuracy * 100}%</span>
-					</div>
-				</button>
-			{/each}
-		</div>
+					<tr class="[&>td]:py-2 [&>td]:px-main text-sm lg:text-base">
+						<td>{name}</td>
+						<td>{damage}</td>
+						<td>{accuracy * 100}%</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	</div>
 
-	<div>
-		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Blocks Cards</h2>
-		<div
-			class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-2 lg:gap-4"
-		>
-			{#each blockCards as [_, value], idx (idx)}
-				{@const { name, reduction, strike_to_cancel, effect } = value}
+	<div class="w-full bg-surface-300-600-token lg:rounded-md">
+		<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl px-main py-5">Block Cards</h2>
+		<table class="w-full">
+			<thead>
+				<tr class="text-left text-xs lg:text-sm opacity-75 [&>th]:pb-2 [&>th]:px-main">
+					<th class="w-1/2">Name</th>
+					<th class="w-1/4">Damage Reduction</th>
+					<th class="w-1/4">Strike to Cancel</th>
+				</tr>
+			</thead>
+			<tbody class="[&>tr:nth-child(even)]:bg-surface-700 [&>tr:nth-child(odd)]:bg-surface-800">
+				{#each blockCards as [_, value], idx (idx)}
+					{@const { name, reduction, strike_to_cancel, effect } = value}
 
-				<button
-					class="flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 bg-surface-400-500-token p-2"
-				>
-					<span class="text-sm lg:text-lg">{name}</span>
-					<div class="flex flex-col text-left">
-						<span class="text-sm lg:text-lg">Damage Reduction: {reduction * 100}%</span>
-						<p class="text-sm lg:text-lg">
-							Cancels
-							<span class="text-tertiary-300">{strike_to_cancel}</span>
-						</p>
-					</div>
-				</button>
-			{/each}
-		</div>
+					<tr class="[&>td]:py-2 [&>td]:px-main text-sm lg:text-base">
+						<td>{name}</td>
+						<td>{reduction * 100}%</td>
+						<td>{strike_to_cancel}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	</div>
+
+	<!-- <div> -->
+	<!-- 	<h2 class="mb-2 font-gt-walsheim-pro-medium text-xl lg:text-5xl">Blocks Cards</h2> -->
+	<!-- 	<div -->
+	<!-- 		class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-2 lg:gap-4" -->
+	<!-- 	> -->
+	<!-- 		{#each blockCards as [_, value], idx (idx)} -->
+	<!-- 			{@const { name, reduction, strike_to_cancel, effect } = value} -->
+	<!---->
+	<!-- 			<button -->
+	<!-- 				class="flex aspect-[1/1.3] w-40 flex-col rounded-md lg:w-60 bg-surface-400-500-token p-2" -->
+	<!-- 			> -->
+	<!-- 				<span class="text-sm lg:text-lg">{name}</span> -->
+	<!-- 				<div class="flex flex-col text-left"> -->
+	<!-- 					<span class="text-sm lg:text-lg">Damage Reduction: {reduction * 100}%</span> -->
+	<!-- 					<p class="text-sm lg:text-lg"> -->
+	<!-- 						Cancels -->
+	<!-- 						<span class="text-tertiary-300">{strike_to_cancel}</span> -->
+	<!-- 					</p> -->
+	<!-- 				</div> -->
+	<!-- 			</button> -->
+	<!-- 		{/each} -->
+	<!-- 	</div> -->
+	<!-- </div> -->
 </div>

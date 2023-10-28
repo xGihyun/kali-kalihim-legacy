@@ -2,8 +2,9 @@
 	import { db } from '$lib/firebase/firebase';
 	import type { UserData } from '$lib/types';
 	import { formatSection } from '$lib/utils/functions.js';
+	import type { Unsubscribe } from 'firebase/auth';
 	import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-	import { getContext, onDestroy } from 'svelte';
+	import { getContext, onDestroy, onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	export let data;
@@ -11,16 +12,21 @@
 	$: ({ users } = data);
 
 	const currentUser = getContext<Writable<UserData>>('user');
+	let unsubRank: Unsubscribe;
 
-	$: {
+	onMount(() => {
 		const usersCollection = collection(db, 'users');
 		const q = query(usersCollection, orderBy('score', 'desc'));
-		const unsubRank = onSnapshot(q, async (snapshot) => {
+		unsubRank = onSnapshot(q, async (snapshot) => {
 			users = snapshot.docs.map((user) => user.data() as UserData);
 		});
+	});
 
-		onDestroy(() => unsubRank());
-	}
+	onDestroy(() => {
+		if (unsubRank) {
+			unsubRank();
+		}
+	});
 </script>
 
 <div class="table-container max-w-5xl">

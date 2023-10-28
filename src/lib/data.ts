@@ -1,4 +1,12 @@
 import {
+	ancients_protection,
+	double_edged_sword,
+	extra_wind,
+	twist_of_fate,
+	viral_x_rival,
+	warlords_domain
+} from './assets/images/cards';
+import {
 	AncientsProtection,
 	DoubleEdgedSword,
 	ExtraWind,
@@ -37,7 +45,8 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			description: {
 				full: 'The player can select a specific skill to perform on their upcoming match. If the opponent uses the same card, the effect will be cancelled.',
 				summarized: 'Choose a specific skill to perform'
-			}
+			},
+			image_url: warlords_domain
 		}
 	],
 	[
@@ -50,7 +59,8 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			description: {
 				full: 'The player will be rewarded double the points after winning the Arnis match, otherwise, the player will receive double deduction.',
 				summarized: 'Double points for a victory, double deduction for a loss'
-			}
+			},
+			image_url: double_edged_sword
 		}
 	],
 	[
@@ -63,7 +73,8 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			description: {
 				full: 'The player can select a new power card, excluding Extra Wind.',
 				summarized: 'Get a new power card'
-			}
+			},
+			image_url: extra_wind
 		}
 	],
 	[
@@ -76,7 +87,9 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			description: {
 				full: "The player won't receive deduction if they lose the Arnis match.",
 				summarized: 'Deduction immunity'
-			}
+			},
+
+			image_url: ancients_protection
 		}
 	],
 	[
@@ -89,7 +102,9 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			description: {
 				full: "The player's current opponent will also be their opponent for the next match.",
 				summarized: 'Repeat current opponent for the next match'
-			}
+			},
+
+			image_url: viral_x_rival
 		}
 	],
 	[
@@ -102,7 +117,9 @@ export const powerCardsMap: Map<string, PowerCard> = new Map([
 			description: {
 				full: 'The player can change their opponent on the upcoming Arnis match.',
 				summarized: 'Switch opponent for the current match'
-			}
+			},
+
+			image_url: twist_of_fate
 		}
 	]
 ]);
